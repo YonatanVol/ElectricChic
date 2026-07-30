@@ -1,0 +1,169 @@
+# =============================================================================
+# ElectricChic — .gitignore
+#
+# This repository tracks ONLY the code we author:
+#   wp-content/plugins/electricchic-core/   (business logic)
+#   wp-content/themes/electricchic-child/   (presentation)
+#   docs/, tests/, scripts/, CI config, and the master plan.
+#
+# WordPress core, uploads, and third-party plugins/themes are NEVER tracked.
+#
+# THIS REPOSITORY IS PUBLIC (decision D12). A committed secret is not merely
+# exposed — it is world-readable and permanent in history. If a secret is ever
+# committed, treat it as compromised: rotate the credential immediately, do not
+# rely on deleting the file. See MASTER_PLAN_V1.md §22.7.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Commercially sensitive planning material — deliberately NOT published
+#
+# MASTER_PLAN_V1.md is the authoritative project specification, but it also
+# contains commercial terms (payment milestones, cost register, warranty and
+# maintenance boundaries), margin methodology, and a risk register with candid
+# assessments of client-side risk. None of that belongs in a public repository.
+# It is held outside version control and shared with the client directly.
+# See docs/README.md for where it lives and what governs in its absence.
+# -----------------------------------------------------------------------------
+MASTER_PLAN_V1.md
+MASTER_PLAN_*.md
+/commercial/
+/private/
+
+# -----------------------------------------------------------------------------
+# Secrets and configuration — NEVER commit any of these
+# -----------------------------------------------------------------------------
+wp-config.php
+wp-config-local.php
+wp-config-staging.php
+.env
+.env.*
+!.env.example
+auth.json
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+credentials*.json
+secrets*.yml
+secrets*.yaml
+
+# -----------------------------------------------------------------------------
+# Database dumps — may contain customer personal data
+# -----------------------------------------------------------------------------
+*.sql
+*.sql.gz
+*.sql.zip
+*.sql.bz2
+*.dump
+/db/
+/database/
+
+# -----------------------------------------------------------------------------
+# WordPress core
+# -----------------------------------------------------------------------------
+/wp-admin/
+/wp-includes/
+/wp-*.php
+/index.php
+/license.txt
+/readme.html
+/xmlrpc.php
+/.htaccess
+
+# -----------------------------------------------------------------------------
+# wp-content — allowlist approach: ignore everything, then un-ignore ours
+# -----------------------------------------------------------------------------
+wp-content/*
+!wp-content/plugins/
+!wp-content/themes/
+
+wp-content/plugins/*
+!wp-content/plugins/electricchic-core/
+
+wp-content/themes/*
+!wp-content/themes/electricchic-child/
+
+# Never track these even if the rules above would allow it
+wp-content/uploads/
+wp-content/upgrade/
+wp-content/upgrade-temp-backup/
+wp-content/cache/
+wp-content/backup*/
+wp-content/backups/
+wp-content/blogs.dir/
+wp-content/mu-plugins/
+wp-content/languages/
+wp-content/debug.log
+wp-content/ai1wm-backups/
+wp-content/updraft/
+
+# -----------------------------------------------------------------------------
+# Dependencies — installed, not committed
+# -----------------------------------------------------------------------------
+/vendor/
+node_modules/
+
+# -----------------------------------------------------------------------------
+# Build output
+# -----------------------------------------------------------------------------
+/dist/
+/build/
+**/build/
+*.min.js.map
+*.min.css.map
+
+# -----------------------------------------------------------------------------
+# Logs
+# -----------------------------------------------------------------------------
+*.log
+debug.log
+error_log
+npm-debug.log*
+yarn-error.log*
+
+# -----------------------------------------------------------------------------
+# Test and tooling artefacts
+# -----------------------------------------------------------------------------
+/tests/coverage/
+/coverage/
+/playwright-report/
+/test-results/
+.phpunit.result.cache
+.phpunit.cache/
+.phpcs-cache
+phpcs.xml
+phpstan.neon
+phpunit.xml
+playwright.config.local.js
+
+# Note: the *.dist variants of the above ARE tracked; the non-dist files are
+# local overrides and must stay out of the repository.
+
+# -----------------------------------------------------------------------------
+# Local development environments
+# -----------------------------------------------------------------------------
+/.local/
+*.local
+/local-xdebuginfo.php
+/.wp-env.override.json
+
+# -----------------------------------------------------------------------------
+# OS and editor
+# -----------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.idea/
+.vscode/
+!.vscode/extensions.json
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~

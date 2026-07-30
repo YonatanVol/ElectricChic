@@ -1,0 +1,46 @@
+# EditorConfig — https://editorconfig.org
+# Matches WordPress Coding Standards, which PHPCS enforces in CI (Issue #02).
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = tab
+indent_size = 4
+
+# WordPress Coding Standards: PHP, JS, and CSS use tabs.
+[*.{php,js,jsx,ts,tsx,css,scss}]
+indent_style = tab
+indent_size = 4
+
+# Data and config formats require spaces — tabs are invalid in YAML.
+[*.{yml,yaml,json,jsonc}]
+indent_style = space
+indent_size = 2
+
+[*.{xml,xml.dist,neon,neon.dist,dist}]
+indent_style = space
+indent_size = 4
+
+# Markdown: trailing whitespace is meaningful (line break), so do not trim.
+[*.md]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = false
+
+[*.{sh,bash}]
+indent_style = space
+indent_size = 2
+
+[{composer.json,package.json,.prettierrc}]
+indent_style = space
+indent_size = 2
+
+[Makefile]
+indent_style = tab
+
+[LICENSE]
+insert_final_newline = false
