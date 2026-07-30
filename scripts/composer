@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Run Composer under the project's pinned PHP.
+source "$(dirname "${BASH_SOURCE[0]}")/_php-env.sh"
+
+COMPOSER_BIN="$(command -v composer || true)"
+if [[ -z "${COMPOSER_BIN}" ]]; then
+	printf 'error: composer not found. Run ./scripts/bootstrap-local.sh\n' >&2
+	exit 1
+fi
+
+exec "${EC_PHP_BIN}" "${COMPOSER_BIN}" "$@"

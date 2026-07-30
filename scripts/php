@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Run PHP at the version this project targets, regardless of what is on PATH.
+source "$(dirname "${BASH_SOURCE[0]}")/_php-env.sh"
+exec "${EC_PHP_BIN}" "$@"
