@@ -26,12 +26,27 @@ Release scheme for this project (master plan §16.10):
   releases, security, data governance.
 - `docs/architecture/current-state.md` — Step 1 repository and environment audit.
 - `README.md`, `CHANGELOG.md`, `.editorconfig`.
+- Local development environment (Issue #07): `php@8.3`, Composer, WP-CLI and
+  Local by WP Engine, installed via Homebrew.
+- `scripts/bootstrap-local.sh` — idempotent environment setup and verification,
+  with a `--check` mode that installs nothing.
+- `scripts/php`, `scripts/composer`, `scripts/wp` — wrappers pinning project
+  tooling to PHP 8.3.
+- `docs/operations/local-development.md` — setup guide and troubleshooting.
 
 ### Security
 - `MASTER_PLAN_V1.md` is excluded from version control by `.gitignore`. It holds
   commercial terms, margin methodology, and a risk register containing candid
   client-side assessments — none of which belong in a public repository. It is
   shared with the client and the team directly.
+
+### Fixed
+- Project tooling is pinned to PHP 8.3. Homebrew's `composer` and `wp-cli`
+  formulae depend on the unversioned `php` formula, which put PHP 8.5 first on
+  `PATH` — newer than the 8.2/8.3 that CI tests and production runs, and new
+  enough that `wp-cli` emitted deprecation warnings from its own dependencies.
+  The `scripts/` wrappers resolve this without altering the developer's global
+  shell configuration.
 
 ### Notes
 - No application code yet. No WordPress, no WooCommerce, no plugin or theme.

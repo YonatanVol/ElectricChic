@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Run WP-CLI under the project's pinned PHP.
+#
+# Homebrew ships wp-cli as a phar with a `#!/usr/bin/env php` shebang, so it
+# adopts whatever php is first on PATH. On a newer PHP it emits deprecation
+# warnings from its own vendored dependencies. Invoking it explicitly avoids that.
+source "$(dirname "${BASH_SOURCE[0]}")/_php-env.sh"
+
+WP_BIN="$(command -v wp || true)"
+if [[ -z "${WP_BIN}" ]]; then
+	printf 'error: wp-cli not found. Run ./scripts/bootstrap-local.sh\n' >&2
+	exit 1
+fi
+
+export WP_CLI_PHP="${EC_PHP_BIN}"
+exec "${EC_PHP_BIN}" "${WP_BIN}" "$@"
