@@ -1,0 +1,51 @@
+{
+    "name": "electricchic/electricchic",
+    "description": "Hebrew-first, RTL-native WooCommerce platform for a physical bicycle shop in Israel.",
+    "type": "project",
+    "license": "proprietary",
+    "require": {},
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.10",
+        "wp-coding-standards/wpcs": "^3.1",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "phpcompatibility/phpcompatibility-wp": "^2.1",
+        "phpstan/phpstan": "^2.0",
+        "szepeviktor/phpstan-wordpress": "^2.0",
+        "php-stubs/woocommerce-stubs": "^9.0"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ElectricChic\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        },
+        "sort-packages": true,
+        "optimize-autoloader": true,
+        "platform": {
+            "php": "8.2.0"
+        }
+    },
+    "scripts": {
+        "lint": "phpcs",
+        "lint:fix": "phpcbf",
+        "lint:summary": "phpcs --report=summary",
+        "analyse": "phpstan analyse --memory-limit=512M",
+        "sniff:selftest": "@php tests/Sniffs/run-hpos-sniff-test.php",
+        "check": [
+            "@lint",
+            "@analyse",
+            "@sniff:selftest"
+        ]
+    },
+    "scripts-descriptions": {
+        "lint": "PHPCS — WordPress Coding Standards, PHP 8.2 compatibility, and the project's HPOS sniff.",
+        "lint:fix": "PHPCBF — auto-fix the PHPCS violations that can be fixed safely.",
+        "lint:summary": "PHPCS with a per-file summary rather than full detail.",
+        "analyse": "PHPStan level 5 with WordPress and WooCommerce stubs.",
+        "sniff:selftest": "Prove the HPOS sniff still catches direct order post-meta access.",
+        "check": "Everything CI runs for PHP. Run this before opening a pull request."
+    }
+}

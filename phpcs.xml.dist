@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<ruleset name="ElectricChic">
+	<description>Coding standards for the ElectricChic WooCommerce project.</description>
+
+	<!--
+		Run with:  ./scripts/composer lint
+		Auto-fix:  ./scripts/composer lint:fix
+
+		This file is the .dist default. To override locally, copy it to phpcs.xml —
+		that filename is gitignored, so local tweaks never reach the repository.
+	-->
+
+	<!-- What to scan. Only code we author. -->
+	<file>wp-content/plugins/electricchic-core</file>
+	<file>wp-content/themes/electricchic-child</file>
+	<file>tools/phpcs</file>
+
+	<!-- Never scan anything we did not write, or fixtures that are wrong on purpose. -->
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/tests/fixtures/*</exclude-pattern>
+	<exclude-pattern>*/build/*</exclude-pattern>
+	<exclude-pattern>*/dist/*</exclude-pattern>
+	<exclude-pattern>*.min.js</exclude-pattern>
+	<exclude-pattern>*.asset.php</exclude-pattern>
+
+	<arg name="extensions" value="php"/>
+	<arg name="basepath" value="."/>
+	<arg name="parallel" value="8"/>
+	<arg name="cache" value=".phpcs-cache"/>
+	<arg value="sp"/><!-- show sniff codes and progress -->
+	<arg name="colors"/>
+
+	<!-- =====================================================================
+		 Project sniffs — enforce architectural decisions mechanically.
+		 ===================================================================== -->
+
+	<!--
+		D20: HPOS is mandatory. Order data goes through WooCommerce CRUD APIs.
+		Direct post-meta access on orders, and queries against the shop_order
+		post type, break silently once HPOS is enabled. This sniff is the
+		enforcement mechanism, not a style preference.
+	-->
+	<rule ref="./tools/phpcs/ElectricChic/ruleset.xml"/>
+
+	<!-- =====================================================================
+		 WordPress Coding Standards
+		 ===================================================================== -->
+
+	<rule ref="WordPress-Extra"/>
+	<rule ref="WordPress-Docs"/>
+
+	<!-- Security-relevant sniffs are errors, not warnings. Escaping and
+		 sanitisation are controls, not formatting. -->
+	<rule ref="WordPress.Security.EscapeOutput">
+		<type>error</type>
+	</rule>
+	<rule ref="WordPress.Security.ValidatedSanitizedInput">
+		<type>error</type>
+	</rule>
+	<rule ref="WordPress.Security.NonceVerification">
+		<type>error</type>
+	</rule>
+
+	<!-- Naming and text domain. -->
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="electricchic"/>
+				<element value="ElectricChic"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="electricchic"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!--
+		Filenames: the project plugin is PSR-4 with PascalCase class files, which
+		is deliberate and conflicts with WordPress's hyphenated-lowercase rule.
+		The theme keeps WordPress conventions, where template filenames matter.
+	-->
+	<rule ref="WordPress.Files.FileName">
+		<exclude-pattern>wp-content/plugins/electricchic-core/includes/*</exclude-pattern>
+		<exclude-pattern>tools/phpcs/*</exclude-pattern>
+	</rule>
+
+	<!-- PHPCS sniffs are PSR-4 classes by requirement of PHPCS itself. -->
+	<rule ref="WordPress.NamingConventions.ValidVariableName">
+		<exclude-pattern>tools/phpcs/*</exclude-pattern>
+	</rule>
+
+	<!-- =====================================================================
+		 PHP version compatibility
+		 =====================================================================
+		 Checked against the supported floor, not the local runtime. Local PHP is
+		 8.3 and Homebrew may put something newer on PATH; neither is what
+		 production runs. See docs/operations/local-development.md.
+	-->
+	<config name="testVersion" value="8.2-"/>
+	<rule ref="PHPCompatibilityWP"/>
+
+	<!-- =====================================================================
+		 Minimum WordPress version for deprecation checks.
+		 ===================================================================== -->
+	<config name="minimum_wp_version" value="6.5"/>
+
+</ruleset>

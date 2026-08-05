@@ -1,0 +1,47 @@
+includes:
+    - vendor/szepeviktor/phpstan-wordpress/extension.neon
+
+parameters:
+
+    # Level 5 is the practical ceiling for WordPress code. Higher levels spend
+    # most of their output on WordPress's own loose typing, and CI noise that
+    # people learn to ignore is worse than no CI at all. Revisit once the core
+    # plugin is largely typed. See master plan §16.8.
+    level: 5
+
+    paths:
+        - wp-content/plugins/electricchic-core
+        - wp-content/themes/electricchic-child
+        - tools/phpcs
+
+    excludePaths:
+        analyse:
+            - tests/fixtures/*
+            - '*/vendor/*'
+            - '*/node_modules/*'
+            - '*/build/*'
+            - '*/dist/*'
+
+    # WooCommerce function and class signatures. WordPress core stubs arrive via
+    # the szepeviktor extension included above.
+    scanFiles:
+        - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
+
+    # PHPCS ships its classes through its own autoloader rather than a PSR-4
+    # mapping Composer exposes, so PHPStan cannot discover them unaided. The
+    # project's sniffs extend those classes and are real code worth analysing.
+    scanDirectories:
+        - vendor/squizlabs/php_codesniffer/src
+
+    # PHPDoc in WordPress and WooCommerce is frequently optimistic. Treating it
+    # as certain produces false positives that bury real findings.
+    treatPhpDocTypesAsCertain: false
+
+    # Analyse against the supported floor, not the local runtime. Local PHP is
+    # 8.3, Homebrew may have something newer on PATH, and production runs 8.3 —
+    # none of which is the version that has to keep working.
+    phpVersion: 80200
+
+    # Surface rules that stop matching anything, so the baseline cannot silently
+    # rot as the codebase changes.
+    reportUnmatchedIgnoredErrors: true
