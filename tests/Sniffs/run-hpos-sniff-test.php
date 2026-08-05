@@ -44,8 +44,12 @@ const EXPECTED = array(
  * @return array<string, int>|null Tally, or null if PHPCS could not be parsed.
  */
 function ec_run_sniff( string $phpcs, string $standard, string $file ): ?array {
+	// Invoke through the PHP running this script. phpcs has a
+	// #!/usr/bin/env php shebang, so calling it directly would use whatever
+	// php is first on PATH — which is not the version this project targets.
 	$command = sprintf(
-		'%s --standard=%s --report=json --runtime-set ignore_warnings_on_exit 1 %s 2>/dev/null',
+		'%s %s --standard=%s --report=json --runtime-set ignore_warnings_on_exit 1 %s 2>/dev/null',
+		escapeshellarg( PHP_BINARY ),
 		escapeshellarg( $phpcs ),
 		escapeshellarg( $standard ),
 		escapeshellarg( $file )

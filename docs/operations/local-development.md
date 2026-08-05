@@ -151,10 +151,30 @@ bugs that only appear after deployment.
 Once Issue #02 lands, the quality gates run through Composer scripts:
 
 ```bash
+./scripts/composer check     # everything CI runs
 ./scripts/composer lint      # PHPCS — WordPress Coding Standards + HPOS sniff
 ./scripts/composer analyse   # PHPStan level 5
 ./scripts/composer test      # PHPUnit — pure business logic, no WordPress bootstrap
 ```
+
+### Two layers of PHP pinning, and why both are needed
+
+The `scripts/` wrappers pin **Composer itself** to PHP 8.3. That is not sufficient on
+its own: tools Composer launches (`phpcs`, `phpstan`, `phpunit`) each carry a
+`#!/usr/bin/env php` shebang, so they follow `PATH` to 8.5 regardless of how Composer
+was started.
+
+This actually happened. PHPUnit reported `Runtime: PHP 8.5.8` while every wrapper
+looked like it was working.
+
+The second layer is Composer's `@php` prefix in `composer.json`, which runs each tool
+with the PHP binary Composer is already using:
+
+```json
+"test": "@php vendor/bin/phpunit"
+```
+
+`HarnessTest::test_runs_on_a_targeted_php_version()` fails loudly if this regresses.
 
 ---
 
