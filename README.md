@@ -105,6 +105,7 @@ See master plan §31 (Definition of Ready) and §32 (Definition of Done) before 
 ./scripts/composer lint           # PHPCS — WordPress standards + PHP 8.2 compat + HPOS sniff
 ./scripts/composer lint:fix       # PHPCBF — safe auto-fixes
 ./scripts/composer analyse        # PHPStan level 5, WordPress + WooCommerce stubs
+./scripts/composer test           # PHPUnit — pure logic, no WordPress bootstrap
 ./scripts/composer sniff:selftest # prove the HPOS sniff still catches violations
 ```
 
@@ -112,7 +113,9 @@ Run `check` before opening a pull request.
 
 **`ElectricChic.HPOS.NoDirectOrderMeta`** is a project-specific sniff that enforces decision D20 mechanically: order data goes through WooCommerce CRUD APIs, never through `get_post_meta()`. Under HPOS, direct post-meta access on orders returns empty without erroring — it fails silently, which is what makes it dangerous. The sniff is itself tested against fixtures. See [`docs/architecture/hpos-enforcement.md`](docs/architecture/hpos-enforcement.md).
 
-Analysis runs against **PHP 8.2**, the supported floor — not against whatever PHP is on your PATH. See [`docs/operations/local-development.md`](docs/operations/local-development.md).
+The unit suite covers **pure business logic only** — inputs in, values out, no framework calls. That constraint is deliberate: the highest-risk logic here (availability resolution, lead-time aggregation, margin calculation, the RMA state machine) is written to be pure so it can be tested in milliseconds without a database or a WordPress install. `HarnessTest` asserts WordPress is genuinely absent, so the suite cannot quietly grow a dependency on it.
+
+Analysis runs against **PHP 8.2**, the supported floor — not against whatever PHP is on your PATH. Composer scripts use the `@php` prefix so the tools Composer spawns inherit the pinned PHP rather than following their shebang to whatever is first on PATH. See [`docs/operations/local-development.md`](docs/operations/local-development.md).
 
 ---
 

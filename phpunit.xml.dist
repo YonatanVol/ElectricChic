@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<phpunit
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+	bootstrap="tests/bootstrap.php"
+	colors="true"
+	cacheDirectory=".phpunit.cache"
+	executionOrder="random"
+	resolveDependencies="true"
+	failOnWarning="true"
+	failOnRisky="true"
+	failOnNotice="true"
+	beStrictAboutOutputDuringTests="true"
+	beStrictAboutCoverageMetadata="false"
+	displayDetailsOnTestsThatTriggerWarnings="true"
+	displayDetailsOnTestsThatTriggerErrors="true"
+	displayDetailsOnTestsThatTriggerNotices="true"
+	displayDetailsOnTestsThatTriggerDeprecations="true"
+	displayDetailsOnIncompleteTests="true"
+	displayDetailsOnSkippedTests="true">
+
+	<!--
+		This suite is for PURE business logic only — code that takes inputs and
+		returns outputs with no WordPress calls inside it.
+
+		That constraint is deliberate, not a limitation. The highest-risk logic in
+		this project (the availability resolver, lead-time aggregation, margin
+		calculation, the RMA state machine) is designed to be pure precisely so it
+		can be tested in milliseconds without a database, a WordPress install, or
+		a WooCommerce bootstrap.
+
+		HarnessTest asserts that WordPress really is absent, so the suite cannot
+		quietly acquire a dependency on it.
+
+		WordPress integration tests are a separate, later concern — master plan
+		§21 defers them post-launch, because the service-container setup costs
+		more than it returns at this stage.
+
+		Run:  ./scripts/composer test
+	-->
+
+	<testsuites>
+		<testsuite name="unit">
+			<directory suffix="Test.php">tests/Unit</directory>
+		</testsuite>
+	</testsuites>
+
+	<source
+		ignoreIndirectDeprecations="true"
+		restrictNotices="true"
+		restrictWarnings="true">
+		<include>
+			<directory suffix=".php">wp-content/plugins/electricchic-core/includes</directory>
+		</include>
+		<exclude>
+			<directory>tests/fixtures</directory>
+			<directory>vendor</directory>
+		</exclude>
+	</source>
+
+	<php>
+		<ini name="display_errors" value="1"/>
+		<ini name="error_reporting" value="-1"/>
+	</php>
+
+</phpunit>
