@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# A newer push to the same branch makes the previous run irrelevant.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  php:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # 8.2 is the supported floor and the version Composer resolves against.
+        # 8.3 is what local development and the production host run.
+        # Both must stay green; a break on either is a real break.
+        php: ['8.2', '8.3']
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: composer:v2
+          ini-values: error_reporting=-1, display_errors=On
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v3
+        with:
+          composer-options: --prefer-dist --no-progress
+
+      - name: Lint — PHPCS
+        run: composer lint
+
+      - name: Static analysis — PHPStan
+        run: composer analyse
+
+      - name: HPOS sniff self-test
+        run: composer sniff:selftest
+
+      - name: Unit tests — PHPUnit
+        run: composer test
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@v4
+        with:
+          # gitleaks needs history, not just the tip. A secret removed in a
+          # later commit is still public on a public repository.
+          fetch-depth: 0
+
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  verify:
+    name: All checks passed
+    runs-on: ubuntu-latest
+    needs: [php, secrets]
+    if: always()
+
+    # A single job for branch protection to require. Without it, protection has
+    # to name every matrix leg by hand and silently stops covering new ones.
+    steps:
+      - name: Confirm no job failed or was skipped
+        run: |
+          echo "php:     ${{ needs.php.result }}"
+          echo "secrets: ${{ needs.secrets.result }}"
+          if [ "${{ needs.php.result }}" != "success" ] || [ "${{ needs.secrets.result }}" != "success" ]; then
+            echo "::error::One or more required checks did not succeed."
+            exit 1
+          fi
+          echo "All required checks passed."
