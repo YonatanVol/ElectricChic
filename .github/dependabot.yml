@@ -1,0 +1,25 @@
+version: 2
+
+updates:
+  - package-ecosystem: composer
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    labels: [ 'type:chore', 'area:infra' ]
+    commit-message:
+      prefix: chore
+      include: scope
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    labels: [ 'type:chore', 'area:infra' ]
+    commit-message:
+      prefix: chore
+      include: scope
+
+  # npm is intentionally absent until the JavaScript toolchain lands.
+  # See CHANGELOG "Deferred" and Issue #03.

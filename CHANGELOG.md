@@ -47,6 +47,12 @@ Release scheme for this project (master plan §16.10):
 - PHPUnit harness (Issue #03): `phpunit.xml.dist`, `tests/bootstrap.php` and
   `HarnessTest`, which asserts that WordPress and WooCommerce are *not* loaded so
   the unit suite cannot quietly acquire a framework dependency.
+- Continuous integration (Issue #04): `.github/workflows/ci.yml` runs PHPCS,
+  PHPStan, the HPOS sniff self-test and PHPUnit against PHP 8.2 and 8.3, plus a
+  full-history gitleaks scan. A single `verify` job aggregates the matrix so
+  branch protection has one stable check to require.
+- `.github/dependabot.yml` — weekly Composer and GitHub Actions updates. The npm
+  ecosystem is deliberately absent until the JavaScript toolchain exists.
 
 ### Security
 - `MASTER_PLAN_V1.md` is excluded from version control by `.gitignore`. It holds
@@ -82,4 +88,4 @@ Release scheme for this project (master plan §16.10):
   8.2, so dependency resolution and static analysis both target the supported
   floor rather than the local runtime.
 - No application code yet. No WordPress, no WooCommerce, no plugin or theme.
-- Repository visibility, CI, and branch protection are configured in Issues #04–#06.
+- Branch protection and deploy workflows are configured in Issues #05 and #06.
