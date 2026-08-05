@@ -4,7 +4,7 @@
 # This repository tracks ONLY the code we author:
 #   wp-content/plugins/electricchic-core/   (business logic)
 #   wp-content/themes/electricchic-child/   (presentation)
-#   docs/, tests/, scripts/, CI config, and the master plan.
+#   docs/, tests/, tools/, scripts/, and CI config.
 #
 # WordPress core, uploads, and third-party plugins/themes are NEVER tracked.
 #
@@ -127,10 +127,11 @@ yarn-error.log*
 # -----------------------------------------------------------------------------
 /tests/coverage/
 /coverage/
+.phpstan-cache/
+.phpunit.cache/
 /playwright-report/
 /test-results/
 .phpunit.result.cache
-.phpunit.cache/
 .phpcs-cache
 phpcs.xml
 phpstan.neon

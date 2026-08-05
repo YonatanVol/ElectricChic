@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<ruleset name="ElectricChic">
+	<description>Project sniffs enforcing ElectricChic architectural decisions.</description>
+
+	<!--
+		A standalone PHPCS standard, so it can be run on its own:
+
+		    vendor/bin/phpcs [standard flag]=tools/phpcs/ElectricChic <path>
+
+		which is what the sniff self-test does. The main phpcs.xml.dist includes
+		this ruleset alongside the WordPress standards.
+	-->
+
+	<rule ref="./Sniffs/HPOS/NoDirectOrderMetaSniff.php"/>
+</ruleset>

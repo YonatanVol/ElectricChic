@@ -33,6 +33,17 @@ Release scheme for this project (master plan §16.10):
 - `scripts/php`, `scripts/composer`, `scripts/wp` — wrappers pinning project
   tooling to PHP 8.3.
 - `docs/operations/local-development.md` — setup guide and troubleshooting.
+- PHP quality gates (Issue #02): PHPCS with WordPress Coding Standards,
+  PHPCompatibilityWP, and PHPStan level 5 with WordPress and WooCommerce stubs.
+- `ElectricChic.HPOS.NoDirectOrderMeta` — project sniff enforcing decision D20.
+  Catches post-meta access with an order-shaped argument, and queries against the
+  `shop_order` post type. Both break silently once HPOS is enabled.
+- Sniff self-test with paired fixtures: nine deliberate violations that must all
+  be caught, and legitimate code that must produce no findings.
+- `composer.json` with `check`, `lint`, `lint:fix`, `analyse` and
+  `sniff:selftest` scripts; `phpcs.xml.dist`; `phpstan.neon.dist`.
+- `docs/architecture/hpos-enforcement.md` — what the sniff catches, the limits of
+  its heuristic, and how to suppress a verified false positive.
 
 ### Security
 - `MASTER_PLAN_V1.md` is excluded from version control by `.gitignore`. It holds
@@ -49,5 +60,8 @@ Release scheme for this project (master plan §16.10):
   shell configuration.
 
 ### Notes
+- Composer's `config.platform.php` is pinned to 8.2.0 and PHPStan analyses at
+  8.2, so dependency resolution and static analysis both target the supported
+  floor rather than the local runtime.
 - No application code yet. No WordPress, no WooCommerce, no plugin or theme.
 - Repository visibility, CI, and branch protection are configured in Issues #04–#06.

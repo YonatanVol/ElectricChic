@@ -98,6 +98,24 @@ See master plan §31 (Definition of Ready) and §32 (Definition of Done) before 
 
 ---
 
+## Quality gates
+
+```bash
+./scripts/composer check          # everything CI runs for PHP
+./scripts/composer lint           # PHPCS — WordPress standards + PHP 8.2 compat + HPOS sniff
+./scripts/composer lint:fix       # PHPCBF — safe auto-fixes
+./scripts/composer analyse        # PHPStan level 5, WordPress + WooCommerce stubs
+./scripts/composer sniff:selftest # prove the HPOS sniff still catches violations
+```
+
+Run `check` before opening a pull request.
+
+**`ElectricChic.HPOS.NoDirectOrderMeta`** is a project-specific sniff that enforces decision D20 mechanically: order data goes through WooCommerce CRUD APIs, never through `get_post_meta()`. Under HPOS, direct post-meta access on orders returns empty without erroring — it fails silently, which is what makes it dangerous. The sniff is itself tested against fixtures. See [`docs/architecture/hpos-enforcement.md`](docs/architecture/hpos-enforcement.md).
+
+Analysis runs against **PHP 8.2**, the supported floor — not against whatever PHP is on your PATH. See [`docs/operations/local-development.md`](docs/operations/local-development.md).
+
+---
+
 ## Security
 
 **This repository is public.** A committed secret is world-readable and permanent in history — deleting the file does not undo it.
