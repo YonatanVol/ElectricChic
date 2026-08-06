@@ -59,6 +59,9 @@ Release scheme for this project (master plan §16.10):
 - `docs/operations/branch-protection.md` and `docs/operations/rulesets/` — the
   ruleset JSON kept in version control so protection is reviewable in a pull
   request rather than living only in a settings screen.
+- `CLAUDE.md` — project context loaded automatically by Claude Code sessions.
+  Captures the constraints, gotchas and decisions that are expensive to
+  rediscover, so a session that loses context stays productive.
 
 ### Security
 - `MASTER_PLAN_V1.md` is excluded from version control by `.gitignore`. It holds
