@@ -1,0 +1,36 @@
+name: Security hardening
+description: Non-urgent security improvement. For a live vulnerability, use a private advisory instead.
+labels: ['type:security', 'priority:high']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > **Do not report an exploitable vulnerability here.** This repository is
+        > public, so an issue discloses it to everyone. Use a
+        > [private security advisory](https://github.com/YonatanVol/ElectricChic/security/advisories/new).
+
+  - type: textarea
+    id: weakness
+    attributes:
+      label: Weakness
+    validations: { required: true }
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact if exploited
+      description: What could an attacker reach — customer data, orders, prices, admin?
+    validations: { required: true }
+
+  - type: textarea
+    id: control
+    attributes:
+      label: Proposed control
+    validations: { required: true }
+
+  - type: textarea
+    id: verification
+    attributes:
+      label: How the control will be verified
+      description: Prefer an attempted violation over reading a settings page.
+    validations: { required: true }

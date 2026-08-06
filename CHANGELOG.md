@@ -53,6 +53,12 @@ Release scheme for this project (master plan §16.10):
   branch protection has one stable check to require.
 - `.github/dependabot.yml` — weekly Composer and GitHub Actions updates. The npm
   ecosystem is deliberately absent until the JavaScript toolchain exists.
+- Repository governance (Issue #05): branch protection on `main` via a ruleset,
+  five issue-form templates, a pull request template, CODEOWNERS, and the
+  project label set.
+- `docs/operations/branch-protection.md` and `docs/operations/rulesets/` — the
+  ruleset JSON kept in version control so protection is reviewable in a pull
+  request rather than living only in a settings screen.
 
 ### Security
 - `MASTER_PLAN_V1.md` is excluded from version control by `.gitignore`. It holds
@@ -88,4 +94,12 @@ Release scheme for this project (master plan §16.10):
   8.2, so dependency resolution and static analysis both target the supported
   floor rather than the local runtime.
 - No application code yet. No WordPress, no WooCommerce, no plugin or theme.
-- Branch protection and deploy workflows are configured in Issues #05 and #06.
+- Deploy workflows are configured in Issue #06, which is blocked on the hosting
+  decision.
+- **Required approvals on `main` is 0, not 1.** This repository has a single
+  collaborator, and GitHub does not permit approving your own pull request, so
+  requiring an approval would block every merge permanently. Every other gate is
+  enforced with no bypass actors. `docs/operations/rulesets/main-protection-with-review.json`
+  turns the requirement on the moment a second maintainer exists. Recorded rather
+  than faked with a bypass, because a rule that must be routinely bypassed trains
+  people to bypass rules.
