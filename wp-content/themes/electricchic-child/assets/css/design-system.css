@@ -1,0 +1,464 @@
+/* =============================================================================
+   ElectricChic — design system
+   =============================================================================
+
+   Warm neutrals rather than white, charcoal rather than black, a single metallic
+   accent used sparingly, sharp corners, and generous space. The restraint is the
+   point: a shop that sells ₪12,000 bicycles should not look like a template.
+
+   Every colour, size and spacing value is a token. Nothing below hard-codes a
+   hex value, so rebranding is a change in one block.
+   ============================================================================= */
+
+/* ── Fonts ─────────────────────────────────────────────────────────────────
+   Self-hosted. No third-party font CDN — a request to Google on every page
+   view is both a performance cost and a privacy one. */
+
+@font-face {
+	font-family: 'Heebo';
+	src: url('../fonts/heebo-hebrew.woff2') format('woff2');
+	font-weight: 100 900;
+	font-display: swap;
+	unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
+}
+
+@font-face {
+	font-family: 'Heebo';
+	src: url('../fonts/heebo-latin.woff2') format('woff2');
+	font-weight: 100 900;
+	font-display: swap;
+	unicode-range: U+0000-00FF, U+0131, U+2000-206F, U+2192, U+2212, U+2215;
+}
+
+@font-face {
+	font-family: 'Frank Ruhl Libre';
+	src: url('../fonts/frank-hebrew.woff2') format('woff2');
+	font-weight: 300 900;
+	font-display: swap;
+	unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
+}
+
+@font-face {
+	font-family: 'Frank Ruhl Libre';
+	src: url('../fonts/frank-latin.woff2') format('woff2');
+	font-weight: 300 900;
+	font-display: swap;
+	unicode-range: U+0000-00FF, U+0131, U+2000-206F;
+}
+
+/* ── Tokens ──────────────────────────────────────────────────────────────── */
+
+:root {
+	/* Warm foundations. Pure white reads cheap on a retail page; cream does not. */
+	--ec-cream: #faf8f5;
+	--ec-ivory: #f3f0eb;
+	--ec-sand: #e8e3dc;
+
+	/* Neutrals. Charcoal rather than #000 — black on cream is harsh at body size. */
+	--ec-stone: #a69f95;
+	--ec-graphite: #4a4640;
+	--ec-charcoal: #2c2926;
+	--ec-ink: #1a1816;
+
+	/* Accent: aged brass. Used on price, focus, and one call to action per view. */
+	--ec-brass: #b8976a;
+	--ec-brass-light: #d4bc96;
+	--ec-brass-dark: #8f7343;
+
+	/* Availability. Meaning never rests on colour alone — every badge carries text. */
+	--ec-in-stock: #3f6b4f;
+	--ec-supplier: #6b6a8f;
+	--ec-warning: #9a7233;
+	--ec-out: #8f5049;
+
+	--ec-white: #ffffff;
+
+	/* Semantic */
+	--ec-bg: var(--ec-cream);
+	--ec-surface: var(--ec-white);
+	--ec-text: var(--ec-graphite);
+	--ec-heading: var(--ec-charcoal);
+	--ec-muted: var(--ec-stone);
+	--ec-border: var(--ec-sand);
+
+	/* Type */
+	--ec-font-sans: 'Heebo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+	--ec-font-serif: 'Frank Ruhl Libre', Georgia, 'Times New Roman', serif;
+
+	--ec-fs-xs: 0.8125rem;
+	--ec-fs-sm: 0.9375rem;
+	--ec-fs-base: 1.0625rem;
+	--ec-fs-lg: 1.25rem;
+	--ec-fs-xl: 1.5rem;
+	--ec-fs-2xl: 2rem;
+	--ec-fs-3xl: 2.75rem;
+	--ec-fs-4xl: 3.75rem;
+
+	/* Space — 4px base */
+	--ec-space-1: 0.25rem;
+	--ec-space-2: 0.5rem;
+	--ec-space-3: 0.75rem;
+	--ec-space-4: 1rem;
+	--ec-space-6: 1.5rem;
+	--ec-space-8: 2rem;
+	--ec-space-12: 3rem;
+	--ec-space-16: 4rem;
+	--ec-space-24: 6rem;
+
+	/* Sharp corners throughout. Rounded pills read consumer-tech, not retail. */
+	--ec-radius: 0;
+
+	--ec-ease: cubic-bezier(0.16, 1, 0.3, 1);
+	--ec-transition: 0.4s var(--ec-ease);
+
+	--ec-container: 1280px;
+}
+
+/* ── Baseline ────────────────────────────────────────────────────────────── */
+
+html {
+	color-scheme: light;
+	scroll-behavior: smooth;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
+}
+
+body {
+	background: var(--ec-bg);
+	color: var(--ec-text);
+	font-family: var(--ec-font-sans);
+	font-size: var(--ec-fs-base);
+	line-height: 1.7;
+	letter-spacing: 0.01em;
+}
+
+h1, h2, h3, h4,
+.wp-block-post-title,
+.woocommerce-loop-product__title,
+.product_title {
+	font-family: var(--ec-font-serif);
+	color: var(--ec-heading);
+	font-weight: 500;
+	line-height: 1.2;
+	letter-spacing: -0.01em;
+}
+
+::selection {
+	background-color: var(--ec-brass-light);
+	color: var(--ec-charcoal);
+}
+
+/* Focus must stay visible — WCAG 2.2 AA, and the first thing themes remove. */
+:focus-visible {
+	outline: 2px solid var(--ec-brass-dark);
+	outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html { scroll-behavior: auto; }
+	*, *::before, *::after {
+		animation-duration: 0.01ms !important;
+		transition-duration: 0.01ms !important;
+	}
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
+.wp-block-site-title a {
+	font-family: var(--ec-font-serif);
+	font-size: var(--ec-fs-xl);
+	font-weight: 700;
+	color: var(--ec-heading);
+	letter-spacing: 0.02em;
+	text-decoration: none;
+}
+
+.wp-block-navigation a {
+	font-size: var(--ec-fs-sm);
+	letter-spacing: 0.04em;
+	color: var(--ec-text);
+	text-decoration: none;
+	transition: color var(--ec-transition);
+}
+
+.wp-block-navigation a:hover {
+	color: var(--ec-brass-dark);
+}
+
+/* ── Shop archive ────────────────────────────────────────────────────────── */
+
+.woocommerce-products-header__title,
+.wp-block-query-title {
+	font-size: var(--ec-fs-3xl);
+	margin-block-end: var(--ec-space-2);
+}
+
+.woocommerce-result-count {
+	color: var(--ec-muted);
+	font-size: var(--ec-fs-sm);
+	letter-spacing: 0.02em;
+}
+
+.woocommerce-ordering select,
+.orderby {
+	font-family: var(--ec-font-sans);
+	font-size: var(--ec-fs-sm);
+	padding: var(--ec-space-2) var(--ec-space-4);
+	border: 1px solid var(--ec-border);
+	border-radius: var(--ec-radius);
+	background: var(--ec-surface);
+	color: var(--ec-text);
+}
+
+/* ── Product cards ───────────────────────────────────────────────────────── */
+
+ul.products {
+	gap: var(--ec-space-12) var(--ec-space-8);
+}
+
+ul.products li.product {
+	background: transparent;
+	text-align: start;
+	position: relative;
+	transition: transform var(--ec-transition);
+}
+
+ul.products li.product:hover {
+	transform: translateY(-4px);
+}
+
+ul.products li.product a img {
+	border-radius: var(--ec-radius);
+	background: var(--ec-ivory);
+	margin-block-end: var(--ec-space-4);
+	aspect-ratio: 4 / 3;
+	object-fit: cover;
+	transition: opacity var(--ec-transition);
+}
+
+ul.products li.product:hover a img {
+	opacity: 0.88;
+}
+
+ul.products li.product a,
+ul.products li.product .wp-block-post-title a,
+.wc-block-product-template__responsive-wrapper a {
+	text-decoration: none;
+}
+
+/* Titles are headings, not links. Inheriting the accent link colour turns an
+   archive into a wall of gold text and destroys the hierarchy. */
+ul.products li.product .woocommerce-loop-product__title,
+ul.products li.product .woocommerce-loop-product__title a,
+.wc-block-grid__product-title,
+.wp-block-post-title a {
+	color: var(--ec-heading) !important;
+	font-size: var(--ec-fs-lg);
+	line-height: 1.35;
+	margin-block: 0 var(--ec-space-2);
+	padding: 0;
+}
+
+ul.products li.product .woocommerce-loop-product__title a:hover,
+.wp-block-post-title a:hover {
+	color: var(--ec-brass-dark) !important;
+}
+
+ul.products li.product .price {
+	font-family: var(--ec-font-sans);
+	font-size: var(--ec-fs-base);
+	font-weight: 500;
+	color: var(--ec-heading);
+	display: block;
+	margin-block-end: var(--ec-space-4);
+}
+
+ul.products li.product .price del {
+	color: var(--ec-muted);
+	font-weight: 400;
+	margin-inline-end: var(--ec-space-2);
+	opacity: 0.75;
+}
+
+ul.products li.product .price ins {
+	color: var(--ec-brass-dark);
+	text-decoration: none;
+	font-weight: 700;
+}
+
+/* ── Sale badge ──────────────────────────────────────────────────────────── */
+
+span.onsale {
+	position: absolute;
+	inset-block-start: var(--ec-space-3);
+	inset-inline-start: var(--ec-space-3);
+	inset-inline-end: auto;
+	background: var(--ec-charcoal);
+	color: var(--ec-cream);
+	font-family: var(--ec-font-sans);
+	font-size: var(--ec-fs-xs);
+	font-weight: 500;
+	letter-spacing: 0.08em;
+	padding: var(--ec-space-1) var(--ec-space-3);
+	border-radius: var(--ec-radius);
+	min-height: 0;
+	min-width: 0;
+	line-height: 1.8;
+	margin: 0;
+	z-index: 2;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+
+.woocommerce a.button,
+.woocommerce button.button,
+.woocommerce input.button,
+.wp-element-button,
+.wc-block-components-button {
+	font-family: var(--ec-font-sans) !important;
+	font-size: var(--ec-fs-sm) !important;
+	font-weight: 500 !important;
+	letter-spacing: 0.04em;
+	background: var(--ec-charcoal) !important;
+	color: var(--ec-cream) !important;
+	border: 1px solid var(--ec-charcoal) !important;
+	border-radius: var(--ec-radius) !important;
+	padding: var(--ec-space-3) var(--ec-space-6) !important;
+	transition: background var(--ec-transition), color var(--ec-transition);
+	text-decoration: none;
+}
+
+.woocommerce a.button:hover,
+.woocommerce button.button:hover,
+.woocommerce input.button:hover,
+.wp-element-button:hover {
+	background: var(--ec-brass-dark) !important;
+	border-color: var(--ec-brass-dark) !important;
+	color: var(--ec-white) !important;
+}
+
+.woocommerce a.button.add_to_cart_button {
+	display: inline-block;
+}
+
+/* ── Single product ──────────────────────────────────────────────────────── */
+
+.product_title {
+	font-size: var(--ec-fs-3xl);
+	margin-block-end: var(--ec-space-4);
+}
+
+.woocommerce div.product p.price,
+.woocommerce div.product span.price {
+	font-family: var(--ec-font-sans);
+	font-size: var(--ec-fs-2xl);
+	font-weight: 500;
+	color: var(--ec-heading);
+	margin-block-end: var(--ec-space-6);
+}
+
+.woocommerce div.product .woocommerce-tabs ul.tabs li {
+	border-radius: var(--ec-radius);
+	background: transparent;
+	border: 0;
+	border-block-end: 2px solid transparent;
+}
+
+.woocommerce div.product .woocommerce-tabs ul.tabs li.active {
+	border-block-end-color: var(--ec-brass);
+	background: transparent;
+}
+
+.woocommerce div.product .woocommerce-tabs ul.tabs::before {
+	border-block-end-color: var(--ec-border);
+}
+
+/* ── Availability ────────────────────────────────────────────────────────
+   Placeholder styling until the derived availability model lands. Colour is
+   never the only signal — each badge carries its own text. */
+
+.stock {
+	font-size: var(--ec-fs-sm);
+	font-weight: 500;
+	letter-spacing: 0.02em;
+	padding: var(--ec-space-1) var(--ec-space-3);
+	display: inline-block;
+	border-inline-start: 3px solid currentColor;
+	background: var(--ec-ivory);
+}
+
+.stock.in-stock { color: var(--ec-in-stock); }
+.stock.out-of-stock { color: var(--ec-out); }
+
+/* ── Forms ───────────────────────────────────────────────────────────────── */
+
+.woocommerce input[type="text"],
+.woocommerce input[type="email"],
+.woocommerce input[type="tel"],
+.woocommerce input[type="number"],
+.woocommerce textarea,
+.woocommerce select {
+	font-family: var(--ec-font-sans);
+	font-size: var(--ec-fs-base);
+	padding: var(--ec-space-3) var(--ec-space-4);
+	border: 1px solid var(--ec-border);
+	border-radius: var(--ec-radius);
+	background: var(--ec-surface);
+	color: var(--ec-text);
+	transition: border-color var(--ec-transition);
+}
+
+.woocommerce input:focus,
+.woocommerce textarea:focus,
+.woocommerce select:focus {
+	border-color: var(--ec-brass);
+	outline: 2px solid var(--ec-brass-light);
+	outline-offset: 1px;
+}
+
+/* ── Notices ─────────────────────────────────────────────────────────────── */
+
+.woocommerce-message,
+.woocommerce-info,
+.woocommerce-error {
+	border-radius: var(--ec-radius);
+	border: 0;
+	border-inline-start: 3px solid var(--ec-brass);
+	background: var(--ec-ivory);
+	color: var(--ec-text);
+	font-size: var(--ec-fs-sm);
+}
+
+.woocommerce-error { border-inline-start-color: var(--ec-out); }
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+
+.wp-block-template-part footer,
+footer.wp-block-template-part {
+	background: var(--ec-charcoal);
+	color: var(--ec-sand);
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────────── */
+
+@media (max-width: 781px) {
+	:root {
+		--ec-fs-3xl: 2rem;
+		--ec-fs-4xl: 2.5rem;
+	}
+
+	ul.products {
+		gap: var(--ec-space-8) var(--ec-space-4);
+	}
+
+	/* WCAG 2.2 AA 2.5.8 — 24px minimum, 44px as the design standard. */
+	.woocommerce a.button,
+	.woocommerce button.button,
+	.wp-element-button {
+		min-height: 44px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+}

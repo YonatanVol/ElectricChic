@@ -19,7 +19,10 @@
  * @package ElectricChic
  */
 
-declare( strict_types = 1 );
+// No declare(strict_types=1) here on purpose. WP-CLI's eval-file runs this
+// through eval(), which rejects the declaration outright. The classes this
+// script drives all declare it, and that is where it earns its keep — this file
+// is procedural glue that builds three objects and prints the result.
 
 use ElectricChic\Core\Configuration\ConfigurationAuditor;
 use ElectricChic\Core\Configuration\ShopConfigurationSpec;
