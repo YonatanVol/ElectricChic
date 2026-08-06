@@ -1,0 +1,56 @@
+name: Bug
+description: Something behaves incorrectly.
+labels: ['type:bug']
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happens
+    validations: { required: true }
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should happen
+    validations: { required: true }
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1.
+        2.
+        3.
+    validations: { required: true }
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: S1 blocks orders or risks data. S2 degrades a function. S3 is cosmetic.
+      options: ['S1 — cannot take orders / data at risk', 'S2 — degraded, workaround exists', 'S3 — minor']
+    validations: { required: true }
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: production / staging / local
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Screenshots, order numbers, log excerpts. Redact customer personal data.
+
+  - type: checkboxes
+    id: surfaces
+    attributes:
+      label: Surfaces affected
+      options:
+        - label: Mobile
+        - label: RTL / Hebrew rendering
+        - label: Checkout or payment
+        - label: Orders or fulfilment
+        - label: Admin only

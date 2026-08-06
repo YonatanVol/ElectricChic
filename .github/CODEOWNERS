@@ -1,0 +1,34 @@
+# Code owners
+#
+# Every path here is somewhere a subtle mistake is expensive and hard to see.
+# Listing them requests review automatically, so these changes cannot be merged
+# without at least being put in front of someone.
+#
+# NOTE: with required approvals currently set to 0 (single-maintainer repository
+# — see docs/operations/branch-protection.md), CODEOWNERS requests review but
+# does not block merge. Turning approvals on makes it binding, and nothing else
+# has to change.
+
+# Default
+*                                                           @YonatanVol
+
+# Availability resolution — the logic that decides whether a product can be
+# sold and what delivery it promises. Wrong here means overselling.
+/wp-content/plugins/electricchic-core/includes/Availability/ @YonatanVol
+
+# Pricing and margin. Wrong here means selling below cost, silently.
+/wp-content/plugins/electricchic-core/includes/Pricing/      @YonatanVol
+
+# Payment, invoicing and webhook handling. Wrong here means money or tax
+# documents going astray, usually without an error being raised.
+/wp-content/plugins/electricchic-core/includes/Integrations/ @YonatanVol
+
+# Returns and refunds — customer money and stock accuracy.
+/wp-content/plugins/electricchic-core/includes/Returns/      @YonatanVol
+
+# CI, deployment and the rules that enforce everything else.
+/.github/workflows/                                          @YonatanVol
+/.github/CODEOWNERS                                          @YonatanVol
+
+# The sniff that mechanically enforces HPOS compliance.
+/tools/phpcs/                                                @YonatanVol

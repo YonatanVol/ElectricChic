@@ -1,0 +1,91 @@
+name: Feature
+description: New customer-facing or admin-facing capability.
+labels: ['type:feature']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        An issue is *Ready* when every required field below is answered concretely.
+        See the Definition of Ready in the master plan (§31).
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: Business goal
+      description: What does the shop gain? Tie it to revenue, trust, or operator time.
+    validations: { required: true }
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: User problem
+      description: Which persona, and what are they trying to do that is hard today?
+    validations: { required: true }
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+    validations: { required: true }
+
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope
+      description: What this issue deliberately does not do. Prevents scope drift.
+    validations: { required: true }
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Specific and testable. "Works correctly" is not acceptance criteria.
+      placeholder: |
+        - [ ] Given X, when Y, then Z
+    validations: { required: true }
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and blockers
+
+  - type: textarea
+    id: tests
+    attributes:
+      label: Test requirements
+      description: Which of unit / integration / E2E / manual, and what specifically.
+    validations: { required: true }
+
+  - type: textarea
+    id: screens
+    attributes:
+      label: Screens and flows affected
+
+  - type: textarea
+    id: analytics
+    attributes:
+      label: Analytics events
+
+  - type: textarea
+    id: accessibility
+    attributes:
+      label: Accessibility requirements
+      description: WCAG 2.2 AA. Keyboard, focus, contrast, screen reader, RTL.
+
+  - type: textarea
+    id: security
+    attributes:
+      label: Security considerations
+      description: Capability checks, nonces, escaping, sanitisation, data exposure.
+
+  - type: textarea
+    id: rollback
+    attributes:
+      label: Rollback considerations
+
+  - type: dropdown
+    id: effort
+    attributes:
+      label: Relative effort
+      options: ['S', 'M', 'L', 'XL']
+    validations: { required: true }
