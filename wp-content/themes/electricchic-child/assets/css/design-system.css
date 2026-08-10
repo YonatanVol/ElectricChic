@@ -462,3 +462,359 @@ footer.wp-block-template-part {
 		justify-content: center;
 	}
 }
+
+/* =============================================================================
+   Homepage
+   ============================================================================= */
+
+.ec-hero {
+	background: linear-gradient(160deg, var(--ec-ivory) 0%, var(--ec-cream) 60%);
+	padding-block: clamp(4rem, 12vw, 9rem);
+	padding-inline: var(--ec-space-6);
+	margin-block-end: var(--ec-space-16);
+	position: relative;
+	overflow: hidden;
+}
+
+/* A single oversized wheel bleeding off the edge. Texture without decoration. */
+.ec-hero::after {
+	content: "";
+	position: absolute;
+	inset-block-start: -18%;
+	inset-inline-start: -8%;
+	width: min(46vw, 620px);
+	aspect-ratio: 1;
+	border: 1px solid var(--ec-sand);
+	border-radius: 50%;
+	pointer-events: none;
+}
+
+.ec-hero__inner {
+	max-width: 780px;
+	margin-inline: auto;
+	position: relative;
+	z-index: 1;
+	text-align: center;
+}
+
+.ec-hero__eyebrow {
+	font-size: var(--ec-fs-sm);
+	letter-spacing: 0.16em;
+	color: var(--ec-brass-dark);
+	margin-block-end: var(--ec-space-6);
+	text-transform: none;
+}
+
+.ec-hero__title {
+	font-family: var(--ec-font-serif);
+	font-size: clamp(2.25rem, 6vw, 4rem);
+	line-height: 1.12;
+	color: var(--ec-heading);
+	margin-block: 0 var(--ec-space-6);
+	font-weight: 500;
+}
+
+.ec-hero__lead {
+	font-size: clamp(1.0625rem, 2vw, 1.25rem);
+	color: var(--ec-text);
+	max-width: 58ch;
+	margin-inline: auto;
+	margin-block-end: var(--ec-space-8);
+}
+
+.ec-hero__actions {
+	display: flex;
+	gap: var(--ec-space-4);
+	justify-content: center;
+	flex-wrap: wrap;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+
+.ec-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 48px;
+	padding: var(--ec-space-3) var(--ec-space-8);
+	font-family: var(--ec-font-sans);
+	font-size: var(--ec-fs-sm);
+	font-weight: 500;
+	letter-spacing: 0.04em;
+	text-decoration: none;
+	border-radius: var(--ec-radius);
+	border: 1px solid transparent;
+	transition: background var(--ec-transition), color var(--ec-transition), border-color var(--ec-transition);
+}
+
+.ec-button--primary {
+	background: var(--ec-charcoal);
+	color: var(--ec-cream);
+	border-color: var(--ec-charcoal);
+}
+
+.ec-button--primary:hover {
+	background: var(--ec-brass-dark);
+	border-color: var(--ec-brass-dark);
+	color: var(--ec-white);
+}
+
+.ec-button--ghost {
+	background: transparent;
+	color: var(--ec-heading);
+	border-color: var(--ec-stone);
+}
+
+.ec-button--ghost:hover {
+	border-color: var(--ec-brass-dark);
+	color: var(--ec-brass-dark);
+}
+
+/* ── Sections ────────────────────────────────────────────────────────────── */
+
+.ec-section {
+	max-width: var(--ec-container);
+	margin-inline: auto;
+	padding-inline: var(--ec-space-6);
+	margin-block-end: var(--ec-space-24);
+}
+
+.ec-section--tint {
+	max-width: none;
+	background: var(--ec-ivory);
+	padding-block: var(--ec-space-16);
+	margin-block-end: var(--ec-space-8);
+}
+
+.ec-section--tint > * {
+	max-width: var(--ec-container);
+	margin-inline: auto;
+}
+
+.ec-section__head {
+	margin-block-end: var(--ec-space-8);
+}
+
+.ec-section__title {
+	font-family: var(--ec-font-serif);
+	font-size: clamp(1.75rem, 4vw, 2.5rem);
+	color: var(--ec-heading);
+	margin-block: 0 var(--ec-space-2);
+	font-weight: 500;
+}
+
+.ec-section__sub {
+	color: var(--ec-muted);
+	font-size: var(--ec-fs-base);
+	margin: 0;
+}
+
+/* ── Category cards ──────────────────────────────────────────────────────── */
+
+.ec-cats {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+	gap: 1px;
+	background: var(--ec-sand);
+	border: 1px solid var(--ec-sand);
+}
+
+.ec-cat {
+	background: var(--ec-cream);
+	padding: var(--ec-space-8) var(--ec-space-6);
+	text-decoration: none;
+	display: flex;
+	flex-direction: column;
+	gap: var(--ec-space-1);
+	position: relative;
+	min-height: 148px;
+	justify-content: center;
+	transition: background var(--ec-transition);
+}
+
+.ec-cat:hover {
+	background: var(--ec-white);
+}
+
+.ec-cat__title {
+	font-family: var(--ec-font-serif);
+	font-size: var(--ec-fs-xl);
+	color: var(--ec-heading);
+	line-height: 1.25;
+}
+
+.ec-cat__sub {
+	font-size: var(--ec-fs-sm);
+	color: var(--ec-muted);
+}
+
+.ec-cat__arrow {
+	position: absolute;
+	inset-block-end: var(--ec-space-6);
+	inset-inline-start: var(--ec-space-6);
+	color: var(--ec-brass);
+	font-size: var(--ec-fs-lg);
+	opacity: 0;
+	transform: translateX(6px);
+	transition: opacity var(--ec-transition), transform var(--ec-transition);
+}
+
+.ec-cat:hover .ec-cat__arrow {
+	opacity: 1;
+	transform: translateX(0);
+}
+
+/* ── Split layout ────────────────────────────────────────────────────────── */
+
+.ec-split {
+	display: grid;
+	grid-template-columns: 1.4fr 1fr;
+	gap: var(--ec-space-16);
+	align-items: start;
+}
+
+@media (max-width: 781px) {
+	.ec-split { grid-template-columns: 1fr; gap: var(--ec-space-8); }
+}
+
+.ec-split__text p { max-width: 56ch; }
+
+.ec-list {
+	list-style: none;
+	padding: 0;
+	margin-block: var(--ec-space-6);
+}
+
+.ec-list li {
+	padding-block: var(--ec-space-2);
+	padding-inline-start: var(--ec-space-6);
+	border-block-end: 1px solid var(--ec-border);
+	position: relative;
+}
+
+.ec-list li::before {
+	content: "—";
+	position: absolute;
+	inset-inline-start: 0;
+	color: var(--ec-brass);
+}
+
+.ec-fact {
+	border-inline-start: 2px solid var(--ec-brass);
+	padding-inline-start: var(--ec-space-6);
+	margin-block-end: var(--ec-space-8);
+}
+
+.ec-fact__num {
+	display: block;
+	font-family: var(--ec-font-serif);
+	font-size: var(--ec-fs-3xl);
+	color: var(--ec-heading);
+	line-height: 1.1;
+}
+
+.ec-fact__label {
+	display: block;
+	font-size: var(--ec-fs-sm);
+	color: var(--ec-muted);
+	margin-block-start: var(--ec-space-2);
+}
+
+/* ── Trust ───────────────────────────────────────────────────────────────── */
+
+.ec-trust {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	gap: var(--ec-space-8);
+}
+
+.ec-trust__item h3 {
+	font-family: var(--ec-font-serif);
+	font-size: var(--ec-fs-lg);
+	color: var(--ec-heading);
+	margin-block: 0 var(--ec-space-2);
+	font-weight: 500;
+}
+
+.ec-trust__item p {
+	font-size: var(--ec-fs-sm);
+	color: var(--ec-text);
+	margin: 0;
+}
+
+/* ── Store ───────────────────────────────────────────────────────────────── */
+
+.ec-store__addr {
+	font-size: var(--ec-fs-lg);
+	color: var(--ec-heading);
+}
+
+.ec-hours {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: var(--ec-space-2) var(--ec-space-8);
+	margin-block: var(--ec-space-6);
+	font-size: var(--ec-fs-sm);
+	max-width: 340px;
+}
+
+.ec-hours dt { color: var(--ec-muted); }
+.ec-hours dd { margin: 0; color: var(--ec-text); }
+
+/* Product grid inside homepage sections keeps the archive spacing. */
+.ec-section--tint + .wp-block-shortcode,
+.home .woocommerce.columns-4 {
+	max-width: var(--ec-container);
+	margin-inline: auto;
+	padding-inline: var(--ec-space-6);
+	margin-block-end: var(--ec-space-24);
+}
+
+/* ── Homepage layout corrections ─────────────────────────────────────────── */
+
+/* The block theme renders the page title above the content. On the front page
+   the hero *is* the title, so a second "דף הבית" heading above it is noise. */
+.home .wp-block-post-title {
+	display: none;
+}
+
+/* ...but a product grid added to the homepage later would use the same block
+   for its titles, and hiding those would be a silent, confusing bug. Restore
+   the block wherever it appears inside a loop. */
+.home .wp-block-post-template .wp-block-post-title,
+.home .wp-block-product-template .wp-block-post-title,
+.home li.product .wp-block-post-title {
+	display: block;
+}
+
+/* Break the hero and tinted sections out of the constrained content column.
+   Without this they sit in an 820px well and read as a document, not a shop. */
+.ec-hero,
+.ec-section--tint {
+	width: 100vw;
+	max-width: 100vw;
+	margin-inline: calc(50% - 50vw);
+}
+
+/* Give the homepage its own rhythm — the theme's default content spacing is
+   tuned for prose, not for full-bleed retail sections. */
+.home .wp-block-post-content > * + * {
+	margin-block-start: 0;
+}
+
+.home .entry-content,
+.home .wp-block-post-content {
+	max-width: none;
+}
+
+/* 100vw includes the scrollbar, so a full-bleed section is a few pixels wider
+   than the viewport and produces a horizontal scrollbar. `clip` contains it
+   without creating a scroll container, so position:sticky keeps working —
+   `hidden` would break it. */
+html {
+	overflow-x: clip;
+}
+
+body {
+	overflow-x: clip;
+}
