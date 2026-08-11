@@ -22,6 +22,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit( 2 );
 }
 
+if ( ! function_exists( 'wc_get_products' ) ) {
+	fwrite( STDERR, "WooCommerce is not active.\n" );
+	exit( 2 );
+}
+
 if ( ! function_exists( 'imagecreatetruecolor' ) ) {
 	fwrite( STDERR, "PHP GD extension is required.\n" );
 	exit( 2 );

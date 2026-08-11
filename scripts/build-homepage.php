@@ -112,7 +112,7 @@ $ec_in_stock = '<!-- wp:html -->
 <!-- /wp:html -->
 
 <!-- wp:shortcode -->
-[products limit="8" columns="4" visibility="visible" orderby="date" class="ec-products"]
+[products limit="8" columns="4" orderby="date" class="ec-products ec-available-now"]
 <!-- /wp:shortcode -->';
 
 // ── Service ──────────────────────────────────────────────────────────────────

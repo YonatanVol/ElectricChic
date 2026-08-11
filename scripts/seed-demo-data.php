@@ -122,8 +122,13 @@ foreach ( $ec_products as $ec_row ) {
 	$ec_product->set_regular_price( (string) $ec_price );
 	$ec_product->set_price( (string) ( $ec_sale ?? $ec_price ) );
 
+	// Clearing matters on re-run: without the else branch a product that used
+	// to be on sale keeps its old sale price forever, and the seeder stops
+	// being idempotent in the one way that shows on the page.
 	if ( null !== $ec_sale ) {
 		$ec_product->set_sale_price( (string) $ec_sale );
+	} else {
+		$ec_product->set_sale_price( '' );
 	}
 
 	$ec_product->set_description( $ec_description );

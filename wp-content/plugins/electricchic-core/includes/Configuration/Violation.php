@@ -80,7 +80,13 @@ final class Violation {
 	 * @param mixed $value Value to encode.
 	 */
 	private function encode( mixed $value ): string {
-		$encoded = wp_json_encode( $value );
+		// Native json_encode, not wp_json_encode. This class is part of the
+		// WordPress-free half of the plugin, and the wrapper is only available
+		// once WordPress is loaded — so the convenient call would fatal in the
+		// unit suite and in any CLI context. Both return string|false, so the
+		// fallback below is unchanged.
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- wp_json_encode() is unavailable in this WordPress-free class; see the note above.
+		$encoded = json_encode( $value );
 
 		return false === $encoded ? '(unencodable)' : $encoded;
 	}

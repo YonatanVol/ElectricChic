@@ -61,27 +61,59 @@ function electricchic_woocommerce_support(): void {
 add_action( 'after_setup_theme', 'electricchic_woocommerce_support' );
 
 /**
- * Show four products per row on the shop archive.
+ * Restrict a [products] shortcode to items actually in stock.
  *
- * @param int $columns Incoming column count.
- * @return int
- */
-function electricchic_loop_columns( $columns ): int {
-	unset( $columns ); // Fixed layout: the incoming value is deliberately ignored.
-
-	return 4;
-}
-add_filter( 'loop_shop_columns', 'electricchic_loop_columns', 20 );
-
-/**
- * Show 16 products per page, a whole number of rows at four columns.
+ * The homepage section is headed "זמין עכשיו בחנות". Before this, it used
+ * visibility="visible", which includes out-of-stock products — so a section
+ * promising immediate availability was listing things the shop did not have.
+ * On a site whose entire premise is honest availability, that is the worst
+ * possible place for the bug to be.
  *
- * @param int $per_page Incoming per-page count.
- * @return int
+ * Applies only to shortcodes carrying the ec-available-now class, so ordinary
+ * [products] usage is untouched. Out-of-stock products stay live and indexed
+ * everywhere else, which is deliberate — the page has accumulated value and the
+ * product will usually come back.
+ *
+ * PLACEHOLDER. Once the availability model lands this becomes a query on the
+ * derived state, so "available now" can mean in-store stock specifically rather
+ * than WooCommerce's single in-stock flag.
+ *
+ * @param array $query_args WP_Query arguments.
+ * @param array $attributes Shortcode attributes.
+ * @return array
  */
-function electricchic_products_per_page( $per_page ): int {
-	unset( $per_page ); // Fixed layout: four columns, four rows.
+function electricchic_available_now_query( $query_args, $attributes ): array {
+	$class = $attributes['class'] ?? '';
 
-	return 16;
+	if ( ! is_string( $class ) || ! str_contains( $class, 'ec-available-now' ) ) {
+		return $query_args;
+	}
+
+	$query_args['tax_query'] = array_merge(
+		$query_args['tax_query'] ?? array(),
+		array(
+			array(
+				'taxonomy' => 'product_visibility',
+				'field'    => 'name',
+				'terms'    => 'outofstock',
+				'operator' => 'NOT IN',
+			),
+		)
+	);
+
+	return $query_args;
 }
-add_filter( 'loop_shop_per_page', 'electricchic_products_per_page', 20 );
+add_filter( 'woocommerce_shortcode_products_query', 'electricchic_available_now_query', 10, 2 );
+
+/*
+ * Removed: electricchic_loop_columns() and electricchic_products_per_page().
+ *
+ * loop_shop_columns and loop_shop_per_page only affect the LEGACY WooCommerce
+ * templates. This is a block theme, where the catalog is rendered by the
+ * Product Collection block and neither filter is consulted. They were dead code
+ * that looked like configuration — the archive kept rendering three columns
+ * while the filter confidently returned four.
+ *
+ * Controlling the block catalog needs a Product Catalog template override in
+ * the child theme, which lands with the design work rather than being faked here.
+ */
