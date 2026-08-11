@@ -52,9 +52,9 @@ $ec_shop_url = get_permalink( (int) wc_get_page_id( 'shop' ) );
 $ec_hero = '<!-- wp:html -->
 <section class="ec-hero">
 	<div class="ec-hero__inner">
-		<p class="ec-hero__eyebrow">חנות אופניים · תל אביב</p>
-		<h1 class="ec-hero__title">אופניים שנבחרו בקפידה,<br>ואנשים שיודעים לתקן אותם</h1>
-		<p class="ec-hero__lead">מכירה, שירות ותיקונים. כל אופניים שיוצאים מכאן מורכבים ומכוונים ביד — ואפשר תמיד לחזור עם שאלה.</p>
+		<p class="ec-hero__eyebrow">אופניים וקורקינטים חשמליים · תל אביב</p>
+		<h1 class="ec-hero__title">חשמליים.<br>ומעבדה שיודעת לתקן אותם.</h1>
+		<p class="ec-hero__lead">חנות מכירה ומעבדה מקצועית בתל אביב. כל רכב שיוצא מכאן מורכב, מכוון ונבדק — ואפשר תמיד לחזור עם שאלה.</p>
 		<div class="ec-hero__actions">
 			<a class="ec-button ec-button--primary" href="' . esc_url( $ec_shop_url ) . '">לחנות</a>
 			<a class="ec-button ec-button--ghost" href="#ec-service">שירות ותיקונים</a>
@@ -129,7 +129,7 @@ $ec_service = '<!-- wp:html -->
 				<li>כיוון בלמים הידראוליים</li>
 				<li>הרכבת אופניים חדשים והתאמה לרוכב</li>
 			</ul>
-			<a class="ec-button ec-button--primary" href="tel:+97200000000">לתיאום טלפוני</a>
+			<a class="ec-button ec-button--primary" href="tel:+972524873436">לתיאום טלפוני</a>
 		</div>
 		<div class="ec-split__aside">
 			<div class="ec-fact"><span class="ec-fact__num">1–2</span><span class="ec-fact__label">ימי עבודה לטיפול רגיל</span></div>
@@ -174,15 +174,16 @@ $ec_store = '<!-- wp:html -->
 	<div class="ec-split">
 		<div class="ec-split__text">
 			<h2 class="ec-section__title">החנות</h2>
-			<p class="ec-store__addr">רחוב הדוגמה 12, תל אביב</p>
+			<p class="ec-store__addr">דרך חיים ברלב 98, תל אביב-יפו</p>
 			<dl class="ec-hours">
-				<dt>ראשון–חמישי</dt><dd>09:00 – 19:00</dd>
-				<dt>שישי</dt><dd>09:00 – 14:00</dd>
+				<dt>ראשון–חמישי</dt><dd>10:00 – 19:00</dd>
+				<dt>שישי</dt><dd>לפי שעות מתפרסמות</dd>
 				<dt>שבת</dt><dd>סגור</dd>
 			</dl>
+			<p class="ec-store__note">השעות טעונות אישור מול החנות לפני עלייה לאוויר.</p>
 			<div class="ec-hero__actions">
-				<a class="ec-button ec-button--primary" href="tel:+97200000000">התקשרו</a>
-				<a class="ec-button ec-button--ghost" href="https://wa.me/97200000000">וואטסאפ</a>
+				<a class="ec-button ec-button--primary" href="tel:+972524873436">התקשרו</a>
+				<a class="ec-button ec-button--ghost" href="https://wa.me/972524873436">וואטסאפ</a>
 			</div>
 		</div>
 	</div>

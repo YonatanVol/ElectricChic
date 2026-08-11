@@ -10,7 +10,10 @@
  * client seeing a bug.
  *
  * Drawn rather than downloaded: no licensing question, no external request, and
- * the palette matches the design system exactly.
+ * the palette matches the design system exactly — which is why these had to be
+ * regenerated when the site moved from a cream ground to a near-black one. On
+ * the dark palette the old ivory images rendered as bright rectangles and read
+ * as broken rather than as pending.
  *
  * No declare(strict_types=1) — WP-CLI's eval-file runs this through eval().
  *
@@ -46,13 +49,13 @@ function ec_draw_placeholder( int $index ): string {
 	// through eval(), so top-level variables never reach true global scope and
 	// `global` would bind null.
 	$palette = array(
-		array( 0xf3, 0xf0, 0xeb ), // ivory
-		array( 0xe8, 0xe3, 0xdc ), // sand
-		array( 0xef, 0xea, 0xe2 ), // between the two
+		array( 0x14, 0x14, 0x18 ), // surface-1
+		array( 0x1c, 0x1c, 0x21 ), // surface-2
+		array( 0x18, 0x18, 0x1d ), // between the two
 	);
 
-	$ec_stroke = array( 0xa6, 0x9f, 0x95 ); // stone
-	$ec_accent = array( 0xb8, 0x97, 0x6a ); // brass
+	$ec_stroke = array( 0x3a, 0x3a, 0x40 ); // line
+	$ec_accent = array( 0xcc, 0xff, 0x00 ); // lime
 
 	$width  = 1200;
 	$height = 900;
@@ -64,8 +67,10 @@ function ec_draw_placeholder( int $index ): string {
 	$bg     = imagecolorallocate( $image, $bg_rgb[0], $bg_rgb[1], $bg_rgb[2] );
 	imagefilledrectangle( $image, 0, 0, $width, $height, $bg );
 
-	$stroke = imagecolorallocatealpha( $image, $ec_stroke[0], $ec_stroke[1], $ec_stroke[2], 75 );
-	$accent = imagecolorallocatealpha( $image, $ec_accent[0], $ec_accent[1], $ec_accent[2], 60 );
+	// Less transparency than the light version: on a dark ground a faint stroke
+	// disappears entirely rather than reading as subtle.
+	$stroke = imagecolorallocatealpha( $image, $ec_stroke[0], $ec_stroke[1], $ec_stroke[2], 40 );
+	$accent = imagecolorallocatealpha( $image, $ec_accent[0], $ec_accent[1], $ec_accent[2], 55 );
 
 	imagesetthickness( $image, 3 );
 
