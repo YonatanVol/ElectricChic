@@ -2,12 +2,19 @@
    ElectricChic — design system
    =============================================================================
 
-   Warm neutrals rather than white, charcoal rather than black, a single metallic
-   accent used sparingly, sharp corners, and generous space. The restraint is the
-   point: a shop that sells ₪12,000 bicycles should not look like a template.
+   Near-black ground, one acid-lime accent, heavy geometric type, sharp corners.
+   The shop sells electric bikes and scooters — urban, technical, fast. An
+   earlier version of this file was warm cream and aged brass, which is the
+   language of a heritage bicycle shop and read as completely wrong next to a
+   500W motor.
+
+   Lime is brand and action ONLY — logo, price, primary button, focus. It is
+   deliberately not used for availability, because a page where "in stock" and
+   "buy now" share a colour reads as though everything is on offer.
 
    Every colour, size and spacing value is a token. Nothing below hard-codes a
-   hex value, so rebranding is a change in one block.
+   hex value, so rebranding is a change in one block — which matters, because
+   Cortez brand assets may yet replace the accent.
    ============================================================================= */
 
 /* ── Fonts ─────────────────────────────────────────────────────────────────
@@ -30,60 +37,50 @@
 	unicode-range: U+0000-00FF, U+0131, U+2000-206F, U+2192, U+2212, U+2215;
 }
 
-@font-face {
-	font-family: 'Frank Ruhl Libre';
-	src: url('../fonts/frank-hebrew.woff2') format('woff2');
-	font-weight: 300 900;
-	font-display: swap;
-	unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
-}
-
-@font-face {
-	font-family: 'Frank Ruhl Libre';
-	src: url('../fonts/frank-latin.woff2') format('woff2');
-	font-weight: 300 900;
-	font-display: swap;
-	unicode-range: U+0000-00FF, U+0131, U+2000-206F;
-}
-
 /* ── Tokens ──────────────────────────────────────────────────────────────── */
 
 :root {
-	/* Warm foundations. Pure white reads cheap on a retail page; cream does not. */
-	--ec-cream: #faf8f5;
-	--ec-ivory: #f3f0eb;
-	--ec-sand: #e8e3dc;
-
-	/* Neutrals. Charcoal rather than #000 — black on cream is harsh at body size. */
-	--ec-stone: #a69f95;
-	--ec-graphite: #4a4640;
-	--ec-charcoal: #2c2926;
-	--ec-ink: #1a1816;
-
-	/* Accent: aged brass. Used on price, focus, and one call to action per view. */
-	--ec-brass: #b8976a;
-	--ec-brass-light: #d4bc96;
-	--ec-brass-dark: #8f7343;
-
-	/* Availability. Meaning never rests on colour alone — every badge carries text. */
-	--ec-in-stock: #3f6b4f;
-	--ec-supplier: #6b6a8f;
-	--ec-warning: #9a7233;
-	--ec-out: #8f5049;
-
-	--ec-white: #ffffff;
-
-	/* Semantic */
-	--ec-bg: var(--ec-cream);
-	--ec-surface: var(--ec-white);
-	--ec-text: var(--ec-graphite);
-	--ec-heading: var(--ec-charcoal);
-	--ec-muted: var(--ec-stone);
-	--ec-border: var(--ec-sand);
+	/* Ground. Near-black rather than pure #000 — true black on a screen crushes
+	   product photography and makes every edge look like a rendering artefact. */
+	--ec-black: #0b0b0d;
+	--ec-surface-1: #141418;
+	--ec-surface-2: #1c1c21;
+	--ec-line: #3a3a40;
 
 	/* Type */
+	--ec-white: #ffffff;
+	--ec-off-white: #e8e8e6;
+	--ec-grey: #8a8a92;
+
+	/* Accent — brand and action only. Never availability. */
+	--ec-lime: #ccff00;
+	--ec-lime-dim: #a8d400;
+
+	/* Availability. A separate scale on purpose: if the accent doubled as
+	   "in stock", every archive would look like a clearance sale. Each badge
+	   carries text as well as colour — colour is never the only signal. */
+	--ec-avail-stock: #4ade80;
+	--ec-avail-stock-bg: #0d2a1c;
+	--ec-avail-supplier: #7dd3fc;
+	--ec-avail-supplier-bg: #0e2733;
+	--ec-avail-confirm: #fbbf24;
+	--ec-avail-confirm-bg: #2a1a0a;
+	--ec-avail-out: #f87171;
+	--ec-avail-out-bg: #2a1214;
+
+	/* Semantic */
+	--ec-bg: var(--ec-black);
+	--ec-surface: var(--ec-surface-1);
+	--ec-text: var(--ec-off-white);
+	--ec-heading: var(--ec-white);
+	--ec-muted: var(--ec-grey);
+	--ec-border: var(--ec-line);
+	--ec-accent: var(--ec-lime);
+
+	/* Type. One family, worked hard. A serif here would say "heritage", which is
+	   the opposite of what these products are. */
 	--ec-font-sans: 'Heebo', system-ui, -apple-system, 'Segoe UI', sans-serif;
-	--ec-font-serif: 'Frank Ruhl Libre', Georgia, 'Times New Roman', serif;
+	--ec-font-serif: var(--ec-font-sans);
 
 	--ec-fs-xs: 0.8125rem;
 	--ec-fs-sm: 0.9375rem;
@@ -105,11 +102,10 @@
 	--ec-space-16: 4rem;
 	--ec-space-24: 6rem;
 
-	/* Sharp corners throughout. Rounded pills read consumer-tech, not retail. */
 	--ec-radius: 0;
 
 	--ec-ease: cubic-bezier(0.16, 1, 0.3, 1);
-	--ec-transition: 0.4s var(--ec-ease);
+	--ec-transition: 0.35s var(--ec-ease);
 
 	--ec-container: 1280px;
 }
@@ -137,21 +133,21 @@ h1, h2, h3, h4,
 .wp-block-post-title,
 .woocommerce-loop-product__title,
 .product_title {
-	font-family: var(--ec-font-serif);
+	font-family: var(--ec-font-sans);
 	color: var(--ec-heading);
-	font-weight: 500;
-	line-height: 1.2;
-	letter-spacing: -0.01em;
+	font-weight: 800;
+	line-height: 1.08;
+	letter-spacing: -0.025em;
 }
 
 ::selection {
-	background-color: var(--ec-brass-light);
-	color: var(--ec-charcoal);
+	background-color: var(--ec-lime);
+	color: var(--ec-black);
 }
 
 /* Focus must stay visible — WCAG 2.2 AA, and the first thing themes remove. */
 :focus-visible {
-	outline: 2px solid var(--ec-brass-dark);
+	outline: 2px solid var(--ec-lime);
 	outline-offset: 3px;
 }
 
@@ -166,7 +162,7 @@ h1, h2, h3, h4,
 /* ── Header ──────────────────────────────────────────────────────────────── */
 
 .wp-block-site-title a {
-	font-family: var(--ec-font-serif);
+	font-family: var(--ec-font-sans);
 	font-size: var(--ec-fs-xl);
 	font-weight: 700;
 	color: var(--ec-heading);
@@ -183,7 +179,7 @@ h1, h2, h3, h4,
 }
 
 .wp-block-navigation a:hover {
-	color: var(--ec-brass-dark);
+	color: var(--ec-lime);
 }
 
 /* ── Shop archive ────────────────────────────────────────────────────────── */
@@ -230,7 +226,7 @@ ul.products li.product:hover {
 
 ul.products li.product a img {
 	border-radius: var(--ec-radius);
-	background: var(--ec-ivory);
+	background: var(--ec-surface-2);
 	margin-block-end: var(--ec-space-4);
 	aspect-ratio: 4 / 3;
 	object-fit: cover;
@@ -262,7 +258,7 @@ ul.products li.product .woocommerce-loop-product__title a,
 
 ul.products li.product .woocommerce-loop-product__title a:hover,
 .wp-block-post-title a:hover {
-	color: var(--ec-brass-dark) !important;
+	color: var(--ec-lime) !important;
 }
 
 ul.products li.product .price {
@@ -282,7 +278,7 @@ ul.products li.product .price del {
 }
 
 ul.products li.product .price ins {
-	color: var(--ec-brass-dark);
+	color: var(--ec-lime);
 	text-decoration: none;
 	font-weight: 700;
 }
@@ -294,11 +290,11 @@ span.onsale {
 	inset-block-start: var(--ec-space-3);
 	inset-inline-start: var(--ec-space-3);
 	inset-inline-end: auto;
-	background: var(--ec-charcoal);
-	color: var(--ec-cream);
+	background: var(--ec-lime);
+	color: var(--ec-black);
 	font-family: var(--ec-font-sans);
 	font-size: var(--ec-fs-xs);
-	font-weight: 500;
+	font-weight: 800;
 	letter-spacing: 0.08em;
 	padding: var(--ec-space-1) var(--ec-space-3);
 	border-radius: var(--ec-radius);
@@ -320,9 +316,9 @@ span.onsale {
 	font-size: var(--ec-fs-sm) !important;
 	font-weight: 500 !important;
 	letter-spacing: 0.04em;
-	background: var(--ec-charcoal) !important;
-	color: var(--ec-cream) !important;
-	border: 1px solid var(--ec-charcoal) !important;
+	background: var(--ec-lime) !important;
+	color: var(--ec-black) !important;
+	border: 1px solid var(--ec-lime) !important;
 	border-radius: var(--ec-radius) !important;
 	padding: var(--ec-space-3) var(--ec-space-6) !important;
 	transition: background var(--ec-transition), color var(--ec-transition);
@@ -333,9 +329,9 @@ span.onsale {
 .woocommerce button.button:hover,
 .woocommerce input.button:hover,
 .wp-element-button:hover {
-	background: var(--ec-brass-dark) !important;
-	border-color: var(--ec-brass-dark) !important;
-	color: var(--ec-white) !important;
+	background: var(--ec-lime-dim) !important;
+	border-color: var(--ec-lime-dim) !important;
+	color: var(--ec-black) !important;
 }
 
 .woocommerce a.button.add_to_cart_button {
@@ -366,7 +362,7 @@ span.onsale {
 }
 
 .woocommerce div.product .woocommerce-tabs ul.tabs li.active {
-	border-block-end-color: var(--ec-brass);
+	border-block-end-color: var(--ec-lime);
 	background: transparent;
 }
 
@@ -385,11 +381,11 @@ span.onsale {
 	padding: var(--ec-space-1) var(--ec-space-3);
 	display: inline-block;
 	border-inline-start: 3px solid currentColor;
-	background: var(--ec-ivory);
+	background: var(--ec-surface-2);
 }
 
-.stock.in-stock { color: var(--ec-in-stock); }
-.stock.out-of-stock { color: var(--ec-out); }
+.stock.in-stock { color: var(--ec-avail-stock); }
+.stock.out-of-stock { color: var(--ec-avail-out); }
 
 /* ── Forms ───────────────────────────────────────────────────────────────── */
 
@@ -412,8 +408,8 @@ span.onsale {
 .woocommerce input:focus,
 .woocommerce textarea:focus,
 .woocommerce select:focus {
-	border-color: var(--ec-brass);
-	outline: 2px solid var(--ec-brass-light);
+	border-color: var(--ec-lime);
+	outline: 2px solid var(--ec-lime);
 	outline-offset: 1px;
 }
 
@@ -424,20 +420,26 @@ span.onsale {
 .woocommerce-error {
 	border-radius: var(--ec-radius);
 	border: 0;
-	border-inline-start: 3px solid var(--ec-brass);
-	background: var(--ec-ivory);
+	border-inline-start: 3px solid var(--ec-lime);
+	background: var(--ec-surface-2);
 	color: var(--ec-text);
 	font-size: var(--ec-fs-sm);
 }
 
-.woocommerce-error { border-inline-start-color: var(--ec-out); }
+.woocommerce-error { border-inline-start-color: var(--ec-avail-out); }
 
 /* ── Footer ──────────────────────────────────────────────────────────────── */
 
+/* --ec-line is a BORDER colour: 1.74:1 against the ground, which is fine for a
+   1px rule and unreadable as text. It ended up here because the palette swap
+   remapped the old --ec-sand mechanically, and the contrast pass afterwards
+   checked the pairs I had designed rather than the pairs the remap produced.
+   scripts/check-contrast.php now checks every colour declaration in this file. */
 .wp-block-template-part footer,
 footer.wp-block-template-part {
-	background: var(--ec-charcoal);
-	color: var(--ec-sand);
+	background: var(--ec-surface-1);
+	color: var(--ec-muted);
+	border-block-start: 1px solid var(--ec-line);
 }
 
 /* ── Mobile ──────────────────────────────────────────────────────────────── */
@@ -468,7 +470,7 @@ footer.wp-block-template-part {
    ============================================================================= */
 
 .ec-hero {
-	background: linear-gradient(160deg, var(--ec-ivory) 0%, var(--ec-cream) 60%);
+	background: radial-gradient(120% 90% at 70% 0%, var(--ec-surface-1) 0%, var(--ec-black) 62%);
 	padding-block: clamp(4rem, 12vw, 9rem);
 	padding-inline: var(--ec-space-6);
 	margin-block-end: var(--ec-space-16);
@@ -484,7 +486,7 @@ footer.wp-block-template-part {
 	inset-inline-start: -8%;
 	width: min(46vw, 620px);
 	aspect-ratio: 1;
-	border: 1px solid var(--ec-sand);
+	border: 1px solid color-mix(in srgb, var(--ec-lime) 22%, transparent);
 	border-radius: 50%;
 	pointer-events: none;
 }
@@ -500,18 +502,19 @@ footer.wp-block-template-part {
 .ec-hero__eyebrow {
 	font-size: var(--ec-fs-sm);
 	letter-spacing: 0.16em;
-	color: var(--ec-brass-dark);
+	color: var(--ec-lime);
 	margin-block-end: var(--ec-space-6);
 	text-transform: none;
 }
 
 .ec-hero__title {
-	font-family: var(--ec-font-serif);
+	font-family: var(--ec-font-sans);
 	font-size: clamp(2.25rem, 6vw, 4rem);
-	line-height: 1.12;
+	line-height: 1.05;
 	color: var(--ec-heading);
 	margin-block: 0 var(--ec-space-6);
-	font-weight: 500;
+	font-weight: 900;
+	letter-spacing: -0.03em;
 }
 
 .ec-hero__lead {
@@ -548,26 +551,27 @@ footer.wp-block-template-part {
 }
 
 .ec-button--primary {
-	background: var(--ec-charcoal);
-	color: var(--ec-cream);
-	border-color: var(--ec-charcoal);
+	background: var(--ec-lime);
+	color: var(--ec-black);
+	border-color: var(--ec-lime);
+	font-weight: 700;
 }
 
 .ec-button--primary:hover {
-	background: var(--ec-brass-dark);
-	border-color: var(--ec-brass-dark);
-	color: var(--ec-white);
+	background: var(--ec-lime-dim);
+	border-color: var(--ec-lime-dim);
+	color: var(--ec-black);
 }
 
 .ec-button--ghost {
 	background: transparent;
-	color: var(--ec-heading);
-	border-color: var(--ec-stone);
+	color: var(--ec-off-white);
+	border-color: var(--ec-line);
 }
 
 .ec-button--ghost:hover {
-	border-color: var(--ec-brass-dark);
-	color: var(--ec-brass-dark);
+	border-color: var(--ec-lime);
+	color: var(--ec-lime);
 }
 
 /* ── Sections ────────────────────────────────────────────────────────────── */
@@ -581,7 +585,7 @@ footer.wp-block-template-part {
 
 .ec-section--tint {
 	max-width: none;
-	background: var(--ec-ivory);
+	background: var(--ec-surface-2);
 	padding-block: var(--ec-space-16);
 	margin-block-end: var(--ec-space-8);
 }
@@ -596,11 +600,12 @@ footer.wp-block-template-part {
 }
 
 .ec-section__title {
-	font-family: var(--ec-font-serif);
+	font-family: var(--ec-font-sans);
 	font-size: clamp(1.75rem, 4vw, 2.5rem);
 	color: var(--ec-heading);
 	margin-block: 0 var(--ec-space-2);
-	font-weight: 500;
+	font-weight: 800;
+	letter-spacing: -0.02em;
 }
 
 .ec-section__sub {
@@ -615,12 +620,12 @@ footer.wp-block-template-part {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 	gap: 1px;
-	background: var(--ec-sand);
-	border: 1px solid var(--ec-sand);
+	background: var(--ec-line);
+	border: 1px solid var(--ec-line);
 }
 
 .ec-cat {
-	background: var(--ec-cream);
+	background: var(--ec-bg);
 	padding: var(--ec-space-8) var(--ec-space-6);
 	text-decoration: none;
 	display: flex;
@@ -633,11 +638,11 @@ footer.wp-block-template-part {
 }
 
 .ec-cat:hover {
-	background: var(--ec-white);
+	background: var(--ec-surface-2);
 }
 
 .ec-cat__title {
-	font-family: var(--ec-font-serif);
+	font-family: var(--ec-font-sans);
 	font-size: var(--ec-fs-xl);
 	color: var(--ec-heading);
 	line-height: 1.25;
@@ -652,7 +657,7 @@ footer.wp-block-template-part {
 	position: absolute;
 	inset-block-end: var(--ec-space-6);
 	inset-inline-start: var(--ec-space-6);
-	color: var(--ec-brass);
+	color: var(--ec-lime);
 	font-size: var(--ec-fs-lg);
 	opacity: 0;
 	transform: translateX(6px);
@@ -696,18 +701,18 @@ footer.wp-block-template-part {
 	content: "—";
 	position: absolute;
 	inset-inline-start: 0;
-	color: var(--ec-brass);
+	color: var(--ec-lime);
 }
 
 .ec-fact {
-	border-inline-start: 2px solid var(--ec-brass);
+	border-inline-start: 2px solid var(--ec-lime);
 	padding-inline-start: var(--ec-space-6);
 	margin-block-end: var(--ec-space-8);
 }
 
 .ec-fact__num {
 	display: block;
-	font-family: var(--ec-font-serif);
+	font-family: var(--ec-font-sans);
 	font-size: var(--ec-fs-3xl);
 	color: var(--ec-heading);
 	line-height: 1.1;
@@ -729,7 +734,7 @@ footer.wp-block-template-part {
 }
 
 .ec-trust__item h3 {
-	font-family: var(--ec-font-serif);
+	font-family: var(--ec-font-sans);
 	font-size: var(--ec-fs-lg);
 	color: var(--ec-heading);
 	margin-block: 0 var(--ec-space-2);
@@ -817,4 +822,214 @@ html {
 
 body {
 	overflow-x: clip;
+}
+
+/* Hours we have not yet confirmed with the shop are marked, not hidden.
+   Publishing invented opening times for a real business is the kind of small
+   fiction customers act on and then arrive to a closed door. */
+.ec-store__note {
+	font-size: var(--ec-fs-xs);
+	color: var(--ec-avail-confirm);
+	border-inline-start: 2px solid var(--ec-avail-confirm);
+	padding-inline-start: var(--ec-space-3);
+	margin-block: var(--ec-space-4) 0;
+}
+
+/* =============================================================================
+   Block-theme product cards
+   =============================================================================
+
+   Twenty Twenty-Five renders the catalogue through the Product Collection
+   block, not the classic WooCommerce templates. The selectors above
+   (span.onsale, ul.products, .woocommerce-loop-product__title) match nothing
+   here — verified by grepping the rendered page: 0 occurrences each, against 12
+   for wc-block-components-product-sale-badge.
+
+   The cards still looked broadly right, which is what made this easy to miss:
+   theme.json and inherited body styles were doing the work while the rules
+   below sat dead. Same failure as the loop_shop_columns filters removed
+   earlier — writing classic WooCommerce for a block theme.
+
+   The classic selectors are kept rather than deleted: they cost nothing and
+   would apply if a classic template is ever introduced.
+   ============================================================================= */
+
+/* The catalogue is not prose: give it the wide measure rather than the 820px
+   content column, which capped it at two columns on any screen size. */
+.woocommerce .wp-block-woocommerce-product-collection,
+.wp-block-woocommerce-product-collection,
+.woocommerce-page .wp-block-query-title,
+.woocommerce-page .woocommerce-result-count,
+.woocommerce-page .wp-block-woocommerce-catalog-sorting,
+.woocommerce-page .wp-block-woocommerce-product-results-count,
+.woocommerce-page .woocommerce-breadcrumb {
+	max-width: var(--ec-container);
+	margin-inline: auto;
+	width: 100%;
+}
+
+/* Explicit columns rather than WooCommerce's formula.
+ *
+ * Their grid is repeat(auto-fill, minmax(max(150px, calc(33.33% - .83em)), 1fr)),
+ * which subtracts the gap THEY assume. Setting a more generous gap here made
+ * three columns no longer fit, and the grid silently fell back to two at a
+ * 1280px viewport — the column count quietly depending on a gap value is the
+ * kind of coupling worth removing rather than tuning around.
+ *
+ * A fixed minimum track is gap-independent and stays responsive on its own.
+ */
+.wc-block-product-template__responsive.wc-block-product-template,
+.wp-block-woocommerce-product-template.wc-block-product-template {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+	gap: var(--ec-space-12) var(--ec-space-8);
+}
+
+li.wc-block-product {
+	position: relative;
+	transition: transform var(--ec-transition);
+}
+
+li.wc-block-product:hover {
+	transform: translateY(-4px);
+}
+
+/* Image well: a lifted surface so the drawn placeholder reads as deliberate. */
+.wc-block-components-product-image {
+	background: var(--ec-surface-1);
+	border-radius: var(--ec-radius);
+	margin-block-end: var(--ec-space-4);
+	position: relative;
+}
+
+/* Constrain the well rather than letting the image set its own height. The
+   block ships an aspect-ratio modifier class, but width:100% with height:auto
+   overrode it and produced cards several screens tall. */
+.wc-block-components-product-image {
+	aspect-ratio: 4 / 3;
+}
+
+.wc-block-components-product-image__inner-container,
+.wc-block-components-product-image a {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.wc-block-components-product-image img {
+	border-radius: var(--ec-radius);
+	transition: opacity var(--ec-transition);
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
+li.wc-block-product:hover .wc-block-components-product-image img {
+	opacity: 0.85;
+}
+
+/* Titles are headings, not links — inheriting the lime link colour would turn
+   an archive into a wall of green. */
+li.wc-block-product .wp-block-post-title,
+li.wc-block-product .wp-block-post-title a {
+	color: var(--ec-heading);
+	font-family: var(--ec-font-sans);
+	font-size: var(--ec-fs-lg);
+	font-weight: 700;
+	line-height: 1.3;
+	letter-spacing: -0.015em;
+	text-decoration: none;
+	text-align: start;
+	margin-block: 0 var(--ec-space-2);
+}
+
+li.wc-block-product .wp-block-post-title a:hover {
+	color: var(--ec-lime);
+}
+
+.wc-block-components-product-price {
+	font-family: var(--ec-font-sans);
+	font-weight: 700;
+	color: var(--ec-heading);
+	display: block;
+	margin-block-end: var(--ec-space-4);
+}
+
+.wc-block-components-product-price del {
+	color: var(--ec-muted);
+	font-weight: 400;
+	opacity: 0.7;
+	margin-inline-end: var(--ec-space-2);
+}
+
+.wc-block-components-product-price ins {
+	color: var(--ec-lime);
+	text-decoration: none;
+	font-weight: 800;
+}
+
+/* Sale badge — the block equivalent of span.onsale. */
+.wc-block-components-product-sale-badge {
+	position: absolute;
+	inset-block-start: var(--ec-space-3);
+	inset-inline-start: var(--ec-space-3);
+	inset-inline-end: auto;
+	width: auto;
+	min-width: 0;
+	max-width: none;
+	white-space: nowrap;
+	background: var(--ec-lime);
+	color: var(--ec-black);
+	border: 0;
+	border-radius: var(--ec-radius);
+	font-family: var(--ec-font-sans);
+	font-size: var(--ec-fs-xs);
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	padding: var(--ec-space-1) var(--ec-space-3);
+	line-height: 1.8;
+	z-index: 2;
+}
+
+.wc-block-components-product-sale-badge__text {
+	color: var(--ec-black);
+}
+
+/* Add-to-cart on a card. */
+.wc-block-components-product-button .wp-block-button__link,
+.wc-block-components-product-button a {
+	background: var(--ec-lime);
+	color: var(--ec-black);
+	border: 1px solid var(--ec-lime);
+	border-radius: var(--ec-radius);
+	font-weight: 700;
+	font-size: var(--ec-fs-sm);
+	letter-spacing: 0.03em;
+	padding: var(--ec-space-3) var(--ec-space-6);
+	transition: background var(--ec-transition), border-color var(--ec-transition);
+	text-decoration: none;
+	min-height: 44px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.wc-block-components-product-button .wp-block-button__link:hover,
+.wc-block-components-product-button a:hover {
+	background: var(--ec-lime-dim);
+	border-color: var(--ec-lime-dim);
+	color: var(--ec-black);
+}
+
+/* Sorting and result count on the block archive. */
+.wc-block-product-sort-select select,
+.wp-block-woocommerce-catalog-sorting select {
+	background: var(--ec-surface-1);
+	color: var(--ec-text);
+	border: 1px solid var(--ec-border);
+	border-radius: var(--ec-radius);
+	font-family: var(--ec-font-sans);
+	font-size: var(--ec-fs-sm);
+	padding: var(--ec-space-2) var(--ec-space-4);
 }

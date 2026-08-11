@@ -19,14 +19,24 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Load the parent and child stylesheets, and the design system.
  */
 function electricchic_enqueue_styles(): void {
-	$theme   = wp_get_theme();
-	$version = $theme->get( 'Version' );
+	$relative = '/assets/css/design-system.css';
+	$path     = get_stylesheet_directory() . $relative;
+
+	// Version from the file's modification time, not the theme version.
+	//
+	// Using the theme version means every CSS change ships under a version
+	// string that did not change, so returning visitors keep the stylesheet
+	// their browser already cached. That is invisible in a fresh incognito
+	// window and very visible to everyone else — it cost a confused round of
+	// "the palette did not apply" during development, and in production it would
+	// mean a fix reaching only new visitors.
+	$version = is_readable( $path ) ? (string) filemtime( $path ) : null;
 
 	wp_enqueue_style(
 		'electricchic-design-system',
-		get_stylesheet_directory_uri() . '/assets/css/design-system.css',
+		get_stylesheet_directory_uri() . $relative,
 		array(),
-		is_string( $version ) ? $version : null
+		$version
 	);
 }
 add_action( 'wp_enqueue_scripts', 'electricchic_enqueue_styles', 20 );
@@ -38,7 +48,7 @@ add_action( 'wp_enqueue_scripts', 'electricchic_enqueue_styles', 20 );
  * first paint swaps fonts visibly, which reads as cheap on a retail page.
  */
 function electricchic_preload_fonts(): void {
-	$fonts = array( 'heebo-hebrew.woff2', 'frank-hebrew.woff2' );
+	$fonts = array( 'heebo-hebrew.woff2' );
 
 	foreach ( $fonts as $font ) {
 		printf(

@@ -44,10 +44,12 @@
         "test": "@php vendor/bin/phpunit",
         "test:coverage": "@php vendor/bin/phpunit --coverage-text",
         "sniff:selftest": "@php tests/Sniffs/run-hpos-sniff-test.php",
+        "contrast": "@php scripts/check-contrast.php",
         "check": [
             "@lint",
             "@analyse",
             "@sniff:selftest",
+            "@contrast",
             "@test"
         ]
     },
@@ -59,6 +61,7 @@
         "sniff:selftest": "Prove the HPOS sniff still catches direct order post-meta access.",
         "check": "Everything CI runs for PHP. Run this before opening a pull request.",
         "test": "PHPUnit \u2014 pure business logic, no WordPress bootstrap.",
-        "test:coverage": "PHPUnit with a text coverage summary (needs Xdebug or PCOV)."
+        "test:coverage": "PHPUnit with a text coverage summary (needs Xdebug or PCOV).",
+        "contrast": "Fail if any colour used as text is unreadable on its ground."
     }
 }
