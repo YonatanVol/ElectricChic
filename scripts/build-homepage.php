@@ -177,7 +177,7 @@ $ec_store = '<!-- wp:html -->
 			<p class="ec-store__addr">דרך חיים ברלב 98, תל אביב-יפו</p>
 			<dl class="ec-hours">
 				<dt>ראשון–חמישי</dt><dd>10:00 – 19:00</dd>
-				<dt>שישי</dt><dd>לפי שעות מתפרסמות</dd>
+				<dt>שישי</dt><dd>טרם אושר</dd>
 				<dt>שבת</dt><dd>סגור</dd>
 			</dl>
 			<p class="ec-store__note">השעות טעונות אישור מול החנות לפני עלייה לאוויר.</p>

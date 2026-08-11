@@ -430,10 +430,16 @@ span.onsale {
 
 /* ── Footer ──────────────────────────────────────────────────────────────── */
 
+/* --ec-line is a BORDER colour: 1.74:1 against the ground, which is fine for a
+   1px rule and unreadable as text. It ended up here because the palette swap
+   remapped the old --ec-sand mechanically, and the contrast pass afterwards
+   checked the pairs I had designed rather than the pairs the remap produced.
+   scripts/check-contrast.php now checks every colour declaration in this file. */
 .wp-block-template-part footer,
 footer.wp-block-template-part {
-	background: var(--ec-black);
-	color: var(--ec-line);
+	background: var(--ec-surface-1);
+	color: var(--ec-muted);
+	border-block-start: 1px solid var(--ec-line);
 }
 
 /* ── Mobile ──────────────────────────────────────────────────────────────── */

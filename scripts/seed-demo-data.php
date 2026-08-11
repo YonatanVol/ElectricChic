@@ -148,16 +148,13 @@ foreach ( $ec_products as $ec_row ) {
 
 printf( "Products: %d created, %d updated.\n", $ec_created, $ec_updated );
 
-/**
- * Point the shop at a front page listing products, so the demo opens on
- * something worth looking at rather than a blog.
+/*
+ * The front page is deliberately NOT set here.
+ *
+ * scripts/build-homepage.php owns it. When setup-wordpress.sh runs with --seed,
+ * this script used to point the front page at the shop archive and then the
+ * homepage builder pointed it back — so the result depended on which ran last.
+ * One owner, no ordering dependency.
  */
-$ec_shop_page_id = (int) wc_get_page_id( 'shop' );
-
-if ( $ec_shop_page_id > 0 ) {
-	update_option( 'show_on_front', 'page' );
-	update_option( 'page_on_front', $ec_shop_page_id );
-	echo "Front page set to the shop.\n";
-}
 
 echo "Demo data seeded.\n";
