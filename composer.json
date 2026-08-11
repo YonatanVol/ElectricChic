@@ -1,5 +1,10 @@
 {
     "name": "electricchic/electricchic",
+    "autoload": {
+        "psr-4": {
+            "ElectricChic\\Core\\": "wp-content/plugins/electricchic-core/includes/"
+        }
+    },
     "description": "Hebrew-first, RTL-native WooCommerce platform for a physical bicycle shop in Israel.",
     "type": "project",
     "license": "proprietary",

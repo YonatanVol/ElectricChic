@@ -13,4 +13,8 @@ if [[ -z "${WP_BIN}" ]]; then
 fi
 
 export WP_CLI_PHP="${EC_PHP_BIN}"
-exec "${EC_PHP_BIN}" "${WP_BIN}" "$@"
+
+# WP-CLI needs more than PHP's 128M default. Core extraction and WooCommerce
+# imports both exceed it, and the failure is an opaque "allowed memory size
+# exhausted" from inside the phar rather than anything actionable.
+exec "${EC_PHP_BIN}" -d memory_limit=1G "${WP_BIN}" "$@"
