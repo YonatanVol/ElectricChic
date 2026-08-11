@@ -40,7 +40,7 @@
         "lint": "@php vendor/bin/phpcs",
         "lint:fix": "@php vendor/bin/phpcbf",
         "lint:summary": "@php vendor/bin/phpcs --report=summary",
-        "analyse": "@php vendor/bin/phpstan analyse --memory-limit=512M",
+        "analyse": "@php vendor/bin/phpstan analyse --memory-limit=1G",
         "test": "@php vendor/bin/phpunit",
         "test:coverage": "@php vendor/bin/phpunit --coverage-text",
         "sniff:selftest": "@php tests/Sniffs/run-hpos-sniff-test.php",
