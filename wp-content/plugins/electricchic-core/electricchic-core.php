@@ -62,6 +62,11 @@ spl_autoload_register(
  * @return void
  */
 function bootstrap(): void {
+	// Registered before the WooCommerce check: a demo site must announce itself
+	// even if WooCommerce is broken or deactivated. A half-working shop is
+	// exactly when someone most needs telling it is not real.
+	( new Integration\DemoMode() )->register();
+
 	if ( ! class_exists( 'WooCommerce' ) ) {
 		add_action( 'admin_notices', __NAMESPACE__ . '\\render_missing_woocommerce_notice' );
 
