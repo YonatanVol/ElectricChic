@@ -70,9 +70,6 @@ final class AvailabilityDisplay {
 
 		// The same, for the Product Collection block this site actually uses.
 		add_filter( 'render_block', array( $this, 'append_badge_to_product_block' ), 10, 2 );
-
-		// Expose the state as a body/product class so CSS can react to it.
-		add_filter( 'woocommerce_post_class', array( $this, 'filter_product_classes' ), 10, 2 );
 	}
 
 	/**
@@ -166,19 +163,6 @@ final class AvailabilityDisplay {
 		$this->rendered[ $id ] = true;
 
 		return true;
-	}
-
-	/**
-	 * Add the state as a class on the product wrapper.
-	 *
-	 * @param string[]   $classes Existing classes.
-	 * @param WC_Product $product The product.
-	 * @return string[]
-	 */
-	public function filter_product_classes( array $classes, WC_Product $product ): array {
-		$classes[] = $this->labels->css_class( $this->reader->state_for( $product ) );
-
-		return $classes;
 	}
 
 	/**
