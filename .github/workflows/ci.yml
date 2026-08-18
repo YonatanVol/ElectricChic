@@ -53,6 +53,13 @@ jobs:
       - name: HPOS sniff self-test
         run: composer sniff:selftest
 
+      # CLAUDE.md and README.md both describe `composer check` as "everything CI
+      # runs". This step was the half of that sentence which was false: the
+      # contrast checker exists because a 1.74:1 footer colour shipped, and it
+      # was never running on a pull request.
+      - name: Colour contrast
+        run: composer contrast
+
       - name: Unit tests — PHPUnit
         run: composer test
 

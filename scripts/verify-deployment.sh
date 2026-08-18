@@ -19,8 +19,20 @@
 set -uo pipefail
 
 BASE="${1:-}"
-[[ -n "${BASE}" ]] || { printf 'usage: %s https://your-site\n' "$0" >&2; exit 2; }
+EXPECT="${2:-auto}"
+
+[[ -n "${BASE}" ]] || {
+	printf 'usage: %s https://your-site [--expect-demo|--expect-live]\n' "$0" >&2
+	exit 2
+}
 BASE="${BASE%/}"
+
+case "${EXPECT}" in
+	--expect-demo) EXPECT=demo ;;
+	--expect-live) EXPECT=live ;;
+	auto|'')       EXPECT=auto ;;
+	*) printf 'unknown option: %s\n' "${EXPECT}" >&2; exit 2 ;;
+esac
 
 PASS=0
 FAIL=0
@@ -58,19 +70,47 @@ home_body="$(body_of "${home}")"
 
 head_ "Demo safety"
 
+#
+# These checks used to assert the demo banner and noindex unconditionally, so
+# the first deploy of the REAL shop would fail every one of them — after the
+# files had already been synced. A gate written for exactly one site state
+# inverts the moment that state changes, and reports the launch as a failure.
+#
+# Both states are now valid; what is checked is that the site is CONSISTENTLY
+# one of them. A page carrying the demo banner must also be noindex. A page
+# without it must be indexable and must not still be refusing orders.
+#
 if grep -q 'ec-demo-banner' <<<"${home_body}"; then
-	pass "Demo banner is present on the page"
+	SITE_MODE=demo
 else
-	fail "NO DEMO BANNER. A visitor cannot tell this is not the real shop."
+	SITE_MODE=live
 fi
 
-if grep -qiE '<meta[^>]+name=["'"'"']robots["'"'"'][^>]+noindex' <<<"${home_body}"; then
-	pass "noindex is served — the demo cannot compete with the real Google listing"
+if [[ "${EXPECT}" != "auto" && "${EXPECT}" != "${SITE_MODE}" ]]; then
+	fail "Expected a ${EXPECT} site; this one is ${SITE_MODE}. Check EC_DEMO_MODE in wp-config.php."
 else
-	fail "noindex MISSING. This page carries the real shop name and can be indexed."
+	pass "Site is in ${SITE_MODE} mode$( [[ "${EXPECT}" == "auto" ]] && printf ' (inferred)' )"
 fi
 
-# -----------------------------------------------------------------------------
+has_noindex() {
+	grep -qiE '<meta[^>]+name=["'"'"']robots["'"'"'][^>]+noindex' <<<"${home_body}"
+}
+
+if [[ "${SITE_MODE}" == "demo" ]]; then
+	if has_noindex; then
+		pass "noindex is served — the demo cannot compete with the real Google listing"
+	else
+		fail "Demo banner present but noindex MISSING. This page carries the real shop name and can be indexed."
+	fi
+else
+	# A live shop that is still noindex is the failure nobody notices: the
+	# launch looks fine and the shop is invisible to Google for weeks.
+	if has_noindex; then
+		fail "LIVE shop is serving noindex. It will not appear in Google. Check blog_public and EC_DEMO_MODE."
+	else
+		pass "Live shop is indexable"
+	fi
+fi
 
 head_ "Catalogue and the availability model"
 
@@ -84,12 +124,14 @@ else
 	fail "No availability badges. The model is not reaching the page."
 fi
 
+#
+# Deliberately not asserting a minimum variety. The original required four
+# distinct states, which is a fact about the seeded demo catalogue, not about a
+# correct site — a real shop with everything on the shelf legitimately shows
+# one. What matters is that states are rendered at all.
+#
 states="$(grep -oE 'data-ec-state="[a-z_]+"' <<<"${shop_body}" | sort -u | wc -l | tr -d ' ')"
-if [[ "${states}" -ge 4 ]]; then
-	pass "${states} distinct availability states visible"
-else
-	fail "Only ${states} distinct state(s) — expected several across the catalogue"
-fi
+pass "${states} distinct availability state(s) rendered"
 
 # A duplicate badge per card is a real bug that has happened here before.
 cards="$(grep -o 'data-block-name="woocommerce/product-price"' <<<"${shop_body}" | wc -l | tr -d ' ')"
@@ -230,6 +272,96 @@ if [[ "$(code_of "${checkout}")" =~ ^(200|302)$ ]]; then
 else
 	fail "Checkout returned $(code_of "${checkout}")"
 fi
+
+# -----------------------------------------------------------------------------
+#
+# The quantity ceiling. This is a regression guard for the worst bug the project
+# has had: the shop claimed overselling was structurally impossible while the
+# add-to-cart form happily accepted fifty units of a product the importer had
+# reported six of. Supplier figures were never written to _stock — true, and not
+# the guarantee anybody needed.
+
+head_ "Attempting to buy more than the supplier has"
+
+#
+# Read the ceiling from a CART ITEM, not from the products endpoint.
+#
+# quantity_limits is computed per cart item by QuantityLimits; the products
+# endpoint does not carry it, so the first version of this check looked at a
+# field that is never populated and reported the ceiling missing. That is the
+# third time in this project a check has been pointed at the wrong data source,
+# which is itself the finding: a check is only worth what its target is.
+#
+jar2="$(mktemp)"
+nonce2="$(curl -sS -D - -o /dev/null -c "${jar2}" --max-time 20 \
+	"${BASE}/wp-json/wc/store/v1/cart" 2>/dev/null \
+	| tr -d '\r' | awk 'tolower($1) == "nonce:" { print $2 }')"
+
+store_add() {
+	curl -sS -b "${jar2}" -c "${jar2}" --max-time 20 \
+		-X POST -H 'Content-Type: application/json' -H "Nonce: ${nonce2}" \
+		-d "{\"id\":$1,\"quantity\":$2}" \
+		"${BASE}/wp-json/wc/store/v1/cart/add-item" 2>/dev/null
+}
+
+sellable_id="$(python3 -c "
+import json, urllib.request
+try:
+    with urllib.request.urlopen('${BASE}/wp-json/wc/store/v1/products?per_page=50', timeout=20) as r:
+        for p in json.load(r):
+            if p.get('is_purchasable'):
+                print(p['id']); break
+except Exception:
+    pass
+" 2>/dev/null || true)"
+
+if [[ -z "${nonce2}" || -z "${sellable_id}" ]]; then
+	fail "Could not reach the Store API cart — the quantity ceiling went unverified"
+else
+	seeded="$(store_add "${sellable_id}" 1)"
+	ceiling="$(python3 -c "
+import json, sys
+try:
+    d = json.loads(sys.stdin.read())
+    print(max((i.get('quantity_limits') or {}).get('maximum', 0) for i in d.get('items', [])))
+except Exception:
+    print(0)
+" <<<"${seeded}" 2>/dev/null || echo 0)"
+
+	if [[ "${ceiling}" -le 0 || "${ceiling}" -ge 500 ]]; then
+		fail "Cart advertises no finite quantity ceiling (got '${ceiling}') — the cap is not reaching the customer"
+	else
+		pass "Cart advertises a ceiling of ${ceiling} for product ${sellable_id}"
+
+		over="$(( ceiling + 20 ))"
+		if grep -q '"code"' <<<"$(store_add "${sellable_id}" "${over}")"; then
+			pass "Refused ${over} units against a ceiling of ${ceiling}"
+		else
+			fail "ACCEPTED ${over} units against a ceiling of ${ceiling} — OVERSOLD"
+		fi
+
+		#
+		# The control. A site refusing everything must not score as a working
+		# cap, so the ceiling itself has to remain reachable.
+		#
+		# One unit is already in the cart from the probe above, so this tops up
+		# to exactly the ceiling rather than adding a further ${ceiling} — which
+		# is what made the first version of this control fail against a limit
+		# that was working correctly.
+		#
+		topup="$(( ceiling - 1 ))"
+
+		if [[ "${topup}" -le 0 ]]; then
+			pass "Ceiling is 1; the single unit already in the cart proves it is reachable"
+		elif grep -q '"items"' <<<"$(store_add "${sellable_id}" "${topup}")"; then
+			pass "Reaches exactly ${ceiling} units — the refusal above is real"
+		else
+			fail "Could not reach its own advertised ceiling of ${ceiling}"
+		fi
+	fi
+fi
+
+rm -f "${jar2}"
 
 # -----------------------------------------------------------------------------
 
