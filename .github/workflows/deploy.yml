@@ -54,7 +54,7 @@ jobs:
 
     steps:
       - name: Check out the commit CI actually tested
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           # workflow_run reports the SHA whose CI run finished. Without this,
           # checkout takes the branch tip instead — so two merges landing minutes
