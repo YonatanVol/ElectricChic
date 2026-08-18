@@ -86,7 +86,10 @@ final class PurchasabilityGuard {
 		 * product the importer said they had six of. Proven, not theorised.
 		 */
 		add_filter( 'woocommerce_quantity_input_max', array( $this, 'filter_quantity_max' ), 10, 2 );
-		add_filter( 'woocommerce_store_api_product_quantity_limit', array( $this, 'filter_store_api_quantity_limit' ), 10, 2 );
+		// The hook is woocommerce_store_api_product_quantity_{$value_type}; the
+		// first attempt guessed '_limit', which does not exist, so the block cart
+		// advertised no ceiling at all. Caught by the deployment verifier.
+		add_filter( 'woocommerce_store_api_product_quantity_maximum', array( $this, 'filter_store_api_quantity_limit' ), 10, 2 );
 	}
 
 	/**

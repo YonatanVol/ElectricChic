@@ -27,6 +27,10 @@ concurrency:
   group: deploy-production
   cancel-in-progress: false
 
+defaults:
+  run:
+    shell: bash
+
 permissions:
   contents: read
 
@@ -34,6 +38,9 @@ jobs:
   deploy:
     name: Deploy to demo host
     runs-on: ubuntu-latest
+    # A hung SSH otherwise holds the deploy-production concurrency group for six
+    # hours, blocking every later deploy including the one that fixes it.
+    timeout-minutes: 15
 
     # workflow_run fires whatever the conclusion, so the result must be checked.
     # Without this line a failing CI run still triggers a deploy.
@@ -46,13 +53,19 @@ jobs:
       url: ${{ vars.SITE_URL }}
 
     steps:
-      - name: Check out
+      - name: Check out the commit CI actually tested
         uses: actions/checkout@v4
+        with:
+          # workflow_run reports the SHA whose CI run finished. Without this,
+          # checkout takes the branch tip instead — so two merges landing minutes
+          # apart mean the deploy triggered by CI run #1 ships commit #2, and the
+          # header comment above about not racing the tests becomes untrue.
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Confirm the host is configured
         run: |
           missing=0
-          for name in SSH_HOST SSH_USER REMOTE_PATH; do
+          for name in SSH_HOST SSH_USER REMOTE_PATH SITE_URL; do
             if [ -z "${!name:-}" ]; then
               echo "::error::Missing repository variable $name"
               missing=1
@@ -70,6 +83,7 @@ jobs:
           SSH_HOST: ${{ vars.SSH_HOST }}
           SSH_USER: ${{ vars.SSH_USER }}
           REMOTE_PATH: ${{ vars.REMOTE_PATH }}
+          SITE_URL: ${{ vars.SITE_URL }}
           SSH_KEY: ${{ secrets.SSH_KEY }}
 
       - name: Set up SSH
@@ -77,9 +91,28 @@ jobs:
           mkdir -p ~/.ssh
           printf '%s\n' "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          # Pin the host key rather than accepting whatever answers. StrictHostKeyChecking=no
-          # would deploy the shop to anything that wins a DNS race.
-          ssh-keyscan -p "${{ vars.SSH_PORT || 22 }}" -H "${{ vars.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+          # If SSH_HOST_KEY is set, this is real pinning: the deploy only
+          # proceeds against a fingerprint recorded in advance.
+          #
+          # Otherwise it falls back to ssh-keyscan, which is trust-on-first-use
+          # on EVERY run — it accepts whatever answers, then validates against
+          # what it just accepted. An earlier comment here claimed that was
+          # pinning. It is not, so the fallback now says so out loud.
+          if [ -n "${HOST_KEY}" ]; then
+            printf '%s\n' "${HOST_KEY}" >> ~/.ssh/known_hosts
+            echo "Host key pinned from SSH_HOST_KEY."
+          else
+            echo "::warning::SSH_HOST_KEY is not set. Falling back to ssh-keyscan, which trusts whatever answers at this moment. Run 'ssh-keyscan -H <host>' once and store the result as the SSH_HOST_KEY variable."
+            if ! ssh-keyscan -p "${SSH_PORT}" -H "${SSH_HOST}" >> ~/.ssh/known_hosts 2>/dev/null; then
+              echo "::error::ssh-keyscan reached nothing. Is the host up and the port correct?"
+              exit 1
+            fi
+            [ -s ~/.ssh/known_hosts ] || { echo "::error::known_hosts is empty after keyscan."; exit 1; }
+          fi
+        env:
+          HOST_KEY: ${{ vars.SSH_HOST_KEY }}
+          SSH_HOST: ${{ vars.SSH_HOST }}
+          SSH_PORT: ${{ vars.SSH_PORT || 22 }}
 
       - name: Deploy plugin and theme
         run: |
@@ -107,16 +140,37 @@ jobs:
 
       - name: Ship the provisioning and seed scripts
         run: |
+          set -euo pipefail
+
+          #
+          # REMOTE_PATH is the public document root, so anything placed there is
+          # world-readable over HTTP. The first version copied the provisioning
+          # script and the catalogue JSON straight into it, meaning
+          # https://site/scripts/provision-remote.sh was downloadable and any
+          # future script without an ABSPATH guard would be remotely executable.
+          #
+          # A deny-all .htaccess ships alongside them. It is belt and braces —
+          # every PHP file here already refuses to run outside WP-CLI — but the
+          # cost is one file and the failure mode is a public shell script.
+          #
+          printf 'Require all denied\n' > .deny-htaccess
+
           rsync -az \
             -e "ssh -i ~/.ssh/deploy_key -p ${{ vars.SSH_PORT || 22 }} -o StrictHostKeyChecking=yes" \
-            scripts/provision-remote.sh scripts/seed-cortez-catalogue.php \
-            scripts/build-homepage.php scripts/generate-placeholder-images.php \
+            scripts/provision-remote.sh scripts/verify-deployment.sh \
+            scripts/seed-cortez-catalogue.php scripts/build-homepage.php \
+            scripts/generate-placeholder-images.php scripts/audit-configuration.php \
             "${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_PATH }}/scripts/"
 
           rsync -az \
             -e "ssh -i ~/.ssh/deploy_key -p ${{ vars.SSH_PORT || 22 }} -o StrictHostKeyChecking=yes" \
             scripts/data/ \
             "${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_PATH }}/scripts/data/"
+
+          rsync -az \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ vars.SSH_PORT || 22 }} -o StrictHostKeyChecking=yes" \
+            .deny-htaccess \
+            "${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_PATH }}/scripts/.htaccess"
 
       - name: Provision
         if: github.event_name == 'workflow_dispatch' && inputs.provision
@@ -138,7 +192,10 @@ jobs:
       - name: Verify the deployed site
         run: |
           chmod +x scripts/verify-deployment.sh
-          ./scripts/verify-deployment.sh "${{ vars.SITE_URL }}"
+          # --expect-demo while EC_DEMO_MODE is on. Change to --expect-live in
+          # the same commit that defines EC_DEMO_MODE false in wp-config.php, so
+          # the gate and the site can never disagree silently.
+          ./scripts/verify-deployment.sh "${{ vars.SITE_URL }}" "${{ vars.DEPLOY_EXPECT || '--expect-demo' }}"
 
       - name: Remove the key
         if: always()
