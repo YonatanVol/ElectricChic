@@ -29,7 +29,12 @@
  * Descriptions are assembled from the specification table only. Cortez's
  * marketing prose is their copyright and is deliberately not copied.
  *
- * Safe to re-run: it trashes previously seeded products and rebuilds.
+ * Safe to re-run. It removes only the products IT created — every seeded
+ * product carries EC_SEED_FLAG — so anything the shop owner added by hand
+ * survives a re-provision. Pass --force-all to clear the catalogue completely,
+ * including products this script did not create.
+ *
+ *   ./scripts/wp eval-file scripts/seed-cortez-catalogue.php --force-all
  *
  * @package ElectricChic
  */
@@ -41,8 +46,21 @@ if ( ! defined( 'WP_CLI' ) ) {
 /**
  * Marks a product as created by this script, so a re-run can clean up after
  * itself without touching anything a human added by hand.
+ *
+ * This flag was written from the first version but never read, so the cleanup
+ * deleted every product on the site regardless — permanently, bypassing the
+ * trash. On a host where Eli has admin access that is his work destroyed
+ * because somebody ticked "provision" in a deploy workflow.
  */
 const EC_SEED_FLAG = '_ec_seeded_catalogue';
+
+/**
+ * Whether to clear products this script did not create.
+ *
+ * Deliberately opt-in and deliberately loud. WP-CLI exposes eval-file arguments
+ * as $args.
+ */
+$ec_force_all = in_array( '--force-all', isset( $args ) && is_array( $args ) ? $args : array(), true );
 
 /**
  * Turn Cortez's SEO page titles into product names.
@@ -238,15 +256,55 @@ WP_CLI::log( 'Source: ' . $ec_data['_source'] );
 WP_CLI::log( 'Captured: ' . $ec_data['_captured'] );
 WP_CLI::log( '' );
 
-// 1. Remove everything the demo invented, plus anything a previous run seeded.
+/*
+ * 1. Remove what THIS script created, and nothing else.
+ *
+ * The earlier version deleted every product on the site with force_delete, so
+ * a re-provision destroyed anything a human had added — permanently, with no
+ * trash copy. On a demo host that Eli has admin access to, that is his work
+ * gone because somebody ticked a checkbox in a deploy workflow.
+ *
+ * Scoped to EC_SEED_FLAG, which was already being written to every seeded
+ * product and simply never read. Products predating the flag (the original
+ * invented catalogue) are matched by --force-all, which has to be asked for.
+ */
+$ec_query = array(
+	'limit'      => -1,
+	'status'     => array( 'publish', 'draft', 'private' ),
+	'meta_key'   => EC_SEED_FLAG,
+	'meta_value' => 'yes',
+);
+
+if ( $ec_force_all ) {
+	unset( $ec_query['meta_key'], $ec_query['meta_value'] );
+}
+
+$ec_doomed = wc_get_products( $ec_query );
+
+if ( array() === $ec_doomed ) {
+	WP_CLI::log( 'Nothing to remove.' );
+} else {
+	WP_CLI::log( sprintf( 'About to permanently delete %d product(s):', count( $ec_doomed ) ) );
+
+	foreach ( $ec_doomed as $ec_old ) {
+		WP_CLI::log( sprintf( '  - %s (#%d)', $ec_old->get_name(), $ec_old->get_id() ) );
+	}
+
+	if ( ! $ec_force_all ) {
+		WP_CLI::log( 'All of the above were created by this script. Anything added by hand is untouched.' );
+	} else {
+		WP_CLI::warning( '--force-all: this includes products NOT created by this script.' );
+	}
+}
+
 $ec_removed = 0;
 
-foreach ( wc_get_products( array( 'limit' => -1, 'status' => array( 'publish', 'draft', 'private' ) ) ) as $ec_old ) {
+foreach ( $ec_doomed as $ec_old ) {
 	wp_delete_post( $ec_old->get_id(), true );
 	++$ec_removed;
 }
 
-WP_CLI::log( sprintf( 'Removed %d previous product(s), including the invented demo catalogue.', $ec_removed ) );
+WP_CLI::log( sprintf( 'Removed %d product(s).', $ec_removed ) );
 
 // 2. Cortez, as a supplier record.
 $ec_supplier = get_posts(

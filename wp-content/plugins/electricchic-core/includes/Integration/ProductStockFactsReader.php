@@ -103,7 +103,7 @@ final class ProductStockFactsReader {
 	public function facts_for( WC_Product $product ): StockFacts {
 		$parent_id = $product->get_parent_id();
 
-		$supplier_id = $this->inherited( $product, $parent_id, self::META_SUPPLIER_ID );
+		$supplier_id = (int) $this->inherited( $product, $parent_id, self::META_SUPPLIER_ID );
 		$raw_stock   = $this->inherited( $product, $parent_id, self::META_SUPPLIER_STOCK );
 
 		/*
@@ -116,14 +116,18 @@ final class ProductStockFactsReader {
 			array(
 				'store_stock'           => $this->store_stock( $product ),
 				'supplier_stock'        => '' === $raw_stock ? null : (int) $raw_stock,
-				'has_supplier'          => '' !== $supplier_id,
+				// inherited() returns a string, so a stored post ID of 0 arrives
+				// as '0' — non-empty, and previously counted as a real supplier.
+				'has_supplier'          => $supplier_id > 0,
 				'supplier_updated_at'   => $this->supplier_timestamp( $product, $parent_id ),
 				'lead_time_min_days'    => (int) $this->inherited( $product, $parent_id, self::META_LEAD_TIME_MIN ),
 				'lead_time_max_days'    => (int) $this->inherited( $product, $parent_id, self::META_LEAD_TIME_MAX ),
 				'requires_confirmation' => 'yes' === $this->inherited( $product, $parent_id, self::META_REQUIRES_CONFIRM ),
 				'enquiry_only'          => 'yes' === $this->inherited( $product, $parent_id, self::META_ENQUIRY_ONLY ),
 				'discontinued'          => 'yes' === $this->inherited( $product, $parent_id, self::META_DISCONTINUED ),
-				'backorders_allowed'    => $product->backorders_allowed(),
+				// get_backorders() is the stored setting. backorders_allowed()
+				// applies our own filter and would feed the verdict back in.
+				'backorders_allowed'    => in_array( $product->get_backorders(), array( 'yes', 'notify' ), true ),
 			)
 		);
 	}
@@ -139,8 +143,23 @@ final class ProductStockFactsReader {
 			return (int) $product->get_stock_quantity();
 		}
 
-		// Not counting units. Fall back to WooCommerce's coarse answer.
-		return $product->is_in_stock() ? 1 : 0;
+		/*
+		 * get_stock_status() reads the STORED property. is_in_stock() runs it
+		 * through woocommerce_product_is_in_stock — a filter PurchasabilityGuard
+		 * registers — so calling it here made the model read its own conclusion
+		 * back in as an input.
+		 *
+		 * The consequence was not theoretical: a purchasable non-store product
+		 * reported store_stock = 1, so SPECIAL_ORDER resolved to IN_STOCK_STORE
+		 * and the page promised immediate collection of something the shop does
+		 * not have. A re-entrancy latch was tried first and was not enough —
+		 * it is per-instance, and AvailabilityDisplay holds its own reader that
+		 * the latch never covered.
+		 *
+		 * The fix is to not ask a filtered question. This class reads raw facts;
+		 * conclusions belong downstream.
+		 */
+		return 'instock' === $product->get_stock_status() ? 1 : 0;
 	}
 
 	/**

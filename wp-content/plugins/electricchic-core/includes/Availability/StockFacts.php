@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace ElectricChic\Core\Availability;
 
 use DateTimeImmutable;
+use Exception;
 use InvalidArgumentException;
 
 /**
@@ -94,7 +95,19 @@ final readonly class StockFacts {
 		$updated = $data['supplier_updated_at'] ?? null;
 
 		if ( is_string( $updated ) && '' !== $updated ) {
-			$updated = new DateTimeImmutable( $updated );
+			/*
+			 * A malformed stored date must degrade to "unknown", not explode.
+			 * DateTimeImmutable throws on anything it cannot parse, and this
+			 * value comes from a text field a human types into. An exception
+			 * here would take down a product page over a typo, whereas null
+			 * reads as stale — which is the safe direction: the shop under-
+			 * promises rather than inventing a delivery date.
+			 */
+			try {
+				$updated = new DateTimeImmutable( $updated );
+			} catch ( Exception ) {
+				$updated = null;
+			}
 		} elseif ( ! $updated instanceof DateTimeImmutable ) {
 			$updated = null;
 		}

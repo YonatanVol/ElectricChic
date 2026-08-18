@@ -380,7 +380,7 @@ span.onsale {
 	letter-spacing: 0.02em;
 	padding: var(--ec-space-1) var(--ec-space-3);
 	display: inline-block;
-	border-inline-start: 3px solid currentColor;
+	border-inline-start: 3px solid currentcolor;
 	background: var(--ec-surface-2);
 }
 
@@ -421,7 +421,7 @@ span.onsale {
 	inline-size: 0.5em;
 	block-size: 0.5em;
 	border-radius: 50%;
-	background: currentColor;
+	background: currentcolor;
 }
 
 .ec-avail.ec-avail--in-stock-store {
@@ -453,7 +453,7 @@ span.onsale {
  * confirmed a unit exists. The dashed edge marks that without inventing a
  * fifth colour nobody would learn the meaning of. */
 .ec-avail.ec-avail--special-order {
-	border: 1px dashed currentColor;
+	border: 1px dashed currentcolor;
 }
 
 .ec-avail__notice {

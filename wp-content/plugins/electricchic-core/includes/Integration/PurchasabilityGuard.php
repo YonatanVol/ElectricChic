@@ -10,6 +10,8 @@ declare( strict_types = 1 );
 namespace ElectricChic\Core\Integration;
 
 use ElectricChic\Core\Availability\AvailabilityLabels;
+use ElectricChic\Core\Availability\AvailabilityState;
+use ElectricChic\Core\Availability\PurchaseLimit;
 use Exception;
 use WC_Product;
 
@@ -73,9 +75,18 @@ final class PurchasabilityGuard {
 		add_filter( 'woocommerce_product_is_in_stock', array( $this, 'filter_is_in_stock' ), 10, 2 );
 		add_filter( 'woocommerce_variation_is_in_stock', array( $this, 'filter_is_in_stock' ), 10, 2 );
 		add_filter( 'woocommerce_product_backorders_allowed', array( $this, 'filter_backorders_allowed' ), 10, 3 );
-		add_filter( 'woocommerce_add_to_cart_validation', array( $this, 'validate_add_to_cart' ), 10, 3 );
+		add_filter( 'woocommerce_add_to_cart_validation', array( $this, 'validate_add_to_cart' ), 10, 5 );
 		add_action( 'woocommerce_store_api_validate_add_to_cart', array( $this, 'validate_store_api_add_to_cart' ), 10, 1 );
 		add_action( 'woocommerce_check_cart_items', array( $this, 'revalidate_cart' ) );
+
+		/*
+		 * The quantity ceiling. filter_backorders_allowed() below permits the
+		 * sale of something not on the shelf, and WooCommerce backorders are
+		 * unbounded — so without these three the shop will sell fifty units of a
+		 * product the importer said they had six of. Proven, not theorised.
+		 */
+		add_filter( 'woocommerce_quantity_input_max', array( $this, 'filter_quantity_max' ), 10, 2 );
+		add_filter( 'woocommerce_store_api_product_quantity_limit', array( $this, 'filter_store_api_quantity_limit' ), 10, 2 );
 	}
 
 	/**
@@ -183,19 +194,31 @@ final class PurchasabilityGuard {
 	/**
 	 * Reject a direct ?add-to-cart= request.
 	 *
-	 * @param bool $passed     Whether validation has passed so far.
-	 * @param int  $product_id The product being added.
-	 * @param int  $quantity   Requested quantity.
+	 * @param bool                 $passed       Whether validation has passed so far.
+	 * @param int                  $product_id   The product being added.
+	 * @param int                  $quantity     Requested quantity.
+	 * @param int                  $variation_id The chosen variation, when there is one.
+	 * @param array<string, mixed> $variations   The chosen attributes.
 	 * @return bool
 	 */
-	public function validate_add_to_cart( bool $passed, int $product_id, int $quantity ): bool {
-		unset( $quantity );
+	public function validate_add_to_cart( bool $passed, int $product_id, $quantity = 1, int $variation_id = 0, array $variations = array() ): bool {
+		unset( $variations );
 
 		if ( ! $passed ) {
 			return false;
 		}
 
-		$product = wc_get_product( $product_id );
+		/*
+		 * Validate the VARIATION when one was requested, not the parent.
+		 *
+		 * state_for() on a variable product aggregates its children and returns
+		 * the BEST of them, because that is the right answer for a catalogue
+		 * card — "you can get one of these". It is the wrong answer here: a
+		 * parent with one sellable colour is purchasable, so
+		 * ?add-to-cart=<parent>&variation_id=<discontinued colour> walked
+		 * straight through the layer whose entire job is catching that URL.
+		 */
+		$product = wc_get_product( $variation_id > 0 ? $variation_id : $product_id );
 
 		if ( ! $product instanceof WC_Product ) {
 			return $passed;
@@ -203,8 +226,16 @@ final class PurchasabilityGuard {
 
 		$state = $this->reader->state_for( $product );
 
+		/*
+		 * Purchasable is not the same question as "this many".
+		 *
+		 * The original returned true here, and that was the oversell: a state
+		 * backed by six supplier units accepted a request for fifty, because
+		 * filter_backorders_allowed() below removes WooCommerce's quantity
+		 * ceiling in order to permit the sale at all.
+		 */
 		if ( $state->is_purchasable() ) {
-			return true;
+			return $this->within_limit( $product, $state, $quantity );
 		}
 
 		wc_add_notice(
@@ -293,5 +324,79 @@ final class PurchasabilityGuard {
 				'error'
 			);
 		}
+	}
+
+	/**
+	 * Refuse a quantity the shop cannot actually supply.
+	 *
+	 * @param WC_Product        $product  The product.
+	 * @param AvailabilityState $state    Its resolved state.
+	 * @param int|float         $quantity Requested quantity.
+	 * @return bool
+	 */
+	private function within_limit( WC_Product $product, $state, $quantity ): bool {
+		$max = PurchaseLimit::for_state( $state, $this->reader->facts_for( $product ) );
+
+		if ( null === $max || (float) $quantity <= (float) $max ) {
+			return true;
+		}
+
+		wc_add_notice(
+			sprintf(
+				/* translators: 1: product name, 2: maximum quantity. */
+				esc_html__( 'We can supply at most %2$d of %1$s at the moment.', 'electricchic' ),
+				esc_html( $product->get_name() ),
+				(int) $max
+			),
+			'error'
+		);
+
+		return false;
+	}
+
+	/**
+	 * Cap the quantity box on the product page.
+	 *
+	 * Presentation only — validate_add_to_cart() is what actually refuses. This
+	 * exists so the customer is not invited to type a number that will be
+	 * rejected after they commit to it.
+	 *
+	 * @param int|string $max     WooCommerce's own maximum.
+	 * @param WC_Product $product The product.
+	 * @return int|string
+	 */
+	public function filter_quantity_max( $max, $product ) {
+		if ( ! $product instanceof WC_Product ) {
+			return $max;
+		}
+
+		$limit = PurchaseLimit::for_state( $this->reader->state_for( $product ), $this->reader->facts_for( $product ) );
+
+		if ( null === $limit ) {
+			return $max;
+		}
+
+		return ( '' === $max || $max < 0 ) ? $limit : min( (int) $max, $limit );
+	}
+
+	/**
+	 * The same ceiling for the block cart, which never consults the filter above.
+	 *
+	 * @param int|null   $limit   WooCommerce's own limit.
+	 * @param WC_Product $product The product.
+	 * @return int|null
+	 */
+	public function filter_store_api_quantity_limit( $limit, $product ) {
+		if ( ! $product instanceof WC_Product ) {
+			return $limit;
+		}
+
+		$ours = PurchaseLimit::for_state( $this->reader->state_for( $product ), $this->reader->facts_for( $product ) );
+
+		if ( null === $ours ) {
+			return $limit;
+		}
+
+		return null === $limit ? $ours : min( (int) $limit, $ours );
 	}
 }

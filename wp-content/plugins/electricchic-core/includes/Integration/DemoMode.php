@@ -51,9 +51,23 @@ final class DemoMode {
 		add_action( 'wp_body_open', array( $this, 'render_banner' ) );
 		add_action( 'wp_head', array( $this, 'render_banner_styles' ) );
 
-		// Refuse the order itself, on both the classic and block checkout.
+		/*
+		 * Refuse the order on both checkout paths, and refuse it BEFORE an order
+		 * exists.
+		 *
+		 * The block path originally hooked woocommerce_store_api_checkout_order_processed,
+		 * which fires at Checkout.php:158 — after the order has been created and
+		 * saved. Throwing there produced an error for the customer and left a
+		 * real order row behind, against prices nobody has confirmed. That is
+		 * precisely the silent order this class exists to prevent.
+		 *
+		 * woocommerce_store_api_cart_errors (CartController.php:496) runs inside
+		 * validate_cart(), which the checkout route calls at Checkout.php:414
+		 * before any order is created, and which raises a structured 409 rather
+		 * than an unhandled 500.
+		 */
 		add_action( 'woocommerce_checkout_process', array( $this, 'block_checkout' ) );
-		add_action( 'woocommerce_store_api_checkout_order_processed', array( $this, 'block_store_api_checkout' ) );
+		add_action( 'woocommerce_store_api_cart_errors', array( $this, 'block_store_api_checkout' ), 10, 1 );
 
 		// Keep a demo out of search results whatever the site settings say.
 		add_filter( 'wp_robots', array( $this, 'filter_robots' ) );
@@ -130,12 +144,22 @@ final class DemoMode {
 	/**
 	 * The same, for the Store API checkout used by the block cart.
 	 *
+	 * Adds to the WP_Error the Store API is already collecting, rather than
+	 * throwing. CartController turns a non-empty error into an InvalidCartException
+	 * with HTTP 409 and a machine-readable code, which the block cart renders as
+	 * a normal message. A raw Exception here would surface as a 500.
+	 *
+	 * @param \WP_Error $errors Errors collected for this cart.
 	 * @return void
-	 * @throws \Exception Rejected and shown to the customer.
 	 */
-	public function block_store_api_checkout(): void {
-		throw new \Exception(
-			esc_html__( 'זהו אתר הדגמה ולא ניתן לבצע בו הזמנות. לרכישה אמיתית צרו קשר עם החנות.', 'electricchic' )
+	public function block_store_api_checkout( $errors ): void {
+		if ( ! $errors instanceof \WP_Error ) {
+			return;
+		}
+
+		$errors->add(
+			'ec_demo_mode',
+			__( 'זהו אתר הדגמה ולא ניתן לבצע בו הזמנות. לרכישה אמיתית צרו קשר עם החנות.', 'electricchic' )
 		);
 	}
 
