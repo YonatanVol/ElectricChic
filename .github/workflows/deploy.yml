@@ -1,0 +1,145 @@
+name: Deploy
+
+# Deploys the plugin and the child theme to the demo host.
+#
+# WordPress core, WooCommerce, uploads and the database are the HOST's, not
+# ours — the repository tracks exactly two directories and this ships exactly
+# those two. Everything else on the server is managed there and is never
+# overwritten from here.
+#
+# Runs only after CI has gone green on main. A deploy that races its own tests
+# is how a red build reaches production while someone is still reading the
+# failure email.
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    branches: [main]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      provision:
+        description: "Also run provisioning (first deploy, or after a WooCommerce change)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy to demo host
+    runs-on: ubuntu-latest
+
+    # workflow_run fires whatever the conclusion, so the result must be checked.
+    # Without this line a failing CI run still triggers a deploy.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+
+    environment:
+      name: demo
+      url: ${{ vars.SITE_URL }}
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Confirm the host is configured
+        run: |
+          missing=0
+          for name in SSH_HOST SSH_USER REMOTE_PATH; do
+            if [ -z "${!name:-}" ]; then
+              echo "::error::Missing repository variable $name"
+              missing=1
+            fi
+          done
+          if [ -z "${SSH_KEY:-}" ]; then
+            echo "::error::Missing repository secret SSH_KEY"
+            missing=1
+          fi
+          [ "$missing" = "0" ] || {
+            echo "See docs/operations/deployment.md for the full list."
+            exit 1
+          }
+        env:
+          SSH_HOST: ${{ vars.SSH_HOST }}
+          SSH_USER: ${{ vars.SSH_USER }}
+          REMOTE_PATH: ${{ vars.REMOTE_PATH }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          # Pin the host key rather than accepting whatever answers. StrictHostKeyChecking=no
+          # would deploy the shop to anything that wins a DNS race.
+          ssh-keyscan -p "${{ vars.SSH_PORT || 22 }}" -H "${{ vars.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Deploy plugin and theme
+        run: |
+          set -euo pipefail
+
+          # --delete keeps the remote identical to the repository, but is scoped
+          # to our two directories so it can never touch uploads, WooCommerce or
+          # WordPress core. Excludes cover files that exist locally and must not
+          # ship: nothing here is secret, but nothing here is useful either.
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ vars.SSH_PORT || 22 }} -o StrictHostKeyChecking=yes" \
+            --exclude '.git*' \
+            --exclude 'node_modules' \
+            --exclude '*.map' \
+            wp-content/plugins/electricchic-core/ \
+            "${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_PATH }}/wp-content/plugins/electricchic-core/"
+
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ vars.SSH_PORT || 22 }} -o StrictHostKeyChecking=yes" \
+            --exclude '.git*' \
+            --exclude 'node_modules' \
+            --exclude '*.map' \
+            wp-content/themes/electricchic-child/ \
+            "${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_PATH }}/wp-content/themes/electricchic-child/"
+
+      - name: Ship the provisioning and seed scripts
+        run: |
+          rsync -az \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ vars.SSH_PORT || 22 }} -o StrictHostKeyChecking=yes" \
+            scripts/provision-remote.sh scripts/seed-cortez-catalogue.php \
+            scripts/build-homepage.php scripts/generate-placeholder-images.php \
+            "${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_PATH }}/scripts/"
+
+          rsync -az \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ vars.SSH_PORT || 22 }} -o StrictHostKeyChecking=yes" \
+            scripts/data/ \
+            "${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.REMOTE_PATH }}/scripts/data/"
+
+      - name: Provision
+        if: github.event_name == 'workflow_dispatch' && inputs.provision
+        run: |
+          ssh -i ~/.ssh/deploy_key -p "${{ vars.SSH_PORT || 22 }}" \
+            -o StrictHostKeyChecking=yes \
+            "${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}" \
+            "cd '${{ vars.REMOTE_PATH }}' && bash scripts/provision-remote.sh"
+
+      - name: Clear caches
+        run: |
+          ssh -i ~/.ssh/deploy_key -p "${{ vars.SSH_PORT || 22 }}" \
+            -o StrictHostKeyChecking=yes \
+            "${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}" \
+            "cd '${{ vars.REMOTE_PATH }}' && (wp cache flush || true) && (wp transient delete --all || true)"
+
+      # The deploy is not finished because rsync exited zero. It is finished when
+      # the live site still refuses to sell what it should refuse to sell.
+      - name: Verify the deployed site
+        run: |
+          chmod +x scripts/verify-deployment.sh
+          ./scripts/verify-deployment.sh "${{ vars.SITE_URL }}"
+
+      - name: Remove the key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key

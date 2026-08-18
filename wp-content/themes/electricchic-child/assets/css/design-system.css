@@ -380,12 +380,89 @@ span.onsale {
 	letter-spacing: 0.02em;
 	padding: var(--ec-space-1) var(--ec-space-3);
 	display: inline-block;
-	border-inline-start: 3px solid currentColor;
+	border-inline-start: 3px solid currentcolor;
 	background: var(--ec-surface-2);
 }
 
 .stock.in-stock { color: var(--ec-avail-stock); }
 .stock.out-of-stock { color: var(--ec-avail-out); }
+
+/* ── Availability badges ─────────────────────────────────────────────────────
+ *
+ * Emitted by ElectricChic\Core\Integration\AvailabilityDisplay, one class per
+ * resolved state. The badge always carries TEXT — colour alone would leave the
+ * distinction invisible to anyone who cannot separate green from amber, and
+ * "from supplier" versus "in the shop" is exactly the distinction this whole
+ * model exists to make.
+ *
+ * Lime is deliberately absent. It is the brand and action colour — price, CTA,
+ * logo — and reusing it here would make "available" and "buy" the same colour,
+ * which is the collision that got two of the four palette options rejected.
+ */
+
+.ec-avail {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5em;
+	margin: 0.5rem 0 0;
+	padding: 0.3em 0.7em;
+	border-radius: 999px;
+	font-size: 0.8125rem;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: -0.01em;
+	/* Fallback for a state with no rule yet: readable, and obviously neutral. */
+	color: var(--ec-off-white);
+	background: var(--ec-surface-2);
+}
+
+.ec-avail__dot {
+	flex: none;
+	inline-size: 0.5em;
+	block-size: 0.5em;
+	border-radius: 50%;
+	background: currentcolor;
+}
+
+.ec-avail.ec-avail--in-stock-store {
+	color: var(--ec-avail-stock);
+	background: var(--ec-avail-stock-bg);
+}
+
+.ec-avail.ec-avail--supplier-available,
+.ec-avail.ec-avail--special-order,
+.ec-avail.ec-avail--backorder {
+	color: var(--ec-avail-supplier);
+	background: var(--ec-avail-supplier-bg);
+}
+
+.ec-avail.ec-avail--confirmation-required,
+.ec-avail.ec-avail--enquiry-only {
+	color: var(--ec-avail-confirm);
+	background: var(--ec-avail-confirm-bg);
+}
+
+.ec-avail.ec-avail--temp-out-of-stock,
+.ec-avail.ec-avail--out-of-stock,
+.ec-avail.ec-avail--discontinued {
+	color: var(--ec-avail-out);
+	background: var(--ec-avail-out-bg);
+}
+
+/* Special order shares the supplier colour but is a weaker claim: no one has
+ * confirmed a unit exists. The dashed edge marks that without inventing a
+ * fifth colour nobody would learn the meaning of. */
+.ec-avail.ec-avail--special-order {
+	border: 1px dashed currentcolor;
+}
+
+.ec-avail__notice {
+	margin: 0.5rem 0 0;
+	max-inline-size: 46ch;
+	color: var(--ec-muted);
+	font-size: 0.875rem;
+	line-height: 1.5;
+}
 
 /* ── Forms ───────────────────────────────────────────────────────────────── */
 

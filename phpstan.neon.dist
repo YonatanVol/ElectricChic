@@ -27,6 +27,18 @@ parameters:
     scanFiles:
         - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
 
+    # The WooCommerce stub file is roughly 10MB. Until the core plugin actually
+    # referenced WC_Product it was never resolved in depth and the default
+    # parallelism was free; the first commit that integrated with WooCommerce
+    # crashed both CI legs on the 512M limit, inside a parallel worker.
+    #
+    # The memory limit is per worker, so raising it alone multiplies total usage
+    # by the worker count — a 4-core runner would then be sized for 4GB. Capping
+    # the workers keeps the ceiling predictable on CI rather than dependent on
+    # whatever machine happens to run it.
+    parallel:
+        maximumNumberOfProcesses: 2
+
     # PHPCS ships its classes through its own autoloader rather than a PSR-4
     # mapping Composer exposes, so PHPStan cannot discover them unaided. The
     # project's sniffs extend those classes and are real code worth analysing.

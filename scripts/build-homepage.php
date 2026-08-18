@@ -65,26 +65,50 @@ $ec_hero = '<!-- wp:html -->
 
 // ── Categories ───────────────────────────────────────────────────────────────
 
-$ec_category_cards = array(
-	array( 'אופניים חשמליים', 'לנסיעה יומית בעיר' ),
-	array( 'אופני הרים', 'לשטח ולסינגלים' ),
-	array( 'אופני כביש', 'לרכיבות ארוכות' ),
-	array( 'אופני ילדים', 'לפי גיל וגובה' ),
-	array( 'קסדות', 'בטיחות קודמת לכול' ),
-	array( 'רכיבים וחלפים', 'חלקי חילוף ותחזוקה' ),
+/*
+ * Built from the categories that actually exist, not from a list typed here.
+ *
+ * The hardcoded version outlived its own data: when the invented catalogue was
+ * replaced with Cortez's real one, four of the six cards pointed at categories
+ * that had been deleted. ec_category_link() returns '#' for a missing term, so
+ * they did not error — they rendered as normal cards that went nowhere, which
+ * is the failure a visitor notices and the developer does not.
+ *
+ * Subtitles are still authored, because "13 מוצרים" is not a reason to click.
+ * An unknown category simply gets no subtitle rather than a wrong one.
+ */
+$ec_category_subtitles = array(
+	'אופניים חשמליים'   => 'לנסיעה יומית בעיר',
+	'קורקינטים חשמליים' => 'קלים, מתקפלים, מהירים',
+);
+
+$ec_terms = get_terms(
+	array(
+		'taxonomy'   => 'product_cat',
+		'hide_empty' => true,
+		'parent'     => 0,
+		'orderby'    => 'count',
+		'order'      => 'DESC',
+	)
 );
 
 $ec_cards_html = '';
 
-foreach ( $ec_category_cards as $ec_card ) {
-	list( $ec_title, $ec_sub ) = $ec_card;
+if ( ! is_wp_error( $ec_terms ) ) {
+	foreach ( $ec_terms as $ec_term ) {
+		$ec_link = get_term_link( $ec_term );
 
-	$ec_cards_html .= sprintf(
-		'<a class="ec-cat" href="%s"><span class="ec-cat__title">%s</span><span class="ec-cat__sub">%s</span><span class="ec-cat__arrow" aria-hidden="true">←</span></a>',
-		esc_url( ec_category_link( $ec_title ) ),
-		esc_html( $ec_title ),
-		esc_html( $ec_sub )
-	);
+		if ( is_wp_error( $ec_link ) ) {
+			continue;
+		}
+
+		$ec_cards_html .= sprintf(
+			'<a class="ec-cat" href="%s"><span class="ec-cat__title">%s</span><span class="ec-cat__sub">%s</span><span class="ec-cat__arrow" aria-hidden="true">←</span></a>',
+			esc_url( $ec_link ),
+			esc_html( $ec_term->name ),
+			esc_html( $ec_category_subtitles[ $ec_term->name ] ?? '' )
+		);
+	}
 }
 
 $ec_categories = '<!-- wp:html -->

@@ -84,9 +84,23 @@ add_action( 'after_setup_theme', 'electricchic_woocommerce_support' );
  * everywhere else, which is deliberate — the page has accumulated value and the
  * product will usually come back.
  *
- * PLACEHOLDER. Once the availability model lands this becomes a query on the
- * derived state, so "available now" can mean in-store stock specifically rather
- * than WooCommerce's single in-stock flag.
+ * The first version excluded WooCommerce's "outofstock" visibility term, which
+ * was not enough: a backorder product is not out of stock, so Cortez GMAX —
+ * orderable, arriving in 14–30 days — appeared under a heading promising
+ * immediate collection. Caught by reading the rendered homepage after the real
+ * catalogue landed.
+ *
+ * The conditions below mirror AvailabilityResolver's path to IN_STOCK_STORE:
+ * units on the shelf, and none of the flags that outrank stock. That mirroring
+ * is a known duplication and the one weak point here — if the resolver's rules
+ * change, this query does not follow. It is survivable because each card still
+ * renders its badge from the resolver itself, so a divergence shows up on the
+ * page as a card whose badge contradicts the heading, rather than hiding.
+ *
+ * The durable fix is a derived-state cache written on save and queried here.
+ * That is a real piece of work — invalidation on supplier edits, on stock
+ * changes, and on the daily staleness rollover — and it is not being sneaked in
+ * under a demo-content commit.
  *
  * @param array $query_args WP_Query arguments.
  * @param array $attributes Shortcode attributes.
@@ -99,14 +113,43 @@ function electricchic_available_now_query( $query_args, $attributes ): array {
 		return $query_args;
 	}
 
-	$query_args['tax_query'] = array_merge(
-		$query_args['tax_query'] ?? array(),
+	$query_args['meta_query'] = array_merge(
+		$query_args['meta_query'] ?? array(),
 		array(
+			'relation' => 'AND',
+			// On the shelf, right now.
 			array(
-				'taxonomy' => 'product_visibility',
-				'field'    => 'name',
-				'terms'    => 'outofstock',
-				'operator' => 'NOT IN',
+				'key'     => '_stock',
+				'value'   => 0,
+				'compare' => '>',
+				'type'    => 'NUMERIC',
+			),
+			// Discontinued and enquiry-only both outrank stock in the resolver,
+			// so a product carrying either is not "available now" whatever the
+			// shelf says. NOT EXISTS keeps products predating these fields.
+			array(
+				'relation' => 'OR',
+				array(
+					'key'     => '_ec_discontinued',
+					'compare' => 'NOT EXISTS',
+				),
+				array(
+					'key'     => '_ec_discontinued',
+					'value'   => 'yes',
+					'compare' => '!=',
+				),
+			),
+			array(
+				'relation' => 'OR',
+				array(
+					'key'     => '_ec_enquiry_only',
+					'compare' => 'NOT EXISTS',
+				),
+				array(
+					'key'     => '_ec_enquiry_only',
+					'value'   => 'yes',
+					'compare' => '!=',
+				),
 			),
 		)
 	);

@@ -1,0 +1,610 @@
+{
+ "_source": "https://cortez.co.il — WooCommerce Store API + product pages",
+ "_captured": "2026-08-13",
+ "_warning": "Prices and specs are Cortez public list values, captured once. They move. Confirm with Eli and Cortez before anything customer-facing.",
+ "products": [
+  {
+   "slug": "cortez-spot-folding-electric-bike-48v-city",
+   "name": "Cortez SPOT אופניים חשמליים מתקפלים עם סוללת 48V/10A לניידות עירונית",
+   "sku": "CTZ-CORTEZ-SPOT-FOLDIN",
+   "regular_price": 3200,
+   "sale_price": null,
+   "category": "אופניים חשמליים",
+   "specs": {
+    "מהירות מירבית": "25 קמ\"ש",
+    "צמיגים": "20×2.0",
+    "בלמים": "דיסק מכני קדמי ואחורי לעצירה בטוחה",
+    "טווח נסיעה": "עד 30 ק\"מ",
+    "סוללה": "48V/10A",
+    "מנוע": "מנוע עוצמתי",
+    "צג": "דיגיטלי",
+    "בקר": "250W",
+    "שלדה": "נאו פלדה",
+    "גלגל": "20X2",
+    "הילוכים": "Shimano"
+   },
+   "colours": [
+    "אדום שחור",
+    "אפור שחור",
+    "שחור"
+   ],
+   "availability": "in_store",
+   "store_stock": 3,
+   "source_url": "https://cortez.co.il/product/cortez-spot-folding-electric-bike-48v-city/"
+  },
+  {
+   "slug": "general",
+   "name": "GENERAL",
+   "sku": "CTZ-GENERAL",
+   "regular_price": 3850,
+   "sale_price": null,
+   "category": "אופניים חשמליים",
+   "specs": {
+    "מהירות מירבית": "25 קמ\"ש",
+    "צמיגים": "20×2.0",
+    "בלמים": "דיסק מכני לעצירה בטוחה",
+    "טווח נסיעה": "עד 30 ק\"מ",
+    "סוללה": "48V/10A",
+    "מנוע": "מנוע עוצמתי",
+    "צג": "דיגיטלי",
+    "בקר": "250w",
+    "שלדה": "אלומיניום תעופתי",
+    "גלגל": "20X2 מגנזיום",
+    "הילוכים": "SHIMANO"
+   },
+   "colours": [
+    "שחור"
+   ],
+   "availability": "supplier_fresh",
+   "store_stock": 8,
+   "source_url": "https://cortez.co.il/product/general/"
+  },
+  {
+   "slug": "max-2",
+   "name": "+MAX 2",
+   "sku": "CTZ-MAX-2",
+   "regular_price": 4200,
+   "sale_price": null,
+   "category": "אופניים חשמליים",
+   "specs": {
+    "מהירות מירבית": "25 קמ\"ש",
+    "צמיגים": "רחבים במיוחד 20×3.0 ליציבות מוגברת",
+    "בלמים": "דיסק שמן הידראולי",
+    "טווח נסיעה": "40 ק\"מ",
+    "סוללה": "48V/15.6A",
+    "מנוע": "מנוע עוצמתי",
+    "צג": "דיגיטלי",
+    "בקר": "250w",
+    "שלדה": "אלומיניום תעופתי",
+    "גלגל": "20X3",
+    "הילוכים": "SHIMANO"
+   },
+   "colours": [
+    "שחור"
+   ],
+   "availability": "supplier_fresh",
+   "store_stock": 5,
+   "source_url": "https://cortez.co.il/product/max-2/"
+  },
+  {
+   "slug": "copper-16",
+   "name": "Cortez COOPER 16 אופניים חשמליים מתקפלים קומפקטיים לעיר",
+   "sku": "CTZ-COPPER-16",
+   "regular_price": 4500,
+   "sale_price": null,
+   "category": "אופניים חשמליים",
+   "specs": {
+    "מהירות מירבית": "25 קמ\"ש",
+    "בלמים": "דיסק מכני קדמי ואחורי לעצירה בטוחה",
+    "טווח נסיעה": "עד 30 ק\"מ",
+    "סוללה": "48V/10A",
+    "מנוע": "מנוע עוצמתי",
+    "צג": "KT דיגיטלי",
+    "בקר": "KT",
+    "שלדה": "אלומיניום תעופתי",
+    "גלגל": "16"
+   },
+   "colours": [
+    "אדום שחור",
+    "אפור שחור",
+    "שחור"
+   ],
+   "availability": "in_store",
+   "store_stock": 2,
+   "source_url": "https://cortez.co.il/product/copper-16/"
+  },
+  {
+   "slug": "copper-14",
+   "name": "14 COPPER",
+   "sku": "CTZ-COPPER-14",
+   "regular_price": 4500,
+   "sale_price": null,
+   "category": "אופניים חשמליים",
+   "specs": {
+    "בלמים": "דיסק מכני לעצירה בטוחה",
+    "טווח נסיעה": "עד 30 ק''מ",
+    "סוללה": "48V/10A",
+    "מנוע": "SANDA",
+    "צג": "KT דיגיטלי גדול",
+    "בקר": "KT",
+    "שלדה": "אלומיניום תעופתי",
+    "גלגל": "14"
+   },
+   "colours": [
+    "אדום שחור",
+    "אפור שחור",
+    "שחור"
+   ],
+   "availability": "supplier_fresh",
+   "store_stock": 4,
+   "source_url": "https://cortez.co.il/product/copper-14/"
+  },
+  {
+   "slug": "copper-12",
+   "name": "COPPER 12",
+   "sku": "CTZ-COPPER-12",
+   "regular_price": 4500,
+   "sale_price": null,
+   "category": "אופניים חשמליים",
+   "specs": {
+    "בלמים": "דיסק מכני לעצירה בטוחה",
+    "טווח נסיעה": "עד 30 ק''מ",
+    "סוללה": "48V/10A",
+    "מנוע": "מנוע עוצמתי",
+    "צג": "KT דיגיטלי",
+    "בקר": "KT",
+    "שלדה": "אלומיניום תעופתי",
+    "גלגל": "12 אינץ'"
+   },
+   "colours": [
+    "אדום שחור",
+    "אפור שחור",
+    "שחור"
+   ],
+   "availability": "supplier_stale",
+   "store_stock": 6,
+   "source_url": "https://cortez.co.il/product/copper-12/"
+  },
+  {
+   "slug": "black-mamba-3",
+   "name": "Black Mamba 3",
+   "sku": "CTZ-BLACK-MAMBA-3",
+   "regular_price": 4600,
+   "sale_price": null,
+   "category": "אופניים חשמליים",
+   "specs": {
+    "מהירות מירבית": "25 קמ\"ש",
+    "צמיגים": "20×3.0 ליציבות מוגברת",
+    "בלמים": "דיסק שמן הידראולי",
+    "טווח נסיעה": "40 ק\"מ",
+    "סוללה": "48V/15.6A",
+    "מנוע": "מנוע עוצמתי",
+    "צג": "דיגיטלי",
+    "בקר": "250W",
+    "שלדה": "אלומיניום תעופתי",
+    "גלגל": "20X3",
+    "הילוכים": "SHIMANO"
+   },
+   "colours": [
+    "אדום שחור",
+    "אפור שחור",
+    "שחור"
+   ],
+   "availability": "supplier_fresh",
+   "store_stock": 3,
+   "source_url": "https://cortez.co.il/product/black-mamba-3/"
+  },
+  {
+   "slug": "supra-3",
+   "name": "Supra 3",
+   "sku": "CTZ-SUPRA-3",
+   "regular_price": 4990,
+   "sale_price": 4790,
+   "category": "אופניים חשמליים",
+   "specs": {
+    "מהירות מירבית": "25 קמ\"ש",
+    "צמיגים": "רחבים במיוחד 20×4.0 ליציבות מוגברת",
+    "בלמים": "דיסק שמן הידראולי",
+    "טווח נסיעה": "35 ק\"מ",
+    "סוללה": "48V/13A",
+    "מנוע": "מנוע עוצמתי",
+    "צג": "דיגיטלי",
+    "בקר": "WILLSON",
+    "שלדה": "אלומיניום תעופתי",
+    "גלגל": "20X3.3",
+    "הילוכים": "SHIMANO"
+   },
+   "colours": [
+    "ירוק בהיר",
+    "כחול",
+    "לבן"
+   ],
+   "availability": "in_store",
+   "store_stock": 1,
+   "source_url": "https://cortez.co.il/product/supra-3/"
+  },
+  {
+   "slug": "supra-4",
+   "name": "Supra 4",
+   "sku": "CTZ-SUPRA-4",
+   "regular_price": 4990,
+   "sale_price": 4790,
+   "category": "אופניים חשמליים",
+   "specs": {
+    "מהירות מירבית": "25 קמ\"ש",
+    "צמיגים": "20×4.0 ליציבות מוגברת",
+    "בלמים": "שמן הידראולי לעצירה בטוחה",
+    "טווח נסיעה": "35 ק\"מ",
+    "סוללה": "48V/13A",
+    "מנוע": "מנוע עוצמתי",
+    "צג": "דיגיטלי צבעוני",
+    "בקר": "WILLSON",
+    "שלדה": "אלומיניום תעופתי",
+    "גלגל": "20X4",
+    "הילוכים": "SHIMANO"
+   },
+   "colours": [
+    "ירוק בהיר",
+    "כחול",
+    "לבן"
+   ],
+   "availability": "supplier_fresh",
+   "store_stock": 2,
+   "source_url": "https://cortez.co.il/product/supra-4/"
+  },
+  {
+   "slug": "black-mamba",
+   "name": "Black Mamba",
+   "sku": "CTZ-BLACK-MAMBA",
+   "regular_price": 5500,
+   "sale_price": null,
+   "category": "אופניים חשמליים",
+   "specs": {
+    "מהירות מירבית": "25 קמ\"ש",
+    "צמיגים": "20×4.0 ליציבות מוגברת",
+    "בלמים": "דיסק שמן הידראולי טקטרו",
+    "טווח נסיעה": "40 ק\"מ",
+    "סוללה": "48V/20A",
+    "מנוע": "מנוע עוצמתי",
+    "צג": "דיגיטלי",
+    "בקר": "KT",
+    "שלדה": "אלומיניום תעופתי",
+    "גלגל": "20x4",
+    "הילוכים": "SHIMANO"
+   },
+   "colours": [
+    "שחור"
+   ],
+   "availability": "supplier_unknown",
+   "store_stock": null,
+   "source_url": "https://cortez.co.il/product/black-mamba/"
+  },
+  {
+   "slug": "black-mamba-premium",
+   "name": "Black Mamba Premium",
+   "sku": "CTZ-BLACK-MAMBA-PREMIU",
+   "regular_price": 5990,
+   "sale_price": null,
+   "category": "אופניים חשמליים",
+   "specs": {
+    "מהירות מירבית": "25 קמ\"ש",
+    "צמיגים": "20×4.0 ליציבות מוגברת",
+    "בלמים": "שמן הידראוליים TEKTRO",
+    "טווח נסיעה": "65 ק\"מ",
+    "סוללה": "48V/24A",
+    "מנוע": "מנוע עוצמתי",
+    "צג": "KT דיגיטלי",
+    "בקר": "KT",
+    "שלדה": "אלומיניום תעופתי",
+    "גלגל": "20X4 מגנזיום",
+    "הילוכים": "SHIMANO"
+   },
+   "colours": [
+    "שחור"
+   ],
+   "availability": "confirm",
+   "store_stock": 2,
+   "source_url": "https://cortez.co.il/product/black-mamba-premium/"
+  },
+  {
+   "slug": "max9",
+   "name": "MAX 9",
+   "sku": "CTZ-MAX9",
+   "regular_price": 5990,
+   "sale_price": null,
+   "category": "אופניים חשמליים",
+   "specs": {
+    "מהירות מירבית": "25 קמ\"ש",
+    "צמיגים": "20×3.0 ליציבות מוגברת",
+    "בלמים": "דיסק שמן הידראולי",
+    "טווח נסיעה": "45 ק\"מ",
+    "סוללה": "48V/18A",
+    "מנוע": "מנוע עוצמתי",
+    "צג": "KT דיגיטלי",
+    "בקר": "KT",
+    "שלדה": "אלומיניום תעופתי",
+    "גלגל": "20X3",
+    "הילוכים": "SHIMANO"
+   },
+   "colours": [
+    "שחור"
+   ],
+   "availability": "supplier_fresh",
+   "store_stock": 3,
+   "source_url": "https://cortez.co.il/product/max9/"
+  },
+  {
+   "slug": "max6-primum",
+   "name": "MAX 6 PREMIUM",
+   "sku": "CTZ-MAX6-PRIMUM",
+   "regular_price": 8790,
+   "sale_price": null,
+   "category": "אופניים חשמליים",
+   "specs": {
+    "מהירות מירבית": "25 קמ\"ש",
+    "צמיגים": "20×4.0 ליציבות מוגברת",
+    "בלמים": "דיסק שמן הידראולי",
+    "טווח נסיעה": "55 ק\"מ",
+    "סוללה": "48V/21A",
+    "מנוע": "מנוע עוצמתי",
+    "צג": "KT דיגיטלי",
+    "בקר": "KT",
+    "שלדה": "אלומיניום תעופתי",
+    "גלגל": "20X4",
+    "הילוכים": "SHIMANO"
+   },
+   "colours": [
+    "כסוף",
+    "שחור"
+   ],
+   "availability": "confirm",
+   "store_stock": 1,
+   "source_url": "https://cortez.co.il/product/max6-primum/"
+  },
+  {
+   "slug": "קורטז-10-איקס-cortez-10x",
+   "name": "CORTEZ 10X",
+   "sku": "CTZ-10-CORTEZ-10X",
+   "regular_price": 2190,
+   "sale_price": 2090,
+   "category": "קורקינטים חשמליים",
+   "specs": {
+    "מהירות מירבית": "25 קמ''ש",
+    "בלמים": "דיסק מכני",
+    "טווח נסיעה": "עד 30 ק''מ",
+    "סוללה": "36V/10.4A"
+   },
+   "colours": [],
+   "availability": "discontinued",
+   "store_stock": null,
+   "source_url": "https://cortez.co.il/product/%d7%a7%d7%95%d7%a8%d7%98%d7%96-10-%d7%90%d7%99%d7%a7%d7%a1-cortez-10x/"
+  },
+  {
+   "slug": "max36",
+   "name": "MAX 36",
+   "sku": "CTZ-MAX36",
+   "regular_price": 3800,
+   "sale_price": null,
+   "category": "קורקינטים חשמליים",
+   "specs": {
+    "מהירות מירבית": "25 קמ\"ש",
+    "מנוע": "מנוע כוח עוצמתי",
+    "בלמים": "דיסק מכני קדמי ואחורי",
+    "טווח נסיעה": "35 ק\"מ",
+    "סוללה": "36V/13A ליתיום",
+    "צג": "דיגיטלי",
+    "שלדה": "אלומיניום תעופתי - קלה ומתקפלת לנשיאה נוחה",
+    "גלגל": "10"
+   },
+   "colours": [
+    "שחור"
+   ],
+   "availability": "in_store",
+   "store_stock": 4,
+   "source_url": "https://cortez.co.il/product/max36/"
+  },
+  {
+   "slug": "cortez-a1",
+   "name": "Cortez A1",
+   "sku": "CTZ-CORTEZ-A1",
+   "regular_price": 3990,
+   "sale_price": 3890,
+   "category": "קורקינטים חשמליים",
+   "specs": {
+    "מהירות מירבית": "25 קמ''ש",
+    "מנוע": "מנוע עוצמתי",
+    "בלמים": "דיסק מכני קדמי ואחורי לעצירה בטוחה",
+    "טווח נסיעה": "עד 40 קילומטר",
+    "סוללה": "48V/15.6A",
+    "שלדה": "אלומיניום תעופתי",
+    "גלגל": "10 אינץ'"
+   },
+   "colours": [],
+   "availability": "supplier_fresh",
+   "store_stock": 7,
+   "source_url": "https://cortez.co.il/product/cortez-a1/"
+  },
+  {
+   "slug": "shark-g2-pro",
+   "name": "SHARK G2 PRO",
+   "sku": "CTZ-SHARK-G2-PRO",
+   "regular_price": 3990,
+   "sale_price": null,
+   "category": "קורקינטים חשמליים",
+   "specs": {
+    "מהירות מירבית": "25 קמ''ש",
+    "מנוע": "מנוע עוצמתי",
+    "בלמים": "דיסק מכני קדמי ואחורי לעצירה בטוחה",
+    "טווח נסיעה": "עד 40 קילומטר",
+    "סוללה": "48V/18A",
+    "צג": "דיגיטלי",
+    "גלגל": "10 אינץ'"
+   },
+   "colours": [],
+   "availability": "supplier_fresh",
+   "store_stock": 5,
+   "source_url": "https://cortez.co.il/product/shark-g2-pro/"
+  },
+  {
+   "slug": "nux-48",
+   "name": "NUX 48",
+   "sku": "CTZ-NUX-48",
+   "regular_price": 4500,
+   "sale_price": null,
+   "category": "קורקינטים חשמליים",
+   "specs": {
+    "מהירות מירבית": "25 קמ\"ש",
+    "מנוע": "מנוע מינימוטוס",
+    "בלמים": "דיסק מכני",
+    "טווח נסיעה": "45 ק\"מ",
+    "סוללה": "48V/21A ליתיום",
+    "צג": "דיגיטלי",
+    "שלדה": "אלומיניום תעופתי - קלה ומתקפלת לנשיאה נוחה",
+    "גלגל": "10"
+   },
+   "colours": [
+    "שחור"
+   ],
+   "availability": "supplier_stale",
+   "store_stock": 3,
+   "source_url": "https://cortez.co.il/product/nux-48/"
+  },
+  {
+   "slug": "xmax48",
+   "name": "XMAX 48",
+   "sku": "CTZ-XMAX48",
+   "regular_price": 5000,
+   "sale_price": null,
+   "category": "קורקינטים חשמליים",
+   "specs": {
+    "מהירות מירבית": "25 קמ\"ש",
+    "מנוע": "מנוע עוצמתי",
+    "בלמים": "דיסק מכני",
+    "טווח נסיעה": "45 ק\"מ",
+    "סוללה": "48V/15A ליתיום",
+    "צג": "דיגיטלי",
+    "שלדה": "אלומיניום תעופתי - קלה ומתקפלת לנשיאה נוחה",
+    "גלגל": "10"
+   },
+   "colours": [
+    "שחור"
+   ],
+   "availability": "in_store",
+   "store_stock": 2,
+   "source_url": "https://cortez.co.il/product/xmax48/"
+  },
+  {
+   "slug": "movix",
+   "name": "MOVIX",
+   "sku": "CTZ-MOVIX",
+   "regular_price": 5990,
+   "sale_price": 5349,
+   "category": "קורקינטים חשמליים",
+   "specs": {
+    "מהירות מירבית": "25 קמ''ש",
+    "מנוע": "מנוע עוצמתי",
+    "בלמים": "שמן הידראולי",
+    "טווח נסיעה": "עד 40 קילומטר",
+    "סוללה": "48V/15.6A",
+    "שלדה": "אלומיניום תעופתי",
+    "גלגל": "10 אינץ'"
+   },
+   "colours": [],
+   "availability": "supplier_zero",
+   "store_stock": 0,
+   "source_url": "https://cortez.co.il/product/movix/"
+  },
+  {
+   "slug": "shark-master",
+   "name": "SHARK MASTER",
+   "sku": "CTZ-SHARK-MASTER",
+   "regular_price": 5990,
+   "sale_price": null,
+   "category": "קורקינטים חשמליים",
+   "specs": {
+    "מהירות מירבית": "25 קמ''ש",
+    "מנוע": "מנוע עוצמתי",
+    "בלמים": "שמן הידראולי",
+    "טווח נסיעה": "עד 50 קילומטר",
+    "סוללה": "52V/21A ליתיום",
+    "צג": "דיגיטלי",
+    "שלדה": "אלומיניום תעופתי - קלה ומתקפלת לנשיאה נוחה",
+    "גלגל": "10 רחב 3 אינץ׳"
+   },
+   "colours": [],
+   "availability": "supplier_fresh",
+   "store_stock": 4,
+   "source_url": "https://cortez.co.il/product/shark-master/"
+  },
+  {
+   "slug": "gmax",
+   "name": "GMAX",
+   "sku": "CTZ-GMAX",
+   "regular_price": 6190,
+   "sale_price": 5890,
+   "category": "קורקינטים חשמליים",
+   "specs": {
+    "מהירות מירבית": "25 קמ''ש",
+    "מנוע": "מנוע עוצמתי",
+    "בלמים": "שמן הידראולי",
+    "טווח נסיעה": "עד 50 קילומטר",
+    "סוללה": "48V/18A",
+    "צג": "דיגיטלי",
+    "שלדה": "אלומיניום תעופתי",
+    "גלגל": "10 אינץ'"
+   },
+   "colours": [],
+   "availability": "backorder",
+   "store_stock": null,
+   "source_url": "https://cortez.co.il/product/gmax/"
+  },
+  {
+   "slug": "shark-pro-m5",
+   "name": "SHARK PRO M5",
+   "sku": "CTZ-SHARK-PRO-M5",
+   "regular_price": 6500,
+   "sale_price": null,
+   "category": "קורקינטים חשמליים",
+   "specs": {
+    "מהירות מירבית": "25 קמ\"ש",
+    "מנוע": "מנוע עוצמתי",
+    "בלמים": "דיסק מכני",
+    "טווח נסיעה": "45 ק\"מ",
+    "סוללה": "52V/21A ליתיום",
+    "צג": "דיגיטלי",
+    "שלדה": "אלומיניום תעופתי - קלה ומתקפלת לנשיאה נוחה",
+    "גלגל": "10 אינץ’"
+   },
+   "colours": [
+    "כתום שחור"
+   ],
+   "availability": "supplier_fresh",
+   "store_stock": 2,
+   "source_url": "https://cortez.co.il/product/shark-pro-m5/"
+  },
+  {
+   "slug": "emove",
+   "name": "EMOVE",
+   "sku": "CTZ-EMOVE",
+   "regular_price": 7000,
+   "sale_price": null,
+   "category": "קורקינטים חשמליים",
+   "specs": {
+    "מהירות מירבית": "25 קמ''ש",
+    "מנוע": "עוצמתי",
+    "בלמים": "שמן הידראולי",
+    "טווח נסיעה": "עד 55 קילומטר",
+    "סוללה": "60V-21A",
+    "צג": "דיגיטלי צבעוני",
+    "שלדה": "אלומיניום 6061",
+    "גלגל": "10 רחב 3 אינץ׳"
+   },
+   "colours": [
+    "שחור"
+   ],
+   "availability": "enquiry",
+   "store_stock": null,
+   "source_url": "https://cortez.co.il/product/emove/"
+  }
+ ]
+}
