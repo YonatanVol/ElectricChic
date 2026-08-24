@@ -60,6 +60,43 @@ function electricchic_preload_fonts(): void {
 add_action( 'wp_head', 'electricchic_preload_fonts', 1 );
 
 /**
+ * Register the image sizes an editorial layout actually needs.
+ *
+ * WordPress and WooCommerce ship sizes that are square-biased and small: the
+ * largest is 2048x2048, and a product page gets `woocommerce_single` at 600px
+ * wide, which is visibly soft on any retina screen. There is no landscape size
+ * at all, so a full-bleed hero had nothing to load.
+ *
+ * These must exist BEFORE images are imported. WordPress generates crops on
+ * upload and does not retroactively create them, so registering afterwards
+ * means re-importing every file.
+ */
+function electricchic_image_sizes(): void {
+	add_image_size( 'ec_hero', 2560, 1440, true );      // 16:9, full-bleed
+	add_image_size( 'ec_editorial', 1600, 1200, true ); // 4:3, one product per row
+	add_image_size( 'ec_card', 900, 675, true );        // 4:3, grid card
+}
+add_action( 'after_setup_theme', 'electricchic_image_sizes' );
+
+/**
+ * Make the new sizes selectable in the editor's image controls.
+ *
+ * @param array<string, string> $sizes Existing choices.
+ * @return array<string, string>
+ */
+function electricchic_image_size_names( array $sizes ): array {
+	return array_merge(
+		$sizes,
+		array(
+			'ec_hero'      => __( 'רקע מלא־מסך', 'electricchic' ),
+			'ec_editorial' => __( 'מוצר גדול', 'electricchic' ),
+			'ec_card'      => __( 'כרטיס', 'electricchic' ),
+		)
+	);
+}
+add_filter( 'image_size_names_choose', 'electricchic_image_size_names' );
+
+/**
  * Declare WooCommerce support so product templates render inside the theme.
  */
 function electricchic_woocommerce_support(): void {
