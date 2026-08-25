@@ -30,6 +30,27 @@ use WC_Product;
 final class AvailabilityDisplay {
 
 	/**
+	 * Blocks the catalogue badge may attach itself to.
+	 *
+	 * More than one on purpose. The badge used to hang off the price block
+	 * alone, which quietly coupled the single most important thing on the card
+	 * to a design decision: any template that moved the price — or dropped it,
+	 * as a minimal product card reasonably might — would have removed every
+	 * availability badge on the site without raising a single error.
+	 *
+	 * That is the exact failure this project exists to prevent, arriving
+	 * through the back door of a redesign. Listing both anchors means a
+	 * template can arrange the card however it likes and still get the badge;
+	 * claim() below keeps it to one per product.
+	 *
+	 * @var string[]
+	 */
+	private const CARD_ANCHORS = array(
+		'woocommerce/product-price',
+		'woocommerce/product-image',
+	);
+
+	/**
 	 * Build the display over the availability model.
 	 *
 	 * @param ProductStockFactsReader $reader Resolves a product to a state.
@@ -107,15 +128,18 @@ final class AvailabilityDisplay {
 	 *
 	 * The classic hook above does fire inside a Product Collection block, but
 	 * only where WooCommerce renders that compatibility layer. This covers the
-	 * block path directly so a card is never left without a badge; claim()
-	 * stops the two from both rendering on the same product.
+	 * block path directly so a card is never left without a badge.
+	 *
+	 * Fires for any block in CARD_ANCHORS, so a custom template is free to
+	 * arrange the card as it likes. claim() guarantees one badge per product
+	 * however many of those blocks are present.
 	 *
 	 * @param string               $content Rendered block HTML.
 	 * @param array<string, mixed> $block   Parsed block.
 	 * @return string
 	 */
 	public function append_badge_to_product_block( string $content, array $block ): string {
-		if ( 'woocommerce/product-price' !== ( $block['blockName'] ?? '' ) ) {
+		if ( ! in_array( $block['blockName'] ?? '', self::CARD_ANCHORS, true ) ) {
 			return $content;
 		}
 
