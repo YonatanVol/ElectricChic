@@ -1,0 +1,194 @@
+<!-- wp:template-part {"slug":"header","tagName":"div"} /-->
+
+<!-- wp:group {"tagName":"main","layout":{"type":"default"}} -->
+<main class="wp-block-group">
+
+	<!-- wp:woocommerce/store-notices /-->
+
+	<!-- Hero: whichever product is flagged "מוצר מומלץ" in admin. No code change needed. -->
+	<!-- wp:group {"className":"ec-hero","layout":{"type":"default"}} -->
+	<div class="wp-block-group ec-hero">
+		<!-- wp:group {"className":"ec-hero__wrap","layout":{"type":"default"}} -->
+		<div class="wp-block-group ec-hero__wrap">
+
+			<!-- wp:woocommerce/product-collection {"queryId":10,"className":"ec-hero__stage","query":{"perPage":1,"pages":1,"offset":0,"postType":"product","order":"desc","orderBy":"date","search":"","exclude":[],"inherit":false,"taxQuery":{},"isProductCollectionBlock":true,"featured":true,"woocommerceStockStatus":["instock","outofstock","onbackorder"],"woocommerceAttributes":[],"woocommerceHandPickedProducts":[]},"tagName":"div","displayLayout":{"type":"flex","columns":1,"shrinkColumns":false},"dimensions":{"widthType":"fill"},"queryContextIncludes":["collection"]} -->
+			<div class="wp-block-woocommerce-product-collection ec-hero__stage">
+				<!-- wp:woocommerce/product-template -->
+					<!-- wp:woocommerce/product-image {"showSaleBadge":false,"imageSizing":"single","isDescendentOfQueryLoop":true} /-->
+				<!-- /wp:woocommerce/product-template -->
+			</div>
+			<!-- /wp:woocommerce/product-collection -->
+
+			<!-- wp:group {"className":"ec-hero__copy","layout":{"type":"default"}} -->
+			<div class="wp-block-group ec-hero__copy">
+				<!-- wp:paragraph {"className":"ec-eyebrow ec-eyebrow--lat","fontFamily":"display"} -->
+				<p class="ec-eyebrow ec-eyebrow--lat has-display-font-family">TEL AVIV · CORTEZ</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:heading {"level":1,"className":"ec-hero__title"} -->
+				<h1 class="wp-block-heading ec-hero__title">חשמליים.<br>ומעבדה שיודעת<br><em>לתקן אותם.</em></h1>
+				<!-- /wp:heading -->
+
+				<!-- wp:paragraph {"className":"ec-hero__lead"} -->
+				<p class="ec-hero__lead">כל כלי שיוצא מכאן מורכב, מכוון ונבדק. ואפשר תמיד לחזור עם שאלה.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:buttons {"className":"ec-hero__acts","layout":{"type":"flex"}} -->
+				<div class="wp-block-buttons ec-hero__acts">
+					<!-- wp:button -->
+					<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/shop/">לכל הדגמים</a></div>
+					<!-- /wp:button -->
+					<!-- wp:button {"className":"is-style-outline"} -->
+					<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ec-lab">מעבדה ותיקונים</a></div>
+					<!-- /wp:button -->
+				</div>
+				<!-- /wp:buttons -->
+			</div>
+			<!-- /wp:group -->
+
+		</div>
+		<!-- /wp:group -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- THE LEGEND ─ the one thing this shop does that the competitors do not. -->
+	<!-- wp:group {"className":"ec-knows","layout":{"type":"default"}} -->
+	<div class="wp-block-group ec-knows">
+		<!-- wp:group {"className":"ec-knows__in","layout":{"type":"default"}} -->
+		<div class="wp-block-group ec-knows__in">
+			<!-- wp:heading {"level":2} -->
+			<h2 class="wp-block-heading">האתר יודע מה יש<br>ומה אין.</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:html -->
+			<ul>
+				<li style="--mark:#2c6b45">במלאי בחנות — אפשר לאסוף היום</li>
+				<li style="--mark:#2a5a86">זמין מקורטז — עם זמן אספקה מוצהר</li>
+				<li style="--mark:#8a5f18">נדרש אישור — נבדק לפני שנלקח כסף</li>
+				<li style="--mark:#8f2f28">הופסק ייצור — העמוד נשאר, הרכישה חסומה</li>
+			</ul>
+			<!-- /wp:html -->
+		</div>
+		<!-- /wp:group -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- BIKES ─ one per row, alternating sides. -->
+	<!-- wp:group {"className":"ec-section ec-models","layout":{"type":"default"}} -->
+	<div class="wp-block-group ec-section ec-models">
+		<!-- wp:group {"className":"ec-section__head","layout":{"type":"default"}} -->
+		<div class="wp-block-group ec-section__head">
+			<!-- wp:heading {"level":2,"fontSize":"x-large"} -->
+			<h2 class="wp-block-heading has-x-large-font-size">אופניים חשמליים</h2>
+			<!-- /wp:heading -->
+			<!-- wp:paragraph {"className":"ec-section__note"} -->
+			<p class="ec-section__note">מה שמסומן ירוק נמצא פיזית בחנות, ואפשר לאסוף אותו היום.</p>
+			<!-- /wp:paragraph -->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:woocommerce/product-collection {"queryId":11,"query":{"perPage":3,"pages":1,"offset":0,"postType":"product","order":"asc","orderBy":"menu_order","search":"","exclude":[],"inherit":false,"taxQuery":{"product_cat":[17]},"isProductCollectionBlock":true,"featured":false,"woocommerceStockStatus":["instock","outofstock","onbackorder"],"woocommerceAttributes":[],"woocommerceHandPickedProducts":[]},"tagName":"div","displayLayout":{"type":"flex","columns":1,"shrinkColumns":false},"dimensions":{"widthType":"fill"},"queryContextIncludes":["collection"]} -->
+		<div class="wp-block-woocommerce-product-collection">
+			<!-- wp:woocommerce/product-template -->
+				<!-- wp:woocommerce/product-image {"showSaleBadge":true,"imageSizing":"single","isDescendentOfQueryLoop":true} /-->
+				<!-- wp:group {"layout":{"type":"default"}} -->
+				<div class="wp-block-group">
+					<!-- wp:post-title {"level":3,"isLink":true,"fontFamily":"display","__woocommerceNamespace":"woocommerce/product-collection/product-title"} /-->
+					<!-- wp:woocommerce/product-price {"isDescendentOfQueryLoop":true,"fontSize":"large"} /-->
+					<!-- wp:post-excerpt {"excerptLength":22,"showMoreOnNewLine":false,"__woocommerceNamespace":"woocommerce/product-collection/product-summary"} /-->
+					<!-- wp:woocommerce/product-button {"isDescendentOfQueryLoop":true,"fontSize":"small"} /-->
+				</div>
+				<!-- /wp:group -->
+			<!-- /wp:woocommerce/product-template -->
+		</div>
+		<!-- /wp:woocommerce/product-collection -->
+
+		<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|70"}}}} -->
+		<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--70)">
+			<!-- wp:button {"className":"is-style-outline"} -->
+			<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/product-category/bikes/">כל האופניים החשמליים</a></div>
+			<!-- /wp:button -->
+		</div>
+		<!-- /wp:buttons -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- SCOOTERS ─ grid. -->
+	<!-- wp:group {"className":"ec-section","style":{"color":{"background":"#fbfaf8"}},"layout":{"type":"default"}} -->
+	<div class="wp-block-group ec-section has-background" style="background-color:#fbfaf8">
+		<!-- wp:group {"className":"ec-section__head","layout":{"type":"default"}} -->
+		<div class="wp-block-group ec-section__head">
+			<!-- wp:heading {"level":2,"fontSize":"x-large"} -->
+			<h2 class="wp-block-heading has-x-large-font-size">קורקינטים חשמליים</h2>
+			<!-- /wp:heading -->
+			<!-- wp:paragraph {"className":"ec-section__note"} -->
+			<p class="ec-section__note">קלים, מתקפלים, ומוגבלים ל־25 קמ״ש לפי התקן הישראלי.</p>
+			<!-- /wp:paragraph -->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:woocommerce/product-collection {"queryId":12,"query":{"perPage":3,"pages":1,"offset":0,"postType":"product","order":"asc","orderBy":"menu_order","search":"","exclude":[],"inherit":false,"taxQuery":{"product_cat":[30]},"isProductCollectionBlock":true,"featured":false,"woocommerceStockStatus":["instock","outofstock","onbackorder"],"woocommerceAttributes":[],"woocommerceHandPickedProducts":[]},"tagName":"div","displayLayout":{"type":"flex","columns":3,"shrinkColumns":true},"dimensions":{"widthType":"fill"},"queryContextIncludes":["collection"]} -->
+		<div class="wp-block-woocommerce-product-collection">
+			<!-- wp:woocommerce/product-template -->
+				<!-- wp:woocommerce/product-image {"showSaleBadge":true,"imageSizing":"single","isDescendentOfQueryLoop":true} /-->
+				<!-- wp:post-title {"level":3,"isLink":true,"fontFamily":"display","__woocommerceNamespace":"woocommerce/product-collection/product-title"} /-->
+				<!-- wp:woocommerce/product-price {"isDescendentOfQueryLoop":true} /-->
+			<!-- /wp:woocommerce/product-template -->
+		</div>
+		<!-- /wp:woocommerce/product-collection -->
+
+		<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|70"}}}} -->
+		<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--70)">
+			<!-- wp:button {"className":"is-style-outline"} -->
+			<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/product-category/scooters/">כל הקורקינטים</a></div>
+			<!-- /wp:button -->
+		</div>
+		<!-- /wp:buttons -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- THE WORKSHOP -->
+	<!-- wp:group {"tagName":"section","className":"ec-lab","anchor":"ec-lab","layout":{"type":"default"}} -->
+	<section class="wp-block-group ec-lab" id="ec-lab">
+		<!-- wp:group {"className":"ec-lab__in","layout":{"type":"default"}} -->
+		<div class="wp-block-group ec-lab__in">
+			<!-- wp:heading {"level":2} -->
+			<h2 class="wp-block-heading">המעבדה היא<br>הסיבה שחוזרים.</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:group {"layout":{"type":"default"}} -->
+			<div class="wp-block-group">
+				<!-- wp:paragraph -->
+				<p>התחלנו כמעבדת תיקונים, ורק אחר כך התחלנו למכור. זה עדיין הסדר הנכון — מי שמוכר כלי שהוא לא יודע לתקן, מוכר לך בעיה.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:html -->
+				<ul>
+					<li>אבחון וטיפול בסוללות ובמנועים</li>
+					<li>כיוון בלמים הידראוליים</li>
+					<li>החלפת צמיגים ופנימיות</li>
+					<li>טיפול תקופתי לכלים חשמליים</li>
+				</ul>
+				<!-- /wp:html -->
+
+				<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|60"}}},"layout":{"type":"flex"}} -->
+				<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--60)">
+					<!-- wp:button -->
+					<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="tel:+972524873436">התקשרו</a></div>
+					<!-- /wp:button -->
+					<!-- wp:button {"className":"is-style-outline"} -->
+					<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="https://wa.me/972524873436" rel="noopener">וואטסאפ</a></div>
+					<!-- /wp:button -->
+				</div>
+				<!-- /wp:buttons -->
+			</div>
+			<!-- /wp:group -->
+		</div>
+		<!-- /wp:group -->
+	</section>
+	<!-- /wp:group -->
+
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"div"} /-->

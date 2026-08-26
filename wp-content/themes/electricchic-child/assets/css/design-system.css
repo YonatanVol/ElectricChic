@@ -2,97 +2,89 @@
    ElectricChic — design system
    =============================================================================
 
-   Near-black ground, one acid-lime accent, heavy geometric type, sharp corners.
-   The shop sells electric bikes and scooters — urban, technical, fast. An
-   earlier version of this file was warm cream and aged brass, which is the
-   language of a heritage bicycle shop and read as completely wrong next to a
-   500W motor.
+   A lit studio on a warm-neutral ground. The products are Cortez's own studio
+   cut-outs, background removed and trimmed to their opaque bounds, so the
+   bottom edge of every file is the ground line. That single fact is what lets
+   a contact shadow sit at the wheels instead of floating below them, and it is
+   why the shadow system below keys off `bottom` rather than a fixed offset.
 
-   Lime is brand and action ONLY — logo, price, primary button, focus. It is
-   deliberately not used for availability, because a page where "in stock" and
-   "buy now" share a colour reads as though everything is on offer.
+   WHY LIGHT, NOT DARK
 
-   Every colour, size and spacing value is a token. Nothing below hard-codes a
-   hex value, so rebranding is a change in one block — which matters, because
-   Cortez brand assets may yet replace the accent.
+   Not taste. Cortez's machines are overwhelmingly black — XMAX, SHARK, SPOT,
+   MOVIX, Supra. A black product on a dark ground disappears; on a light ground
+   it reads as a crisp silhouette. The palette follows the merchandise.
+
+   HEBREW TYPOGRAPHY
+
+   The previous version applied Latin display habits to Hebrew: line-height
+   1.08 and letter-spacing -0.025em on headings. At display sizes that clips
+   the descenders of ק ן ך ף ץ against the line below, and negative tracking
+   collapses ו / ז / י into each other. Hebrew headings here sit at 1.02
+   minimum with zero tracking; negative tracking is reserved for the Latin
+   model names, which are 22 of the 24 products.
    ============================================================================= */
 
 /* ── Fonts ─────────────────────────────────────────────────────────────────
-   Self-hosted. No third-party font CDN — a request to Google on every page
-   view is both a performance cost and a privacy one. */
+   Declared in theme.json, not here.
 
-@font-face {
-	font-family: 'Heebo';
-	src: url('../fonts/heebo-hebrew.woff2') format('woff2');
-	font-weight: 100 900;
-	font-display: swap;
-	unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
-}
+   A block theme emits @font-face from theme.json into the global-styles sheet,
+   which is what makes the families selectable in the editor. Declaring them in
+   both places means the editor shows one set and the front end uses another,
+   and they drift the first time a subset changes.
 
-@font-face {
-	font-family: 'Heebo';
-	src: url('../fonts/heebo-latin.woff2') format('woff2');
-	font-weight: 100 900;
-	font-display: swap;
-	unicode-range: U+0000-00FF, U+0131, U+2000-206F, U+2192, U+2212, U+2215;
+     Heebo   — Hebrew and Latin subsets, self-hosted
+     Archivo — Latin only, for model names
+
+   Archivo exists because 22 of the 24 products are named in Latin
+   (SHARK PRO M5, XMAX 48) and Heebo's Latin is Roboto-derived — the most
+   generic sans there is — which was setting every product H1 on the site.
+   unicode-range hands Hebrew back to Heebo automatically.
+
+   Self-hosted rather than loaded from Google: a request to a third party on
+   every page view is both a performance cost and a privacy one. */
+
+/* The light position, animated. Declaring it as a typed custom property is
+   what makes it interpolate rather than snap. */
+@property --ec-lx {
+	syntax: '<percentage>';
+	inherits: true;
+	initial-value: 50%;
 }
 
 /* ── Tokens ──────────────────────────────────────────────────────────────── */
 
 :root {
-	/* Ground. Near-black rather than pure #000 — true black on a screen crushes
-	   product photography and makes every edge look like a rendering artefact. */
-	--ec-black: #0b0b0d;
-	--ec-surface-1: #141418;
-	--ec-surface-2: #1c1c21;
-	--ec-line: #3a3a40;
+	/* Ground. Warm neutral rather than pure white — a cut-out on #fff has no
+	   air around it, and the shadow has nothing to fall on. */
+	--ec-paper: #f2f1ee;
+	--ec-lift: #fbfaf8;
+	--ec-sink: #e3e1da;
 
-	/* Type */
-	--ec-white: #ffffff;
-	--ec-off-white: #e8e8e6;
-	--ec-grey: #8a8a92;
+	--ec-ink: #191713;
+	--ec-soft: #67635a;
+	--ec-hair: #dcd9d1;
 
-	/* Accent — brand and action only. Never availability. */
-	--ec-lime: #ccff00;
-	--ec-lime-dim: #a8d400;
+	/* Availability. A separate scale on purpose, and never the brand colour:
+	   a page where "in stock" and "buy now" share a colour reads as though
+	   everything is on offer. Each badge carries text as well as colour. */
+	--ec-stock: #2c6b45;
+	--ec-supp: #2a5a86;
+	--ec-back: #8a5f18;
+	--ec-out: #8f2f28;
 
-	/* Availability. A separate scale on purpose: if the accent doubled as
-	   "in stock", every archive would look like a clearance sale. Each badge
-	   carries text as well as colour — colour is never the only signal. */
-	--ec-avail-stock: #4ade80;
-	--ec-avail-stock-bg: #0d2a1c;
-	--ec-avail-supplier: #7dd3fc;
-	--ec-avail-supplier-bg: #0e2733;
-	--ec-avail-confirm: #fbbf24;
-	--ec-avail-confirm-bg: #2a1a0a;
-	--ec-avail-out: #f87171;
-	--ec-avail-out-bg: #2a1214;
+	--ec-ease: cubic-bezier(0.16, 1, 0.3, 1);
 
-	/* Semantic */
-	--ec-bg: var(--ec-black);
-	--ec-surface: var(--ec-surface-1);
-	--ec-text: var(--ec-off-white);
-	--ec-heading: var(--ec-white);
-	--ec-muted: var(--ec-grey);
-	--ec-border: var(--ec-line);
-	--ec-accent: var(--ec-lime);
-
-	/* Type. One family, worked hard. A serif here would say "heritage", which is
-	   the opposite of what these products are. */
-	--ec-font-sans: 'Heebo', system-ui, -apple-system, 'Segoe UI', sans-serif;
-	--ec-font-serif: var(--ec-font-sans);
-
-	--ec-fs-xs: 0.8125rem;
-	--ec-fs-sm: 0.9375rem;
+	/* Type scale. Fluid, and capped so a very wide monitor does not produce a
+	   headline nobody can read in one fixation. */
+	--ec-fs-xs: 0.78rem;
+	--ec-fs-sm: 0.875rem;
 	--ec-fs-base: 1.0625rem;
 	--ec-fs-lg: 1.25rem;
-	--ec-fs-xl: 1.5rem;
-	--ec-fs-2xl: 2rem;
-	--ec-fs-3xl: 2.75rem;
-	--ec-fs-4xl: 3.75rem;
+	--ec-fs-xl: clamp(1.35rem, 2.2vw, 1.7rem);
+	--ec-fs-2xl: clamp(1.7rem, 3.4vw, 2.75rem);
+	--ec-fs-3xl: clamp(1.9rem, 4.6vw, 3.6rem);
+	--ec-fs-4xl: clamp(2.4rem, 7.2vw, 5.6rem);
 
-	/* Space — 4px base */
-	--ec-space-1: 0.25rem;
 	--ec-space-2: 0.5rem;
 	--ec-space-3: 0.75rem;
 	--ec-space-4: 1rem;
@@ -102,366 +94,409 @@
 	--ec-space-16: 4rem;
 	--ec-space-24: 6rem;
 
-	--ec-radius: 0;
-
-	--ec-ease: cubic-bezier(0.16, 1, 0.3, 1);
-	--ec-transition: 0.35s var(--ec-ease);
-
-	--ec-container: 1280px;
+	--ec-container: 1560px;
 }
 
 /* ── Baseline ────────────────────────────────────────────────────────────── */
 
 html {
+	/* `direction` must sit on the root, not on body: a position:fixed element
+	   is laid out against the initial containing block, which takes direction
+	   from <html>. With it on body only, `inset-inline: 0` resolved against
+	   LTR and pushed fixed bars off the client box. */
+	direction: rtl;
+
+	/* html is the scrolling box, not body — clipping body does nothing. */
+	overflow-x: clip;
+
+	/* Not `smooth`. It animates a scroll on every in-page navigation in
+	   Chrome and does nothing in Safari, so scroll position is driven
+	   explicitly instead. */
+	scroll-behavior: auto;
+
 	color-scheme: light;
-	scroll-behavior: smooth;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	text-rendering: optimizeLegibility;
 }
 
 body {
-	background: var(--ec-bg);
-	color: var(--ec-text);
-	font-family: var(--ec-font-sans);
+	background: var(--ec-paper);
+	color: var(--ec-ink);
+	font-family: 'Heebo', system-ui, -apple-system, 'Segoe UI', sans-serif;
 	font-size: var(--ec-fs-base);
-	line-height: 1.7;
-	letter-spacing: 0.01em;
+	line-height: 1.62;
+	overflow-x: clip;
 }
 
-h1, h2, h3, h4,
-.wp-block-post-title,
-.woocommerce-loop-product__title,
-.product_title {
-	font-family: var(--ec-font-sans);
-	color: var(--ec-heading);
-	font-weight: 800;
-	line-height: 1.08;
-	letter-spacing: -0.025em;
-}
-
-::selection {
-	background-color: var(--ec-lime);
-	color: var(--ec-black);
+img {
+	display: block;
+	max-width: 100%;
+	height: auto;
 }
 
 /* Focus must stay visible — WCAG 2.2 AA, and the first thing themes remove. */
 :focus-visible {
-	outline: 2px solid var(--ec-lime);
+	outline: 2px solid var(--ec-ink);
 	outline-offset: 3px;
+	border-radius: 2px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-	html { scroll-behavior: auto; }
-	*, *::before, *::after {
-		animation-duration: 0.01ms !important;
-		transition-duration: 0.01ms !important;
-	}
+/* Hebrew headings: zero tracking, and never tighter than 1.02. */
+h1, h2, h3, h4,
+.wp-block-post-title,
+.wc-block-components-product-title,
+.product_title {
+	color: var(--ec-ink);
+	font-weight: 200;
+	line-height: 1.04;
+	letter-spacing: 0;
+	text-wrap: balance;
+}
+
+h3, h4 {
+	font-weight: 500;
+	line-height: 1.18;
+}
+
+/* Latin model names. Heebo's Latin is Roboto-derived — the most generic sans
+   there is — and it was setting every product H1 on the site. */
+.wc-block-components-product-title,
+.wc-block-components-product-title a,
+.product_title,
+.ec-model-name {
+	font-family: 'Archivo', 'Heebo', system-ui, sans-serif;
+	font-weight: 600;
+	letter-spacing: -0.018em;
+}
+
+/* Hebrew has no case, so tracking it out only tears the word apart. Eyebrows
+   are tracked in Latin only. */
+.ec-eyebrow {
+	font-size: var(--ec-fs-xs);
+	font-weight: 500;
+	color: var(--ec-soft);
+	margin: 0;
+}
+
+.ec-eyebrow--lat {
+	letter-spacing: 0.16em;
+}
+
+/* Heebo has no italic; the browser synthesises an oblique that mangles
+   Hebrew letterforms. */
+i, em, .wp-block-post-content em {
+	font-style: normal;
+}
+
+::selection {
+	background-color: var(--ec-ink);
+	color: var(--ec-paper);
+}
+
+/* ── The lit stage ─────────────────────────────────────────────────────────
+
+   Three layers under every product, because a single uniform drop-shadow
+   produces a halo, not a shadow — the object reads as floating. Verified
+   side by side before it was adopted.
+
+     · form shadow    wide, soft, low opacity
+     · contact shadow narrow and dark, right at the wheels
+     · edge definition a 1px drop-shadow so the silhouette does not dissolve
+
+   The contact shadow swings opposite to the light, so the two stay
+   physically consistent as --ec-lx moves. */
+
+.ec-stage {
+	position: relative;
+	--ec-sx: 1;
+}
+
+.ec-stage > img,
+.wc-block-components-product-image img,
+.woocommerce-product-gallery__image img {
+	position: relative;
+	z-index: 3;
+	filter: drop-shadow(calc((50% - var(--ec-lx)) * 0.05) 2px 1px rgba(28, 25, 20, 0.34));
+}
+
+.ec-stage::before {
+	content: "";
+	position: absolute;
+	z-index: 1;
+	left: -9%;
+	right: -9%;
+	bottom: -3.4%;
+	height: 9%;
+	background: radial-gradient(50% 50% at 50% 50%, rgba(40, 36, 29, 0.30) 0%, transparent 70%);
+	filter: blur(24px);
+}
+
+.ec-stage::after {
+	content: "";
+	position: absolute;
+	z-index: 2;
+	left: 15%;
+	right: 15%;
+	bottom: -1.1%;
+	height: 3.2%;
+	background: radial-gradient(50% 50% at 50% 50%, rgba(24, 21, 16, 0.56) 0%, transparent 68%);
+	filter: blur(6px);
+	transform: translateX(calc((50% - var(--ec-lx)) * 0.1)) scaleX(var(--ec-sx));
 }
 
 /* ── Header ──────────────────────────────────────────────────────────────── */
 
 .wp-block-site-title a {
-	font-family: var(--ec-font-sans);
-	font-size: var(--ec-fs-xl);
-	font-weight: 700;
-	color: var(--ec-heading);
-	letter-spacing: 0.02em;
+	font-family: 'Archivo', 'Heebo', sans-serif;
+	font-size: var(--ec-fs-lg);
+	font-weight: 500;
+	color: var(--ec-ink);
+	letter-spacing: 0.09em;
 	text-decoration: none;
 }
 
 .wp-block-navigation a {
 	font-size: var(--ec-fs-sm);
-	letter-spacing: 0.04em;
-	color: var(--ec-text);
+	color: var(--ec-soft);
 	text-decoration: none;
-	transition: color var(--ec-transition);
+	transition: color 0.2s;
+	/* 44px minimum touch target, met with padding rather than a fixed height
+	   so the label still centres when it wraps. */
+	padding-block: 0.7rem;
 }
 
-.wp-block-navigation a:hover {
-	color: var(--ec-lime);
-}
-
-/* ── Shop archive ────────────────────────────────────────────────────────── */
-
-.woocommerce-products-header__title,
-.wp-block-query-title {
-	font-size: var(--ec-fs-3xl);
-	margin-block-end: var(--ec-space-2);
-}
-
-.woocommerce-result-count {
-	color: var(--ec-muted);
-	font-size: var(--ec-fs-sm);
-	letter-spacing: 0.02em;
-}
-
-.woocommerce-ordering select,
-.orderby {
-	font-family: var(--ec-font-sans);
-	font-size: var(--ec-fs-sm);
-	padding: var(--ec-space-2) var(--ec-space-4);
-	border: 1px solid var(--ec-border);
-	border-radius: var(--ec-radius);
-	background: var(--ec-surface);
-	color: var(--ec-text);
-}
-
-/* ── Product cards ───────────────────────────────────────────────────────── */
-
-ul.products {
-	gap: var(--ec-space-12) var(--ec-space-8);
-}
-
-ul.products li.product {
-	background: transparent;
-	text-align: start;
-	position: relative;
-	transition: transform var(--ec-transition);
-}
-
-ul.products li.product:hover {
-	transform: translateY(-4px);
-}
-
-ul.products li.product a img {
-	border-radius: var(--ec-radius);
-	background: var(--ec-surface-2);
-	margin-block-end: var(--ec-space-4);
-	aspect-ratio: 4 / 3;
-	object-fit: cover;
-	transition: opacity var(--ec-transition);
-}
-
-ul.products li.product:hover a img {
-	opacity: 0.88;
-}
-
-ul.products li.product a,
-ul.products li.product .wp-block-post-title a,
-.wc-block-product-template__responsive-wrapper a {
-	text-decoration: none;
-}
-
-/* Titles are headings, not links. Inheriting the accent link colour turns an
-   archive into a wall of gold text and destroys the hierarchy. */
-ul.products li.product .woocommerce-loop-product__title,
-ul.products li.product .woocommerce-loop-product__title a,
-.wc-block-grid__product-title,
-.wp-block-post-title a {
-	color: var(--ec-heading) !important;
-	font-size: var(--ec-fs-lg);
-	line-height: 1.35;
-	margin-block: 0 var(--ec-space-2);
-	padding: 0;
-}
-
-ul.products li.product .woocommerce-loop-product__title a:hover,
-.wp-block-post-title a:hover {
-	color: var(--ec-lime) !important;
-}
-
-ul.products li.product .price {
-	font-family: var(--ec-font-sans);
-	font-size: var(--ec-fs-base);
-	font-weight: 500;
-	color: var(--ec-heading);
-	display: block;
-	margin-block-end: var(--ec-space-4);
-}
-
-ul.products li.product .price del {
-	color: var(--ec-muted);
-	font-weight: 400;
-	margin-inline-end: var(--ec-space-2);
-	opacity: 0.75;
-}
-
-ul.products li.product .price ins {
-	color: var(--ec-lime);
-	text-decoration: none;
-	font-weight: 700;
-}
-
-/* ── Sale badge ──────────────────────────────────────────────────────────── */
-
-span.onsale {
-	position: absolute;
-	inset-block-start: var(--ec-space-3);
-	inset-inline-start: var(--ec-space-3);
-	inset-inline-end: auto;
-	background: var(--ec-lime);
-	color: var(--ec-black);
-	font-family: var(--ec-font-sans);
-	font-size: var(--ec-fs-xs);
-	font-weight: 800;
-	letter-spacing: 0.08em;
-	padding: var(--ec-space-1) var(--ec-space-3);
-	border-radius: var(--ec-radius);
-	min-height: 0;
-	min-width: 0;
-	line-height: 1.8;
-	margin: 0;
-	z-index: 2;
+.wp-block-navigation a:hover,
+.wp-block-navigation .current-menu-item a {
+	color: var(--ec-ink);
 }
 
 /* ── Buttons ─────────────────────────────────────────────────────────────── */
 
+.wp-block-button__link,
+.wc-block-components-button,
 .woocommerce a.button,
-.woocommerce button.button,
-.woocommerce input.button,
-.wp-element-button,
-.wc-block-components-button {
-	font-family: var(--ec-font-sans) !important;
-	font-size: var(--ec-fs-sm) !important;
-	font-weight: 500 !important;
-	letter-spacing: 0.04em;
-	background: var(--ec-lime) !important;
-	color: var(--ec-black) !important;
-	border: 1px solid var(--ec-lime) !important;
-	border-radius: var(--ec-radius) !important;
-	padding: var(--ec-space-3) var(--ec-space-6) !important;
-	transition: background var(--ec-transition), color var(--ec-transition);
+.woocommerce button.button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 48px;
+	padding-inline: var(--ec-space-8);
+	border-radius: 999px;
+	background: var(--ec-ink);
+	color: var(--ec-paper);
+	font-family: 'Heebo', sans-serif;
+	font-size: var(--ec-fs-sm);
+	font-weight: 500;
+	border: 1px solid var(--ec-ink);
+	transition: background 0.25s, color 0.25s, transform 0.2s;
+}
+
+.wp-block-button__link:hover,
+.wc-block-components-button:hover,
+.woocommerce a.button:hover {
+	background: #000;
+	color: var(--ec-paper);
+}
+
+.wp-block-button__link:active {
+	transform: scale(0.97);
+}
+
+.is-style-outline .wp-block-button__link,
+.wp-block-button.is-style-outline > .wp-block-button__link {
+	background: transparent;
+	color: var(--ec-ink);
+}
+
+/* ── Product cards, Product Collection block ─────────────────────────────── */
+
+.wp-block-woocommerce-product-collection,
+.wc-block-product-template {
+	gap: clamp(1rem, 3vw, 2.75rem);
+}
+
+.wc-block-product-template__responsive,
+li.wc-block-product {
+	background: transparent;
+	text-align: start;
+}
+
+/* The card image is the composition, not a thumbnail in a box. */
+.wc-block-components-product-image {
+	position: relative;
+	margin-bottom: var(--ec-space-4);
+	transition: transform 0.35s var(--ec-ease);
+}
+
+li.wc-block-product:hover .wc-block-components-product-image {
+	transform: translateY(-6px);
+}
+
+.wc-block-components-product-image img {
+	background: transparent;
+
+	/*
+	 * !important because WooCommerce's product-image block writes
+	 * style="object-fit:cover" onto every product image inline, and an inline
+	 * style cannot be beaten any other way.
+	 *
+	 * It matters more here than it would on a normal shop. These are cut-outs
+	 * — background removed, then trimmed so the bottom edge of the file is the
+	 * wheels — and `cover` crops whatever does not fit the box. The first
+	 * version of this template passed width:100% to the block, which made the
+	 * box a different shape from the machine, and the hero product lost its
+	 * rear wheel. Nothing errored; it simply looked like a bad photograph.
+	 *
+	 * Without this the crop is one uniform-height card grid away from coming
+	 * back, silently, across the entire catalogue.
+	 */
+	object-fit: contain !important;
+}
+
+/* Titles are headings, not links. Inheriting a link colour turns an archive
+   into a wall of coloured text and destroys the hierarchy. */
+.wc-block-components-product-title,
+.wc-block-components-product-title a {
+	color: var(--ec-ink) !important;
+	font-size: clamp(0.95rem, 1.6vw, 1.2rem);
+	line-height: 1.25;
+	margin-block: 0 var(--ec-space-2);
 	text-decoration: none;
 }
 
-.woocommerce a.button:hover,
-.woocommerce button.button:hover,
-.woocommerce input.button:hover,
-.wp-element-button:hover {
-	background: var(--ec-lime-dim) !important;
-	border-color: var(--ec-lime-dim) !important;
-	color: var(--ec-black) !important;
-}
-
-.woocommerce a.button.add_to_cart_button {
-	display: inline-block;
-}
-
-/* ── Single product ──────────────────────────────────────────────────────── */
-
-.product_title {
-	font-size: var(--ec-fs-3xl);
-	margin-block-end: var(--ec-space-4);
-}
-
+.wc-block-components-product-price,
 .woocommerce div.product p.price,
-.woocommerce div.product span.price {
-	font-family: var(--ec-font-sans);
-	font-size: var(--ec-fs-2xl);
-	font-weight: 500;
-	color: var(--ec-heading);
-	margin-block-end: var(--ec-space-6);
+.woocommerce ul.products li.product .price {
+	color: var(--ec-ink);
+	font-size: clamp(1rem, 1.7vw, 1.25rem);
+	font-weight: 400;
+	font-variant-numeric: tabular-nums;
 }
 
-.woocommerce div.product .woocommerce-tabs ul.tabs li {
-	border-radius: var(--ec-radius);
-	background: transparent;
+/* Two sibling price spans reverse under RTL, so a struck original and a sale
+   price render in the wrong order. Six products carry a sale price. */
+.wc-block-components-product-price,
+.woocommerce div.product p.price {
+	direction: ltr;
+	text-align: start;
+}
+
+.wc-block-components-product-price del,
+.woocommerce del {
+	color: var(--ec-soft);
+	font-size: 0.7em;
+	margin-inline-start: 0.5rem;
+	opacity: 1;
+}
+
+.wc-block-components-product-sale-badge {
+	background: var(--ec-ink);
+	color: var(--ec-paper);
 	border: 0;
-	border-block-end: 2px solid transparent;
+	border-radius: 999px;
+	font-size: var(--ec-fs-xs);
+	font-weight: 600;
+	padding: 0.25rem 0.7rem;
 }
 
-.woocommerce div.product .woocommerce-tabs ul.tabs li.active {
-	border-block-end-color: var(--ec-lime);
-	background: transparent;
-}
+/* ── Availability ─────────────────────────────────────────────────────────
 
-.woocommerce div.product .woocommerce-tabs ul.tabs::before {
-	border-block-end-color: var(--ec-border);
-}
-
-/* ── Availability ────────────────────────────────────────────────────────
-   Placeholder styling until the derived availability model lands. Colour is
-   never the only signal — each badge carries its own text. */
-
-.stock {
-	font-size: var(--ec-fs-sm);
-	font-weight: 500;
-	letter-spacing: 0.02em;
-	padding: var(--ec-space-1) var(--ec-space-3);
-	display: inline-block;
-	border-inline-start: 3px solid currentcolor;
-	background: var(--ec-surface-2);
-}
-
-.stock.in-stock { color: var(--ec-avail-stock); }
-.stock.out-of-stock { color: var(--ec-avail-out); }
-
-/* ── Availability badges ─────────────────────────────────────────────────────
- *
- * Emitted by ElectricChic\Core\Integration\AvailabilityDisplay, one class per
- * resolved state. The badge always carries TEXT — colour alone would leave the
- * distinction invisible to anyone who cannot separate green from amber, and
- * "from supplier" versus "in the shop" is exactly the distinction this whole
- * model exists to make.
- *
- * Lime is deliberately absent. It is the brand and action colour — price, CTA,
- * logo — and reusing it here would make "available" and "buy" the same colour,
- * which is the collision that got two of the four palette options rejected.
- */
+   These class names come from ElectricChic\Core\Integration\AvailabilityDisplay
+   and are hyphenated (`ec-avail--in-stock-store`). Presented as information
+   with a rule and a coloured mark — not a marketing pill. This is the shop's
+   competitive difference, not a footnote. */
 
 .ec-avail {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.5em;
-	margin: 0.5rem 0 0;
-	padding: 0.3em 0.7em;
-	border-radius: 999px;
-	font-size: 0.8125rem;
+	display: flex;
+	align-items: baseline;
+	gap: 0.5rem;
+	margin: var(--ec-space-3) 0 0;
+	font-size: var(--ec-fs-sm);
 	font-weight: 600;
-	line-height: 1.3;
-	letter-spacing: -0.01em;
-	/* Fallback for a state with no rule yet: readable, and obviously neutral. */
-	color: var(--ec-off-white);
-	background: var(--ec-surface-2);
+	line-height: 1.4;
+	flex-wrap: wrap;
 }
 
 .ec-avail__dot {
-	flex: none;
-	inline-size: 0.5em;
-	block-size: 0.5em;
+	width: 7px;
+	height: 7px;
 	border-radius: 50%;
-	background: currentcolor;
+	background: currentColor;
+	flex: none;
+	transform: translateY(-1px);
 }
 
-.ec-avail.ec-avail--in-stock-store {
-	color: var(--ec-avail-stock);
-	background: var(--ec-avail-stock-bg);
-}
+.ec-avail--in-stock-store { color: var(--ec-stock); }
+.ec-avail--supplier-available,
+.ec-avail--special-order { color: var(--ec-supp); }
+.ec-avail--backorder,
+.ec-avail--confirmation-required { color: var(--ec-back); }
+.ec-avail--discontinued,
+.ec-avail--temp-out-of-stock,
+.ec-avail--enquiry-only,
+.ec-avail--out-of-stock { color: var(--ec-out); }
 
-.ec-avail.ec-avail--supplier-available,
-.ec-avail.ec-avail--special-order,
-.ec-avail.ec-avail--backorder {
-	color: var(--ec-avail-supplier);
-	background: var(--ec-avail-supplier-bg);
-}
-
-.ec-avail.ec-avail--confirmation-required,
-.ec-avail.ec-avail--enquiry-only {
-	color: var(--ec-avail-confirm);
-	background: var(--ec-avail-confirm-bg);
-}
-
-.ec-avail.ec-avail--temp-out-of-stock,
-.ec-avail.ec-avail--out-of-stock,
-.ec-avail.ec-avail--discontinued {
-	color: var(--ec-avail-out);
-	background: var(--ec-avail-out-bg);
-}
-
-/* Special order shares the supplier colour but is a weaker claim: no one has
- * confirmed a unit exists. The dashed edge marks that without inventing a
- * fifth colour nobody would learn the meaning of. */
-.ec-avail.ec-avail--special-order {
-	border: 1px dashed currentcolor;
-}
-
+/* The sentence that makes a special order honest: the one telling a customer
+   nobody has confirmed a unit exists yet. */
 .ec-avail__notice {
-	margin: 0.5rem 0 0;
+	margin: var(--ec-space-3) 0 0;
+	padding: 0.75rem 0.875rem;
+	background: var(--ec-lift);
+	border-inline-start: 2px solid currentColor;
+	border-radius: 0 4px 4px 0;
 	max-inline-size: 46ch;
-	color: var(--ec-muted);
-	font-size: 0.875rem;
-	line-height: 1.5;
+	color: var(--ec-soft);
+	font-size: var(--ec-fs-sm);
+	font-weight: 400;
+	line-height: 1.55;
+}
+
+/* ── Product page ────────────────────────────────────────────────────────── */
+
+.woocommerce div.product .product_title {
+	font-size: var(--ec-fs-3xl);
+	line-height: 1.04;
+}
+
+.woocommerce div.product .woocommerce-product-gallery {
+	position: relative;
+	background: radial-gradient(120% 92% at var(--ec-lx) 4%,
+		var(--ec-lift) 0%, var(--ec-paper) 52%, var(--ec-sink) 100%);
+	border-radius: 3px;
+	padding: clamp(1.25rem, 4vw, 3.75rem) clamp(1rem, 3vw, 2.75rem);
+}
+
+/* Each cell takes direction from its own first strong character: 48V/15.6A
+   goes LTR, דיסק מכני goes RTL, in one column, with no per-cell logic. */
+.woocommerce table.shop_attributes td,
+.ec-spec-table td {
+	unicode-bidi: plaintext;
+	font-variant-numeric: tabular-nums;
+}
+
+.woocommerce table.shop_attributes,
+.ec-spec-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: var(--ec-fs-sm);
+}
+
+.woocommerce table.shop_attributes th,
+.woocommerce table.shop_attributes td,
+.ec-spec-table th,
+.ec-spec-table td {
+	padding: 0.8rem 0;
+	text-align: start;
+	border-top: 1px solid var(--ec-hair);
+	border-bottom: 0;
+}
+
+.woocommerce table.shop_attributes th,
+.ec-spec-table th {
+	font-weight: 400;
+	color: var(--ec-soft);
+	width: 38%;
 }
 
 /* ── Forms ───────────────────────────────────────────────────────────────── */
@@ -470,643 +505,610 @@ span.onsale {
 .woocommerce input[type="email"],
 .woocommerce input[type="tel"],
 .woocommerce input[type="number"],
+.woocommerce input[type="password"],
 .woocommerce textarea,
-.woocommerce select {
-	font-family: var(--ec-font-sans);
-	font-size: var(--ec-fs-base);
-	padding: var(--ec-space-3) var(--ec-space-4);
-	border: 1px solid var(--ec-border);
-	border-radius: var(--ec-radius);
-	background: var(--ec-surface);
-	color: var(--ec-text);
-	transition: border-color var(--ec-transition);
-}
-
-.woocommerce input:focus,
-.woocommerce textarea:focus,
-.woocommerce select:focus {
-	border-color: var(--ec-lime);
-	outline: 2px solid var(--ec-lime);
-	outline-offset: 1px;
+.woocommerce select,
+.wc-block-components-text-input input {
+	/* Under 16px, iOS Safari zooms on focus and stays zoomed. */
+	font-size: 16px;
+	min-height: 48px;
+	padding: 0.7rem 0.9rem;
+	border: 1px solid var(--ec-hair);
+	border-radius: 4px;
+	background: var(--ec-lift);
+	color: var(--ec-ink);
+	font-family: 'Heebo', sans-serif;
 }
 
 /* ── Notices ─────────────────────────────────────────────────────────────── */
 
 .woocommerce-message,
 .woocommerce-info,
-.woocommerce-error {
-	border-radius: var(--ec-radius);
-	border: 0;
-	border-inline-start: 3px solid var(--ec-lime);
-	background: var(--ec-surface-2);
-	color: var(--ec-text);
+.woocommerce-error,
+.wc-block-components-notice-banner {
+	border-radius: 4px;
+	border-inline-start: 3px solid var(--ec-ink);
+	background: var(--ec-lift);
+	color: var(--ec-ink);
 	font-size: var(--ec-fs-sm);
 }
 
-.woocommerce-error { border-inline-start-color: var(--ec-avail-out); }
-
-/* ── Footer ──────────────────────────────────────────────────────────────── */
-
-/* --ec-line is a BORDER colour: 1.74:1 against the ground, which is fine for a
-   1px rule and unreadable as text. It ended up here because the palette swap
-   remapped the old --ec-sand mechanically, and the contrast pass afterwards
-   checked the pairs I had designed rather than the pairs the remap produced.
-   scripts/check-contrast.php now checks every colour declaration in this file. */
-.wp-block-template-part footer,
-footer.wp-block-template-part {
-	background: var(--ec-surface-1);
-	color: var(--ec-muted);
-	border-block-start: 1px solid var(--ec-line);
+.woocommerce-error,
+.wc-block-components-notice-banner.is-error {
+	border-inline-start-color: var(--ec-out);
 }
 
-/* ── Mobile ──────────────────────────────────────────────────────────────── */
-
-@media (max-width: 781px) {
-	:root {
-		--ec-fs-3xl: 2rem;
-		--ec-fs-4xl: 2.5rem;
-	}
-
-	ul.products {
-		gap: var(--ec-space-8) var(--ec-space-4);
-	}
-
-	/* WCAG 2.2 AA 2.5.8 — 24px minimum, 44px as the design standard. */
-	.woocommerce a.button,
-	.woocommerce button.button,
-	.wp-element-button {
-		min-height: 44px;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-	}
-}
-
-/* =============================================================================
-   Homepage
-   ============================================================================= */
-
-.ec-hero {
-	background: radial-gradient(120% 90% at 70% 0%, var(--ec-surface-1) 0%, var(--ec-black) 62%);
-	padding-block: clamp(4rem, 12vw, 9rem);
-	padding-inline: var(--ec-space-6);
-	margin-block-end: var(--ec-space-16);
-	position: relative;
-	overflow: hidden;
-}
-
-/* A single oversized wheel bleeding off the edge. Texture without decoration. */
-.ec-hero::after {
-	content: "";
-	position: absolute;
-	inset-block-start: -18%;
-	inset-inline-start: -8%;
-	width: min(46vw, 620px);
-	aspect-ratio: 1;
-	border: 1px solid color-mix(in srgb, var(--ec-lime) 22%, transparent);
-	border-radius: 50%;
-	pointer-events: none;
-}
-
-.ec-hero__inner {
-	max-width: 780px;
-	margin-inline: auto;
-	position: relative;
-	z-index: 1;
-	text-align: center;
-}
-
-.ec-hero__eyebrow {
-	font-size: var(--ec-fs-sm);
-	letter-spacing: 0.16em;
-	color: var(--ec-lime);
-	margin-block-end: var(--ec-space-6);
-	text-transform: none;
-}
-
-.ec-hero__title {
-	font-family: var(--ec-font-sans);
-	font-size: clamp(2.25rem, 6vw, 4rem);
-	line-height: 1.05;
-	color: var(--ec-heading);
-	margin-block: 0 var(--ec-space-6);
-	font-weight: 900;
-	letter-spacing: -0.03em;
-}
-
-.ec-hero__lead {
-	font-size: clamp(1.0625rem, 2vw, 1.25rem);
-	color: var(--ec-text);
-	max-width: 58ch;
-	margin-inline: auto;
-	margin-block-end: var(--ec-space-8);
-}
-
-.ec-hero__actions {
-	display: flex;
-	gap: var(--ec-space-4);
-	justify-content: center;
-	flex-wrap: wrap;
-}
-
-/* ── Buttons ─────────────────────────────────────────────────────────────── */
-
-.ec-button {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	min-height: 48px;
-	padding: var(--ec-space-3) var(--ec-space-8);
-	font-family: var(--ec-font-sans);
-	font-size: var(--ec-fs-sm);
-	font-weight: 500;
-	letter-spacing: 0.04em;
-	text-decoration: none;
-	border-radius: var(--ec-radius);
-	border: 1px solid transparent;
-	transition: background var(--ec-transition), color var(--ec-transition), border-color var(--ec-transition);
-}
-
-.ec-button--primary {
-	background: var(--ec-lime);
-	color: var(--ec-black);
-	border-color: var(--ec-lime);
-	font-weight: 700;
-}
-
-.ec-button--primary:hover {
-	background: var(--ec-lime-dim);
-	border-color: var(--ec-lime-dim);
-	color: var(--ec-black);
-}
-
-.ec-button--ghost {
-	background: transparent;
-	color: var(--ec-off-white);
-	border-color: var(--ec-line);
-}
-
-.ec-button--ghost:hover {
-	border-color: var(--ec-lime);
-	color: var(--ec-lime);
-}
-
-/* ── Sections ────────────────────────────────────────────────────────────── */
+/* ── Sections and rhythm ─────────────────────────────────────────────────── */
 
 .ec-section {
 	max-width: var(--ec-container);
 	margin-inline: auto;
-	padding-inline: var(--ec-space-6);
-	margin-block-end: var(--ec-space-24);
-}
-
-.ec-section--tint {
-	max-width: none;
-	background: var(--ec-surface-2);
-	padding-block: var(--ec-space-16);
-	margin-block-end: var(--ec-space-8);
-}
-
-.ec-section--tint > * {
-	max-width: var(--ec-container);
-	margin-inline: auto;
+	padding: clamp(3rem, 8vw, 7.5rem) clamp(1rem, 4vw, 3.375rem);
 }
 
 .ec-section__head {
-	margin-block-end: var(--ec-space-8);
-}
-
-.ec-section__title {
-	font-family: var(--ec-font-sans);
-	font-size: clamp(1.75rem, 4vw, 2.5rem);
-	color: var(--ec-heading);
-	margin-block: 0 var(--ec-space-2);
-	font-weight: 800;
-	letter-spacing: -0.02em;
-}
-
-.ec-section__sub {
-	color: var(--ec-muted);
-	font-size: var(--ec-fs-base);
-	margin: 0;
-}
-
-/* ── Category cards ──────────────────────────────────────────────────────── */
-
-.ec-cats {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-	gap: 1px;
-	background: var(--ec-line);
-	border: 1px solid var(--ec-line);
-}
-
-.ec-cat {
-	background: var(--ec-bg);
-	padding: var(--ec-space-8) var(--ec-space-6);
-	text-decoration: none;
 	display: flex;
-	flex-direction: column;
-	gap: var(--ec-space-1);
-	position: relative;
-	min-height: 148px;
-	justify-content: center;
-	transition: background var(--ec-transition);
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: var(--ec-space-6);
+	margin-bottom: clamp(1.25rem, 3.5vw, 3rem);
+	flex-wrap: wrap;
 }
 
-.ec-cat:hover {
-	background: var(--ec-surface-2);
-}
-
-.ec-cat__title {
-	font-family: var(--ec-font-sans);
-	font-size: var(--ec-fs-xl);
-	color: var(--ec-heading);
-	line-height: 1.25;
-}
-
-.ec-cat__sub {
+.ec-section__note {
+	color: var(--ec-soft);
 	font-size: var(--ec-fs-sm);
-	color: var(--ec-muted);
-}
-
-.ec-cat__arrow {
-	position: absolute;
-	inset-block-end: var(--ec-space-6);
-	inset-inline-start: var(--ec-space-6);
-	color: var(--ec-lime);
-	font-size: var(--ec-fs-lg);
-	opacity: 0;
-	transform: translateX(6px);
-	transition: opacity var(--ec-transition), transform var(--ec-transition);
-}
-
-.ec-cat:hover .ec-cat__arrow {
-	opacity: 1;
-	transform: translateX(0);
-}
-
-/* ── Split layout ────────────────────────────────────────────────────────── */
-
-.ec-split {
-	display: grid;
-	grid-template-columns: 1.4fr 1fr;
-	gap: var(--ec-space-16);
-	align-items: start;
-}
-
-@media (max-width: 781px) {
-	.ec-split { grid-template-columns: 1fr; gap: var(--ec-space-8); }
-}
-
-.ec-split__text p { max-width: 56ch; }
-
-.ec-list {
-	list-style: none;
-	padding: 0;
-	margin-block: var(--ec-space-6);
-}
-
-.ec-list li {
-	padding-block: var(--ec-space-2);
-	padding-inline-start: var(--ec-space-6);
-	border-block-end: 1px solid var(--ec-border);
-	position: relative;
-}
-
-.ec-list li::before {
-	content: "—";
-	position: absolute;
-	inset-inline-start: 0;
-	color: var(--ec-lime);
-}
-
-.ec-fact {
-	border-inline-start: 2px solid var(--ec-lime);
-	padding-inline-start: var(--ec-space-6);
-	margin-block-end: var(--ec-space-8);
-}
-
-.ec-fact__num {
-	display: block;
-	font-family: var(--ec-font-sans);
-	font-size: var(--ec-fs-3xl);
-	color: var(--ec-heading);
-	line-height: 1.1;
-}
-
-.ec-fact__label {
-	display: block;
-	font-size: var(--ec-fs-sm);
-	color: var(--ec-muted);
-	margin-block-start: var(--ec-space-2);
-}
-
-/* ── Trust ───────────────────────────────────────────────────────────────── */
-
-.ec-trust {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-	gap: var(--ec-space-8);
-}
-
-.ec-trust__item h3 {
-	font-family: var(--ec-font-sans);
-	font-size: var(--ec-fs-lg);
-	color: var(--ec-heading);
-	margin-block: 0 var(--ec-space-2);
-	font-weight: 500;
-}
-
-.ec-trust__item p {
-	font-size: var(--ec-fs-sm);
-	color: var(--ec-text);
+	max-width: 40ch;
 	margin: 0;
 }
 
-/* ── Store ───────────────────────────────────────────────────────────────── */
-
-.ec-store__addr {
-	font-size: var(--ec-fs-lg);
-	color: var(--ec-heading);
+.ec-rule {
+	border: 0;
+	border-top: 1px solid var(--ec-hair);
+	margin: 0;
 }
 
-.ec-hours {
-	display: grid;
-	grid-template-columns: auto 1fr;
-	gap: var(--ec-space-2) var(--ec-space-8);
-	margin-block: var(--ec-space-6);
+/* ── Motion ──────────────────────────────────────────────────────────────── */
+
+.ec-reveal {
+	opacity: 0;
+	transform: translateY(18px);
+	transition: opacity 0.75s var(--ec-ease), transform 0.75s var(--ec-ease);
+}
+
+.ec-reveal.is-in {
+	opacity: 1;
+	transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*, *::before, *::after {
+		animation-duration: 0.001ms !important;
+		transition-duration: 0.001ms !important;
+	}
+
+	.ec-reveal {
+		opacity: 1;
+		transform: none;
+	}
+
+	li.wc-block-product:hover .wc-block-components-product-image {
+		transform: none;
+	}
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+
+.wp-block-site-footer,
+.ec-foot {
+	color: var(--ec-soft);
 	font-size: var(--ec-fs-sm);
-	max-width: 340px;
+	border-top: 1px solid var(--ec-hair);
 }
 
-.ec-hours dt { color: var(--ec-muted); }
-.ec-hours dd { margin: 0; color: var(--ec-text); }
+/* ── Cross-document view transitions ──────────────────────────────────────
 
-/* Product grid inside homepage sections keeps the archive spacing. */
-.ec-section--tint + .wp-block-shortcode,
-.home .woocommerce.columns-4 {
-	max-width: var(--ec-container);
-	margin-inline: auto;
-	padding-inline: var(--ec-space-6);
-	margin-block-end: var(--ec-space-24);
+   The prototype faked navigation with a hash router so it could animate
+   between screens. On the real site the navigations are real, and the CSS
+   rule below gets the same morph without a router: the browser animates
+   between two genuine page loads.
+
+   Everything the prototype needed JavaScript for — the re-entrancy guard, the
+   view-transition-name bookkeeping, awaiting decode — is the browser's problem
+   here. Where the rule is unsupported the navigation is simply a navigation,
+   which is the correct fallback and needs no code.
+
+   `plus-lighter` is the default blend for the old/new pair and it destroys a
+   transparent PNG, which is every product image we own. */
+
+@view-transition {
+	navigation: auto;
 }
 
-/* ── Homepage layout corrections ─────────────────────────────────────────── */
-
-/* The block theme renders the page title above the content. On the front page
-   the hero *is* the title, so a second "דף הבית" heading above it is noise. */
-.home .wp-block-post-title {
-	display: none;
+::view-transition-old(root),
+::view-transition-new(root) {
+	mix-blend-mode: normal;
+	animation-duration: 260ms;
+	animation-timing-function: var(--ec-ease);
 }
 
-/* ...but a product grid added to the homepage later would use the same block
-   for its titles, and hiding those would be a silent, confusing bug. Restore
-   the block wherever it appears inside a loop. */
-.home .wp-block-post-template .wp-block-post-title,
-.home .wp-block-product-template .wp-block-post-title,
-.home li.product .wp-block-post-title {
-	display: block;
+@media (prefers-reduced-motion: reduce) {
+	@view-transition {
+		navigation: none;
+	}
 }
 
-/* Break the hero and tinted sections out of the constrained content column.
-   Without this they sit in an 820px well and read as a document, not a shop. */
-.ec-hero,
-.ec-section--tint {
-	width: 100vw;
-	max-width: 100vw;
-	margin-inline: calc(50% - 50vw);
-}
+/* ── Hero ─────────────────────────────────────────────────────────────────
 
-/* Give the homepage its own rhythm — the theme's default content spacing is
-   tuned for prose, not for full-bleed retail sections. */
-.home .wp-block-post-content > * + * {
-	margin-block-start: 0;
-}
+   The earlier drafts read as "banal" for a measurable reason, not a matter of
+   taste: the product occupied about 40% of the viewport width where the sites
+   we were being compared to run 90–100%. Scale was the finding. The hero
+   product here is sized against the viewport, not against a column. */
 
-.home .entry-content,
-.home .wp-block-post-content {
-	max-width: none;
-}
-
-/* 100vw includes the scrollbar, so a full-bleed section is a few pixels wider
-   than the viewport and produces a horizontal scrollbar. `clip` contains it
-   without creating a scroll container, so position:sticky keeps working —
-   `hidden` would break it. */
-html {
-	overflow-x: clip;
-}
-
-body {
-	overflow-x: clip;
-}
-
-/* Hours we have not yet confirmed with the shop are marked, not hidden.
-   Publishing invented opening times for a real business is the kind of small
-   fiction customers act on and then arrive to a closed door. */
-.ec-store__note {
-	font-size: var(--ec-fs-xs);
-	color: var(--ec-avail-confirm);
-	border-inline-start: 2px solid var(--ec-avail-confirm);
-	padding-inline-start: var(--ec-space-3);
-	margin-block: var(--ec-space-4) 0;
-}
-
-/* =============================================================================
-   Block-theme product cards
-   =============================================================================
-
-   Twenty Twenty-Five renders the catalogue through the Product Collection
-   block, not the classic WooCommerce templates. The selectors above
-   (span.onsale, ul.products, .woocommerce-loop-product__title) match nothing
-   here — verified by grepping the rendered page: 0 occurrences each, against 12
-   for wc-block-components-product-sale-badge.
-
-   The cards still looked broadly right, which is what made this easy to miss:
-   theme.json and inherited body styles were doing the work while the rules
-   below sat dead. Same failure as the loop_shop_columns filters removed
-   earlier — writing classic WooCommerce for a block theme.
-
-   The classic selectors are kept rather than deleted: they cost nothing and
-   would apply if a classic template is ever introduced.
-   ============================================================================= */
-
-/* The catalogue is not prose: give it the wide measure rather than the 820px
-   content column, which capped it at two columns on any screen size. */
-.woocommerce .wp-block-woocommerce-product-collection,
-.wp-block-woocommerce-product-collection,
-.woocommerce-page .wp-block-query-title,
-.woocommerce-page .woocommerce-result-count,
-.woocommerce-page .wp-block-woocommerce-catalog-sorting,
-.woocommerce-page .wp-block-woocommerce-product-results-count,
-.woocommerce-page .woocommerce-breadcrumb {
-	max-width: var(--ec-container);
-	margin-inline: auto;
-	width: 100%;
-}
-
-/* Explicit columns rather than WooCommerce's formula.
- *
- * Their grid is repeat(auto-fill, minmax(max(150px, calc(33.33% - .83em)), 1fr)),
- * which subtracts the gap THEY assume. Setting a more generous gap here made
- * three columns no longer fit, and the grid silently fell back to two at a
- * 1280px viewport — the column count quietly depending on a gap value is the
- * kind of coupling worth removing rather than tuning around.
- *
- * A fixed minimum track is gap-independent and stays responsive on its own.
- */
-.wc-block-product-template__responsive.wc-block-product-template,
-.wp-block-woocommerce-product-template.wc-block-product-template {
+.ec-hero {
+	position: relative;
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
-	gap: var(--ec-space-12) var(--ec-space-8);
+	align-items: center;
+	min-height: clamp(560px, 92svh, 900px);
+	padding: clamp(3rem, 7vh, 5.5rem) clamp(1rem, 4vw, 3.375rem) clamp(2rem, 6vh, 4rem);
+	background: radial-gradient(120% 100% at var(--ec-lx) 0%,
+		var(--ec-lift) 0%, var(--ec-paper) 55%, var(--ec-sink) 100%);
+	overflow: clip;
 }
 
-li.wc-block-product {
-	position: relative;
-	transition: transform var(--ec-transition);
-}
-
-li.wc-block-product:hover {
-	transform: translateY(-4px);
-}
-
-/* Image well: a lifted surface so the drawn placeholder reads as deliberate. */
-.wc-block-components-product-image {
-	background: var(--ec-surface-1);
-	border-radius: var(--ec-radius);
-	margin-block-end: var(--ec-space-4);
-	position: relative;
-}
-
-/* Constrain the well rather than letting the image set its own height. The
-   block ships an aspect-ratio modifier class, but width:100% with height:auto
-   overrode it and produced cards several screens tall. */
-.wc-block-components-product-image {
-	aspect-ratio: 4 / 3;
-}
-
-.wc-block-components-product-image__inner-container,
-.wc-block-components-product-image a {
-	display: block;
+.ec-hero__wrap {
+	display: grid;
+	grid-template-columns: 1fr;
+	align-items: center;
 	width: 100%;
-	height: 100%;
+	max-width: var(--ec-container);
+	margin-inline: auto;
 }
 
-.wc-block-components-product-image img {
-	border-radius: var(--ec-radius);
-	transition: opacity var(--ec-transition);
-	display: block;
-	width: 100%;
-	height: 100%;
+/* Copy and product share one grid cell and are pulled to opposite sides, so
+   the machine can run behind the text instead of beside it. A two-column grid
+   would put a gutter between them and lose exactly the overlap that makes the
+   composition read as a photograph rather than a layout. */
+.ec-hero__stage,
+.ec-hero__copy {
+	grid-area: 1 / 1;
+}
+
+.ec-hero__stage {
+	justify-self: start;
+	width: clamp(280px, 48vw, 680px);
+	z-index: 1;
+}
+
+/* The hero's height is set by the product, not by the copy — these are
+   portrait cut-outs, and at 48vw wide the tallest of them ran 826px, which
+   pushed the primary button below the fold on a 1280x860 desktop. Capping the
+   image against the viewport is what keeps the call to action visible; width
+   alone cannot, because the aspect ratio varies per machine.
+
+   Left as a cap rather than a fixed height: a wide, low scooter should still
+   be allowed to be short. */
+.ec-hero__stage img {
+	max-height: min(58svh, 620px);
+	width: auto;
+	margin-inline: auto;
 	object-fit: contain;
 }
 
-li.wc-block-product:hover .wc-block-components-product-image img {
-	opacity: 0.85;
-}
-
-/* Titles are headings, not links — inheriting the lime link colour would turn
-   an archive into a wall of green. */
-li.wc-block-product .wp-block-post-title,
-li.wc-block-product .wp-block-post-title a {
-	color: var(--ec-heading);
-	font-family: var(--ec-font-sans);
-	font-size: var(--ec-fs-lg);
-	font-weight: 700;
-	line-height: 1.3;
-	letter-spacing: -0.015em;
-	text-decoration: none;
-	text-align: start;
-	margin-block: 0 var(--ec-space-2);
-}
-
-li.wc-block-product .wp-block-post-title a:hover {
-	color: var(--ec-lime);
-}
-
-.wc-block-components-product-price {
-	font-family: var(--ec-font-sans);
-	font-weight: 700;
-	color: var(--ec-heading);
-	display: block;
-	margin-block-end: var(--ec-space-4);
-}
-
-.wc-block-components-product-price del {
-	color: var(--ec-muted);
-	font-weight: 400;
-	opacity: 0.7;
-	margin-inline-end: var(--ec-space-2);
-}
-
-.wc-block-components-product-price ins {
-	color: var(--ec-lime);
-	text-decoration: none;
-	font-weight: 800;
-}
-
-/* Sale badge — the block equivalent of span.onsale. */
-.wc-block-components-product-sale-badge {
-	position: absolute;
-	inset-block-start: var(--ec-space-3);
-	inset-inline-start: var(--ec-space-3);
-	inset-inline-end: auto;
-	width: auto;
-	min-width: 0;
-	max-width: none;
-	white-space: nowrap;
-	background: var(--ec-lime);
-	color: var(--ec-black);
-	border: 0;
-	border-radius: var(--ec-radius);
-	font-family: var(--ec-font-sans);
-	font-size: var(--ec-fs-xs);
-	font-weight: 800;
-	letter-spacing: 0.08em;
-	padding: var(--ec-space-1) var(--ec-space-3);
-	line-height: 1.8;
+.ec-hero__copy {
+	justify-self: end;
 	z-index: 2;
+	text-align: start;
+
+	/* Wider than a reading measure on purpose. A display headline and a
+	   paragraph of body copy do not share a measure: at 90px, 52ch is about
+	   440px, which broke a deliberate three-line headline onto a fourth line
+	   and pushed the primary button below the fold on a 1280x860 desktop.
+	   The lead paragraph keeps its own 34ch below. */
+	max-width: min(56vw, 760px);
 }
 
-.wc-block-components-product-sale-badge__text {
-	color: var(--ec-black);
+.ec-hero__title {
+	font-size: var(--ec-fs-4xl);
+	margin: 0.35rem 0 0;
 }
 
-/* Add-to-cart on a card. */
-.wc-block-components-product-button .wp-block-button__link,
-.wc-block-components-product-button a {
-	background: var(--ec-lime);
-	color: var(--ec-black);
-	border: 1px solid var(--ec-lime);
-	border-radius: var(--ec-radius);
-	font-weight: 700;
+/* Heebo has no italic, so <em> is re-purposed as a weight shift. Left as an
+   oblique the browser synthesises one and mangles the Hebrew letterforms. */
+.ec-hero__title em {
+	font-style: normal;
+	font-weight: 500;
+}
+
+.ec-hero__lead {
+	margin: clamp(0.875rem, 2.4vh, 1.5rem) 0 0;
+	max-width: 34ch;
+	color: var(--ec-soft);
+	font-size: clamp(1rem, 1.5vw, 1.2rem);
+}
+
+.ec-hero__acts {
+	display: flex;
+	gap: 0.75rem;
+	flex-wrap: wrap;
+	margin-top: clamp(1.25rem, 3vh, 2rem);
+}
+
+@media (max-width: 860px) {
+	.ec-hero {
+		min-height: auto;
+	}
+
+	.ec-hero__wrap {
+		grid-template-rows: auto auto;
+	}
+
+	.ec-hero__copy {
+		grid-area: 1 / 1;
+		justify-self: stretch;
+		max-width: none;
+	}
+
+	.ec-hero__stage {
+		grid-area: 2 / 1;
+		justify-self: center;
+		width: min(78vw, 420px);
+		margin-top: var(--ec-space-6);
+	}
+}
+
+/* ── The availability legend ──────────────────────────────────────────────
+
+   Four coloured marks with their meanings spelled out. This is the one thing
+   the shop does that its competitors do not, so it is stated on the homepage
+   rather than discovered on a product page. Colour is never the only carrier —
+   every line is also a sentence. */
+
+.ec-knows {
+	background: var(--ec-ink);
+	color: var(--ec-paper);
+	padding-block: clamp(2.5rem, 7vw, 5rem);
+}
+
+.ec-knows__in {
+	max-width: var(--ec-container);
+	margin-inline: auto;
+	padding-inline: clamp(1rem, 4vw, 3.375rem);
+	display: grid;
+	gap: clamp(1.5rem, 4vw, 4rem);
+	grid-template-columns: 1fr;
+}
+
+@media (min-width: 900px) {
+	.ec-knows__in {
+		grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+		align-items: start;
+	}
+}
+
+.ec-knows h2 {
+	color: var(--ec-paper);
+	font-size: var(--ec-fs-2xl);
+	margin: 0;
+}
+
+.ec-knows ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: 0.9rem;
+}
+
+.ec-knows li {
+	display: flex;
+	align-items: baseline;
+	gap: 0.75rem;
 	font-size: var(--ec-fs-sm);
-	letter-spacing: 0.03em;
-	padding: var(--ec-space-3) var(--ec-space-6);
-	transition: background var(--ec-transition), border-color var(--ec-transition);
-	text-decoration: none;
+	line-height: 1.5;
+	padding-block-end: 0.9rem;
+	border-bottom: 1px solid rgba(242, 241, 238, 0.14);
+}
+
+.ec-knows li::before {
+	content: "";
+	inline-size: 7px;
+	block-size: 7px;
+	border-radius: 50%;
+	background: var(--mark, var(--ec-paper));
+	flex: none;
+	transform: translateY(-1px);
+}
+
+/* ── Editorial product rows ───────────────────────────────────────────────
+
+   One product per row, alternating sides. The alternation is CSS, not markup:
+   the Product Collection block emits identical list items and cannot know
+   which side a given one lands on, so asking the template to encode it would
+   mean hand-writing the products and giving up the query. */
+
+.ec-models .wc-block-product-template {
+	display: grid;
+	gap: clamp(2.5rem, 7vw, 6rem);
+	grid-template-columns: 1fr;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.ec-models li.wc-block-product {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: clamp(1.25rem, 4vw, 3.5rem);
+	align-items: center;
+}
+
+@media (min-width: 900px) {
+	.ec-models li.wc-block-product {
+		grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+	}
+
+	/* Physical direction on purpose. The stage is lit from one side and the
+	   contact shadow leans away from that light, so mirroring the row under
+	   RTL would put the shadow on the wrong side of the wheels. */
+	.ec-models li.wc-block-product:nth-child(even) > *:first-child {
+		order: 2;
+	}
+}
+
+.ec-models .wc-block-components-product-image {
+	background: radial-gradient(110% 90% at var(--ec-lx) 6%,
+		var(--ec-lift) 0%, var(--ec-paper) 58%, var(--ec-sink) 100%);
+	border-radius: 3px;
+	padding: clamp(1rem, 3vw, 2.5rem);
+	margin: 0;
+}
+
+.ec-models .wc-block-components-product-title,
+.ec-models .wc-block-components-product-title a {
+	font-size: var(--ec-fs-2xl) !important;
+	line-height: 1.06;
+}
+
+/* ── The workshop ─────────────────────────────────────────────────────────── */
+
+.ec-lab {
+	background: var(--ec-lift);
+	border-block: 1px solid var(--ec-hair);
+	padding-block: clamp(3rem, 8vw, 6.5rem);
+}
+
+.ec-lab__in {
+	max-width: var(--ec-container);
+	margin-inline: auto;
+	padding-inline: clamp(1rem, 4vw, 3.375rem);
+	display: grid;
+	gap: clamp(1.5rem, 4vw, 4rem);
+	grid-template-columns: 1fr;
+}
+
+@media (min-width: 900px) {
+	.ec-lab__in {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	}
+}
+
+.ec-lab h2 {
+	font-size: var(--ec-fs-2xl);
+	margin: 0;
+}
+
+.ec-lab ul {
+	list-style: none;
+	margin: var(--ec-space-6) 0 0;
+	padding: 0;
+	display: grid;
+	gap: 0.75rem;
+	font-size: var(--ec-fs-sm);
+	color: var(--ec-soft);
+}
+
+.ec-lab li {
+	padding-block-end: 0.75rem;
+	border-bottom: 1px solid var(--ec-hair);
+}
+
+/* ── Header, sticky ──────────────────────────────────────────────────────── */
+
+.ec-head {
+	position: sticky;
+	top: 0;
+	z-index: 40;
+	background: color-mix(in srgb, var(--ec-paper) 86%, transparent);
+	backdrop-filter: saturate(1.4) blur(14px);
+	border-bottom: 1px solid transparent;
+	transition: border-color 0.3s, background 0.3s;
+}
+
+/* Set by the scroll listener rather than by a scroll-driven animation, because
+   the animation form is still unsupported in Safari and this is the one piece
+   of chrome present on every page. */
+.ec-head.is-stuck {
+	border-bottom-color: var(--ec-hair);
+	background: color-mix(in srgb, var(--ec-paper) 96%, transparent);
+}
+
+/* The header must not be dragged into the page transition — it is the one
+   element that genuinely persists across a navigation. */
+.ec-head {
+	view-transition-name: ec-head;
+}
+
+/* ── Compliance and fine print ───────────────────────────────────────────── */
+
+.ec-fine {
+	color: var(--ec-soft);
+	font-size: var(--ec-fs-xs);
+	margin: var(--ec-space-4) 0 0;
+}
+
+/* Where the buy button would have been.
+
+   A product the model says cannot be bought has no add-to-cart form, so this
+   is the only thing standing between the price and the specification. It is
+   given the button's own vertical space rather than being tucked under the
+   price, because a customer scanning for "can I buy this" looks here. */
+.ec-avail-instead {
+	margin-block: var(--ec-space-6);
+	padding-block: var(--ec-space-4);
+	border-top: 1px solid var(--ec-hair);
+	border-bottom: 1px solid var(--ec-hair);
+}
+
+.ec-avail-instead .ec-avail {
+	margin-top: 0;
+	font-size: var(--ec-fs-base);
+}
+
+/* ── Touch targets ────────────────────────────────────────────────────────
+
+   Measured on a 390x844 viewport rather than assumed. Before this the footer
+   links were 21px tall, the card titles 23px, and the header controls between
+   24px and 43px — all under the 24px WCAG 2.2 minimum or the 44px that a
+   thumb actually needs.
+
+   Height is added with padding rather than a fixed height, so a label that
+   wraps to two lines still centres and still grows its target rather than
+   overflowing a box. */
+
+.ec-foot__links {
+	list-style: none;
+	margin: var(--ec-space-3) 0 0;
+	padding: 0;
+}
+
+.ec-foot__links a {
+	display: inline-block;
+	padding-block: 0.6rem;
+	min-height: 44px;
+	align-content: center;
+}
+
+/* The card image above is also a link to the same product, so the title was
+   never the only way in — but it is the one people aim at. */
+.wc-block-components-product-title a,
+.wp-block-post-title a {
+	display: inline-block;
+	padding-block: 0.7rem;
+}
+
+/* WooCommerce's own header controls. Sized by the plugin, not by us, and both
+   land under the minimum. */
+.wc-block-mini-cart__button,
+.wc-block-customer-account__link,
+.wp-block-site-title a,
+.wp-block-navigation__responsive-container-open,
+.wp-block-navigation__responsive-container-close {
+	min-width: 44px;
 	min-height: 44px;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 }
 
-.wc-block-components-product-button .wp-block-button__link:hover,
-.wc-block-components-product-button a:hover {
-	background: var(--ec-lime-dim);
-	border-color: var(--ec-lime-dim);
-	color: var(--ec-black);
+/* ── The catalogue grid ───────────────────────────────────────────────────
+
+   TWO THINGS WERE MEASURED WRONG BEFORE THIS EXISTED, ON A REAL SHOP PAGE.
+
+   1. The grid rendered two columns where the template asked for three.
+      WooCommerce sizes its columns as `calc(33.333% - .833em)` inside an
+      auto-fill — arithmetic that assumes ITS OWN 1.25em gap. Widening the gap
+      for the editorial spacing pushed the third column past the container and
+      auto-fill quietly dropped it. Nothing errored; the shop simply had one
+      fewer column than the template said. Columns are therefore declared here
+      explicitly rather than inherited from that calculation.
+
+   2. Card heights ran from 545px to 1055px in the same grid. At one width, a
+      tall portrait cut-out and a low wide scooter produce wildly different
+      cards, and a grid of them reads as broken rather than varied.
+
+   The second fix is the whole payoff of cutting the products out and trimming
+   them to their opaque bounds: because the bottom edge of every file is now
+   the wheels, a fixed-height stage with the image bottom-aligned puts every
+   machine in the catalogue on ONE GROUND LINE. Cards become the same height,
+   and the products keep their true relative proportions inside them. That is
+   a shop window, not a spreadsheet — and it is only possible because no image
+   here carries a background. */
+
+.wc-block-product-template.wc-block-product-template__responsive,
+.wc-block-product-template.is-flex-container {
+	grid-template-columns: 1fr;
 }
 
-/* Sorting and result count on the block archive. */
-.wc-block-product-sort-select select,
-.wp-block-woocommerce-catalog-sorting select {
-	background: var(--ec-surface-1);
-	color: var(--ec-text);
-	border: 1px solid var(--ec-border);
-	border-radius: var(--ec-radius);
-	font-family: var(--ec-font-sans);
-	font-size: var(--ec-fs-sm);
-	padding: var(--ec-space-2) var(--ec-space-4);
+@media (min-width: 640px) {
+	.wc-block-product-template.wc-block-product-template__responsive,
+	.wc-block-product-template.is-flex-container {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (min-width: 1000px) {
+	.wc-block-product-template.wc-block-product-template__responsive,
+	.wc-block-product-template.is-flex-container {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+li.wc-block-product .wc-block-components-product-image {
+	/* One value, used by the stage and by the image cap below.
+	   They must never drift apart: the stage height is what makes the cards
+	   equal, and the image cap is what keeps the product inside it. */
+	--ec-stage: clamp(190px, 22vw, 330px);
+
+	display: grid;
+
+	/* end = the ground line. The trimmed file's bottom edge is the tyre
+	   contact patch, so bottom-aligning every product stands them all on the
+	   same surface. */
+	place-items: end center;
+	block-size: var(--ec-stage);
+}
+
+/* The image is NOT the grid item. WooCommerce wraps it in a link, and a
+   percentage max-height resolved against an auto-height wrapper is defined to
+   mean no limit at all — so the cap below did nothing until the wrapper
+   carried the height itself. Measured before this line existed: the cut-outs
+   ran 164–227px past the bottom of their stage and the product title printed
+   across the rear wheel. */
+li.wc-block-product .wc-block-components-product-image > a,
+li.wc-block-product .wc-block-components-product-image > .wc-block-components-product-image__inner-container {
+	display: grid;
+	place-items: end center;
+	block-size: 100%;
+	min-block-size: 0;
+}
+
+li.wc-block-product .wc-block-components-product-image img {
+	/*
+	 * The cap is the stage value itself, NOT 100%.
+	 *
+	 * A percentage max-height resolves against the grid ROW, and an implicit
+	 * row is auto-sized — it grows to whatever the image needs. So `100%`
+	 * measured 445px on a 282px stage and capped nothing at all. Measured, not
+	 * reasoned about: the products ran up to 314px past their stage and the
+	 * title printed across the wheel.
+	 */
+	max-block-size: var(--ec-stage);
+	inline-size: auto;
+	max-inline-size: 100%;
+}
+
+/* The hero and the editorial rows are compositions, not grid cells: there is
+   nothing beside them to line up with, and forcing them into a card stage
+   would throw away the scale that makes them work. */
+.ec-hero__stage .wc-block-components-product-image,
+.ec-models .wc-block-components-product-image {
+	display: block;
+	block-size: auto;
+}
+
+.ec-models .wc-block-components-product-image img,
+.ec-hero__stage .wc-block-components-product-image img {
+	inline-size: auto;
+	max-inline-size: 100%;
 }

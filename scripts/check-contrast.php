@@ -108,24 +108,44 @@ for ( $pass = 0; $pass < 2; $pass++ ) {
 }
 
 /**
- * Backgrounds text can land on. Availability badges carry their own ground, so
- * they are checked against it rather than against the page.
+ * Backgrounds text can land on.
+ *
+ * Named explicitly rather than inferred, because "which colours are grounds"
+ * is a design decision the checker cannot read off the stylesheet.
+ *
+ * A missing ground is now a hard error. When the palette moved from dark to
+ * light every one of these names changed, and the checker quietly skipped all
+ * four grounds, compared every colour against nothing, and reported seven
+ * failures with an empty audit table. A gate that fails for the wrong reason
+ * teaches people to ignore it.
  */
-$grounds = array(
-	'ec-black'     => $tokens['ec-black'] ?? null,
-	'ec-surface-1' => $tokens['ec-surface-1'] ?? null,
-	'ec-surface-2' => $tokens['ec-surface-2'] ?? null,
-	// Lime is a ground too: buttons and the sale badge are black text on lime.
-	// Omitting it made the checker report a correct pairing as a failure.
-	'ec-lime'      => $tokens['ec-lime'] ?? null,
-);
+$ground_names = array( 'ec-paper', 'ec-lift', 'ec-sink', 'ec-ink' );
+$grounds      = array();
+$missing      = array();
 
-$paired = array(
-	'ec-avail-stock'    => 'ec-avail-stock-bg',
-	'ec-avail-supplier' => 'ec-avail-supplier-bg',
-	'ec-avail-confirm'  => 'ec-avail-confirm-bg',
-	'ec-avail-out'      => 'ec-avail-out-bg',
-);
+foreach ( $ground_names as $name ) {
+	if ( isset( $tokens[ $name ] ) ) {
+		$grounds[ $name ] = $tokens[ $name ];
+	} else {
+		$missing[] = $name;
+	}
+}
+
+if ( array() !== $missing ) {
+	fwrite( STDERR, "Ground token(s) not found in the stylesheet: " . implode( ', ', $missing ) . "\n" );
+	fwrite( STDERR, "The palette was renamed without updating this list, so nothing was actually checked.\n" );
+	exit( 2 );
+}
+
+/**
+ * Foregrounds that sit on their own background rather than on the page.
+ *
+ * Empty in the current design: availability colours are coloured text on the
+ * page ground, which is a stricter test than a tinted pill would be.
+ *
+ * @var array<string, string>
+ */
+$paired = array();
 
 // Every token actually used in a `color:` declaration.
 preg_match_all( '/(?<!-)color:\s*var\(\s*--(ec-[a-z0-9-]+)\s*\)/', $css, $used, PREG_SET_ORDER );

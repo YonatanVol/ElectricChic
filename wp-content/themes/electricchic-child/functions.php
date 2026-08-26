@@ -42,6 +42,36 @@ function electricchic_enqueue_styles(): void {
 add_action( 'wp_enqueue_scripts', 'electricchic_enqueue_styles', 20 );
 
 /**
+ * Load the motion script.
+ *
+ * Deferred, and deliberately not a dependency of anything. Every element it
+ * touches renders in its final readable state without it; the only thing lost
+ * when it fails to load is the movement. That ordering is the point — the
+ * reveal class is added BY the script rather than sitting in the markup, so a
+ * blocked or broken file can never leave the page blank.
+ */
+function electricchic_enqueue_scripts(): void {
+	$relative = '/assets/js/ec-motion.js';
+	$path     = get_stylesheet_directory() . $relative;
+
+	if ( ! is_readable( $path ) ) {
+		return;
+	}
+
+	wp_enqueue_script(
+		'electricchic-motion',
+		get_stylesheet_directory_uri() . $relative,
+		array(),
+		(string) filemtime( $path ),
+		array(
+			'strategy'  => 'defer',
+			'in_footer' => true,
+		)
+	);
+}
+add_action( 'wp_enqueue_scripts', 'electricchic_enqueue_scripts', 20 );
+
+/**
  * Preload the two font files above the fold.
  *
  * Hebrew body text and headings both render immediately; without the preload the
@@ -207,3 +237,44 @@ add_filter( 'woocommerce_shortcode_products_query', 'electricchic_available_now_
  * Controlling the block catalog needs a Product Catalog template override in
  * the child theme, which lands with the design work rather than being faked here.
  */
+
+/**
+ * Load the first product image on a page eagerly.
+ *
+ * The homepage hero is the largest thing above the fold and therefore the
+ * page's Largest Contentful Paint. WooCommerce's product-image block renders
+ * it through wp_get_attachment_image(), which marks it loading="lazy" — so the
+ * browser deliberately delays the one image the visitor is waiting for, and
+ * only starts fetching it after layout.
+ *
+ * Only the first one. Making them all eager would have the browser fetch two
+ * dozen product photographs at once and starve the one that matters, which is
+ * the failure this is meant to fix, inverted.
+ *
+ * @param array<string, string> $attr Attributes for the image markup.
+ * @return array<string, string>
+ */
+function electricchic_eager_first_product_image( array $attr ): array {
+	static $done = false;
+
+	if ( $done || is_admin() ) {
+		return $attr;
+	}
+
+	if ( ! str_contains( $attr['class'] ?? '', 'attachment-' ) ) {
+		return $attr;
+	}
+
+	$done = true;
+
+	$attr['loading']       = 'eager';
+	$attr['fetchpriority'] = 'high';
+
+	// wp_get_attachment_image() adds decoding="async" by default, which tells
+	// the browser it may paint the page without waiting. For the LCP image
+	// that is the wrong instruction.
+	unset( $attr['decoding'] );
+
+	return $attr;
+}
+add_filter( 'wp_get_attachment_image_attributes', 'electricchic_eager_first_product_image' );
