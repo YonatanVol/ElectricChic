@@ -309,15 +309,42 @@ i, em, .wp-block-post-content em {
 	color: var(--ec-ink);
 }
 
-/* ── Product cards, Product Collection block ─────────────────────────────── */
+/* ── Product cards, Product Collection block ─────────────────────────────────
 
-.wp-block-woocommerce-product-collection,
-.wc-block-product-template {
+   EVERYTHING THAT STYLES A CARD IS SCOPED TO .ec-grid. THIS IS NOT DECORATION.
+
+   A Product Collection block is used in more than one shape on this site: a
+   catalogue grid, and a single featured product staged in the hero. The rules
+   below describe the grid shape only, but they were written against the bare
+   WooCommerce class names — so they reached every collection on the site.
+
+   That is not a hypothetical. The homepage ran an editorial section of
+   full-width product rows, and the catalogue's `grid-template-columns:
+   repeat(3, ...)` matched it at identical specificity from further down this
+   file and won. Measured at 1600px: three 420px columns where the section
+   asked for one full-width row, model names broken onto three lines, and a
+   129px bicycle floating in a 410px box.
+
+   The instinct is to add a reset for the other context. There already was one,
+   and it lost, because it reset two properties out of six. A specificity war
+   against a third party's class names is one you lose again next month.
+
+   So: an unclassed collection gets WooCommerce's own layout, and a collection
+   that wants the card treatment asks for it by name. A section that renders
+   unstyled is a visible mistake; a section that silently inherits another
+   section's layout is the one that shipped. */
+
+.ec-grid .wp-block-woocommerce-product-collection,
+.ec-grid.wp-block-woocommerce-product-collection,
+.ec-grid .wc-block-product-template {
+	/* Wider than WooCommerce's 1.25em. Note that its column arithmetic —
+	   calc(33.333% - .83333em) inside an auto-fill — assumes its own gap, so
+	   the explicit column declaration further down is not optional. */
 	gap: clamp(1rem, 3vw, 2.75rem);
 }
 
-.wc-block-product-template__responsive,
-li.wc-block-product {
+.ec-grid .wc-block-product-template,
+.ec-grid li.wc-block-product {
 	background: transparent;
 	text-align: start;
 }
@@ -329,7 +356,7 @@ li.wc-block-product {
 	transition: transform 0.35s var(--ec-ease);
 }
 
-li.wc-block-product:hover .wc-block-components-product-image {
+.ec-grid li.wc-block-product:hover .wc-block-components-product-image {
 	transform: translateY(-6px);
 }
 
@@ -592,7 +619,7 @@ li.wc-block-product:hover .wc-block-components-product-image {
 		transform: none;
 	}
 
-	li.wc-block-product:hover .wc-block-components-product-image {
+	.ec-grid li.wc-block-product:hover .wc-block-components-product-image {
 		transform: none;
 	}
 }
@@ -820,54 +847,105 @@ li.wc-block-product:hover .wc-block-components-product-image {
 	transform: translateY(-1px);
 }
 
-/* ── Editorial product rows ───────────────────────────────────────────────
+/* ── The five departments ─────────────────────────────────────────────────
 
-   One product per row, alternating sides. The alternation is CSS, not markup:
-   the Product Collection block emits identical list items and cannot know
-   which side a given one lands on, so asking the template to encode it would
-   mean hand-writing the products and giving up the query. */
+   The way into the shop. Two of the five have stock and are links; three do
+   not and are deliberately NOT links — a card that opens an empty page costs a
+   customer a tap to learn what the card could have told them, and it is what
+   makes a shop look abandoned.
 
-.ec-models .wc-block-product-template {
+   The two states are one component, not two: same box, same type, same
+   spacing. Only the colour of the last line and the arrow differ, so the
+   empty ones read as "not yet" rather than as broken. */
+
+.ec-depts {
 	display: grid;
-	gap: clamp(2.5rem, 7vw, 6rem);
+	gap: 1px;
 	grid-template-columns: 1fr;
-	list-style: none;
-	margin: 0;
-	padding: 0;
+	background: var(--ec-hair);
+	border-block: 1px solid var(--ec-hair);
 }
 
-.ec-models li.wc-block-product {
-	display: grid;
-	grid-template-columns: 1fr;
-	gap: clamp(1.25rem, 4vw, 3.5rem);
-	align-items: center;
-}
-
-@media (min-width: 900px) {
-	.ec-models li.wc-block-product {
-		grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-	}
-
-	/* Physical direction on purpose. The stage is lit from one side and the
-	   contact shadow leans away from that light, so mirroring the row under
-	   RTL would put the shadow on the wrong side of the wheels. */
-	.ec-models li.wc-block-product:nth-child(even) > *:first-child {
-		order: 2;
+@media (min-width: 700px) {
+	.ec-depts {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }
 
-.ec-models .wc-block-components-product-image {
-	background: radial-gradient(110% 90% at var(--ec-lx) 6%,
-		var(--ec-lift) 0%, var(--ec-paper) 58%, var(--ec-sink) 100%);
-	border-radius: 3px;
-	padding: clamp(1rem, 3vw, 2.5rem);
-	margin: 0;
+@media (min-width: 1100px) {
+	/* Five across on a wide screen: the whole shop in one glance, which is the
+	   entire point of putting them here. */
+	.ec-depts {
+		grid-template-columns: repeat(5, minmax(0, 1fr));
+	}
 }
 
-.ec-models .wc-block-components-product-title,
-.ec-models .wc-block-components-product-title a {
-	font-size: var(--ec-fs-2xl) !important;
-	line-height: 1.06;
+.ec-dept {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	/* Comfortably past the 44px minimum without needing to be checked. */
+	padding: clamp(1.25rem, 2.5vw, 2rem) clamp(1rem, 2vw, 1.5rem);
+	background: var(--ec-paper);
+	color: var(--ec-ink);
+	text-decoration: none;
+	min-block-size: 100%;
+	transition: background 0.25s var(--ec-ease);
+}
+
+a.ec-dept:hover,
+a.ec-dept:focus-visible {
+	background: var(--ec-lift);
+	text-decoration: none;
+}
+
+.ec-dept__name {
+	font-size: var(--ec-fs-lg);
+	font-weight: 500;
+	line-height: 1.2;
+}
+
+.ec-dept__blurb {
+	color: var(--ec-soft);
+	font-size: var(--ec-fs-sm);
+	line-height: 1.5;
+	flex: 1;
+}
+
+.ec-dept__count {
+	font-size: var(--ec-fs-xs);
+	font-weight: 500;
+	color: var(--ec-soft);
+}
+
+/* Never colour alone. The words carry the meaning; the colour only reinforces
+   it, which is also what keeps this legible to anyone who cannot separate the
+   two greys. */
+.ec-dept__empty {
+	font-size: var(--ec-fs-xs);
+	font-weight: 600;
+	color: var(--ec-back);
+}
+
+.ec-dept--empty .ec-dept__name {
+	color: var(--ec-soft);
+}
+
+.ec-dept__go {
+	font-size: var(--ec-fs-sm);
+	color: var(--ec-soft);
+	transition: transform 0.25s var(--ec-ease);
+}
+
+/* Physical, not logical. The arrow is drawn pointing left and means "onward"
+   in a right-to-left page; a logical property would flip the glyph's motion
+   away from the direction it points. */
+a.ec-dept:hover .ec-dept__go {
+	transform: translateX(-4px);
+}
+
+.ec-section--depts {
+	padding-block: clamp(2.5rem, 6vw, 5rem);
 }
 
 /* ── The workshop ─────────────────────────────────────────────────────────── */
@@ -1035,26 +1113,23 @@ li.wc-block-product:hover .wc-block-components-product-image {
    a shop window, not a spreadsheet — and it is only possible because no image
    here carries a background. */
 
-.wc-block-product-template.wc-block-product-template__responsive,
-.wc-block-product-template.is-flex-container {
+.ec-grid .wc-block-product-template {
 	grid-template-columns: 1fr;
 }
 
 @media (min-width: 640px) {
-	.wc-block-product-template.wc-block-product-template__responsive,
-	.wc-block-product-template.is-flex-container {
+	.ec-grid .wc-block-product-template {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }
 
 @media (min-width: 1000px) {
-	.wc-block-product-template.wc-block-product-template__responsive,
-	.wc-block-product-template.is-flex-container {
+	.ec-grid .wc-block-product-template {
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 	}
 }
 
-li.wc-block-product .wc-block-components-product-image {
+.ec-grid li.wc-block-product .wc-block-components-product-image {
 	/* One value, used by the stage and by the image cap below.
 	   They must never drift apart: the stage height is what makes the cards
 	   equal, and the image cap is what keeps the product inside it. */
@@ -1075,15 +1150,15 @@ li.wc-block-product .wc-block-components-product-image {
    carried the height itself. Measured before this line existed: the cut-outs
    ran 164–227px past the bottom of their stage and the product title printed
    across the rear wheel. */
-li.wc-block-product .wc-block-components-product-image > a,
-li.wc-block-product .wc-block-components-product-image > .wc-block-components-product-image__inner-container {
+.ec-grid li.wc-block-product .wc-block-components-product-image > a,
+.ec-grid li.wc-block-product .wc-block-components-product-image > .wc-block-components-product-image__inner-container {
 	display: grid;
 	place-items: end center;
 	block-size: 100%;
 	min-block-size: 0;
 }
 
-li.wc-block-product .wc-block-components-product-image img {
+.ec-grid li.wc-block-product .wc-block-components-product-image img {
 	/*
 	 * The cap is the stage value itself, NOT 100%.
 	 *
@@ -1098,16 +1173,10 @@ li.wc-block-product .wc-block-components-product-image img {
 	max-inline-size: 100%;
 }
 
-/* The hero and the editorial rows are compositions, not grid cells: there is
-   nothing beside them to line up with, and forcing them into a card stage
-   would throw away the scale that makes them work. */
-.ec-hero__stage .wc-block-components-product-image,
-.ec-models .wc-block-components-product-image {
-	display: block;
-	block-size: auto;
-}
-
-.ec-models .wc-block-components-product-image img,
+/* No reset for the hero. It used to need one — the card rules reached it and
+   had to be undone — and that reset lost the moment a card rule it did not
+   know about was added. Scoping removed the need for it entirely; this is the
+   hero asking for what it wants, not undoing what it was given. */
 .ec-hero__stage .wc-block-components-product-image img {
 	inline-size: auto;
 	max-inline-size: 100%;

@@ -27,8 +27,8 @@
 	<!-- /wp:group -->
 
 	<!-- Keep product-image or product-price: the availability badge attaches to one of them. -->
-	<!-- wp:woocommerce/product-collection {"queryId":0,"query":{"perPage":24,"pages":0,"offset":0,"postType":"product","order":"asc","orderBy":"menu_order","search":"","exclude":[],"inherit":true,"taxQuery":{},"isProductCollectionBlock":true,"woocommerceStockStatus":["instock","outofstock","onbackorder"],"woocommerceAttributes":[],"woocommerceHandPickedProducts":[]},"tagName":"div","displayLayout":{"type":"flex","columns":3,"shrinkColumns":true},"dimensions":{"widthType":"fill"},"queryContextIncludes":["collection"]} -->
-	<div class="wp-block-woocommerce-product-collection">
+	<!-- wp:woocommerce/product-collection {"className":"ec-grid","queryId":0,"query":{"perPage":24,"pages":0,"offset":0,"postType":"product","order":"asc","orderBy":"menu_order","search":"","exclude":[],"inherit":true,"taxQuery":{},"isProductCollectionBlock":true,"woocommerceStockStatus":["instock","outofstock","onbackorder"],"woocommerceAttributes":[],"woocommerceHandPickedProducts":[]},"tagName":"div","displayLayout":{"type":"flex","columns":3,"shrinkColumns":true},"dimensions":{"widthType":"fill"},"queryContextIncludes":["collection"]} -->
+	<div class="wp-block-woocommerce-product-collection ec-grid">
 		<!-- wp:woocommerce/product-template -->
 			<!-- wp:woocommerce/product-image {"showSaleBadge":true,"imageSizing":"single","isDescendentOfQueryLoop":true} /-->
 			<!-- wp:post-title {"level":3,"isLink":true,"fontFamily":"display","__woocommerceNamespace":"woocommerce/product-collection/product-title"} /-->
@@ -44,9 +44,18 @@
 		<!-- wp:woocommerce/product-collection-no-results -->
 		<!-- wp:group {"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
 		<div class="wp-block-group">
-			<!-- wp:paragraph -->
-			<p>לא נמצאו דגמים שמתאימים לסינון.</p>
+			<!-- Covers both an empty department and an over-narrow filter, because this block cannot tell them apart. -->
+			<!-- wp:paragraph {"className":"ec-section__note"} -->
+			<p class="ec-section__note">אין כאן דגמים להצגה כרגע. ייתכן שהמלאי במחלקה הזו טרם התקבל, או שהסינון צר מדי.</p>
 			<!-- /wp:paragraph -->
+
+			<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|50"}}},"layout":{"type":"flex"}} -->
+			<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--50)">
+				<!-- wp:button {"className":"is-style-outline"} -->
+				<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/shop/">לכל הדגמים</a></div>
+				<!-- /wp:button -->
+			</div>
+			<!-- /wp:buttons -->
 		</div>
 		<!-- /wp:group -->
 		<!-- /wp:woocommerce/product-collection-no-results -->

@@ -46,7 +46,7 @@
 	   single worst failure mode available here. */
 	if ( ! reduce.matches && 'IntersectionObserver' in window ) {
 		var targets = document.querySelectorAll(
-			'.ec-models li.wc-block-product, .ec-lab__in, .ec-knows__in'
+			'.ec-available-now li.wc-block-product, .ec-lab__in, .ec-knows__in'
 		);
 
 		if ( targets.length ) {
