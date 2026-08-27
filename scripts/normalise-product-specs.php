@@ -87,10 +87,28 @@ $ec_dry_run = in_array( 'dry-run', isset( $args ) && is_array( $args ) ? $args :
  * @return string
  */
 function ec_hebrew_quotes( string $text ): string {
-	// The table is stored as HTML, so the straight quote arrives encoded.
-	// Missing this is why the first run reported changes it had not made.
+	/*
+	 * The table is stored as HTML, so the straight quote arrives encoded — and
+	 * a doubled apostrophe arrives as TWO consecutive entities.
+	 *
+	 * The first version matched a single entity with a Hebrew letter required
+	 * immediately after it, which a pair can never satisfy: after the first
+	 * entity comes the second, not a letter. So `ק&#039;&#039;מ` sailed
+	 * through untouched and rendered as ק''מ on seven product pages while the
+	 * script reported success. Found by measuring a rendered spec table, not
+	 * by re-reading the regex.
+	 *
+	 * The pair is handled before the single, or the single would consume half
+	 * of it and leave a stray apostrophe behind.
+	 *
+	 * The single has NO lookahead. The first attempt required a Hebrew letter
+	 * after it, which is true for צ׳ק but false for the far more common case
+	 * here — a word-final geresh in an abbreviation. Five products kept
+	 * rendering `אינץ&#039;` for inches while the run reported success.
+	 */
+	$text = preg_replace( '/(?<=\p{Hebrew})(?:&#0?39;){2}(?=\p{Hebrew})/u', "\u{05F4}", $text );
 	$text = preg_replace( '/(?<=\p{Hebrew})&quot;(?=\p{Hebrew})/u', "\u{05F4}", $text );
-	$text = preg_replace( '/(?<=\p{Hebrew})&#0?39;(?=\p{Hebrew})/u', "\u{05F4}", $text );
+	$text = preg_replace( '/(?<=\p{Hebrew})&#0?39;/u', "\u{05F3}", $text );
 
 	// Gershayim (U+05F4) between two Hebrew letters: ק''מ -> ק״מ
 	$text = preg_replace( '/(?<=\p{Hebrew})(?:\'\'|")(?=\p{Hebrew})/u', "\u{05F4}", $text );

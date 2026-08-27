@@ -495,10 +495,23 @@ i, em, .wp-block-post-content em {
 }
 
 /* Each cell takes direction from its own first strong character: 48V/15.6A
-   goes LTR, דיסק מכני goes RTL, in one column, with no per-cell logic. */
+   goes LTR, דיסק מכני goes RTL, in one column, with no per-cell logic. That is
+   what keeps `48V/15.6A` from scrambling its slash and digits in an RTL
+   paragraph, and it is not optional.
+
+   The alignment, though, must NOT follow the same rule. `text-align: start`
+   resolves against each cell's content-derived direction, so a Latin-first
+   value takes "start" to mean the left edge — and measured on a real spec
+   table, `36V/10.4A` sat 752px away from the column its neighbours shared.
+   The label said one thing and the value was across the page.
+
+   `right` is physical on purpose. This table is Hebrew and right-to-left by
+   construction; a logical value here would go on resolving per-cell and
+   reintroduce exactly the split it is meant to fix. */
 .woocommerce table.shop_attributes td,
 .ec-spec-table td {
 	unicode-bidi: plaintext;
+	text-align: right;
 	font-variant-numeric: tabular-nums;
 }
 
@@ -513,14 +526,20 @@ i, em, .wp-block-post-content em {
 .woocommerce table.shop_attributes td,
 .ec-spec-table th,
 .ec-spec-table td {
+	/* Alignment is set per cell type below, not here. This rule used to carry
+	   `text-align: start` and, sitting later in the file, quietly reinstated
+	   it on the value cells — undoing the fix above without changing a line
+	   of it. */
 	padding: 0.8rem 0;
-	text-align: start;
 	border-top: 1px solid var(--ec-hair);
 	border-bottom: 0;
 }
 
+/* Labels are Hebrew throughout, so logical `start` is right for them and stays
+   correct if the table is ever used in a left-to-right context. */
 .woocommerce table.shop_attributes th,
 .ec-spec-table th {
+	text-align: start;
 	font-weight: 400;
 	color: var(--ec-soft);
 	width: 38%;

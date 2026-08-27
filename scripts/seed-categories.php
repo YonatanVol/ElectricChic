@@ -144,8 +144,36 @@ foreach ( EC_DEPARTMENTS as $ec_order => $ec_dept ) {
 			$ec_term = get_term( $ec_new['term_id'], 'product_cat' );
 		}
 	} elseif ( '' === $ec_action ) {
-		$ec_action = 'already correct';
-		++$ec_intact;
+		/*
+		 * Already under the right slug — but that is not the same as being
+		 * right. `scooters` predated this script and had no description, so
+		 * the first version skipped it entirely and its card on the homepage
+		 * rendered a department with no blurb beside four that had one.
+		 *
+		 * Idempotent has to mean "ends up correct", not "does nothing when it
+		 * recognises the slug".
+		 */
+		$ec_stale = $ec_term->name !== $ec_dept['name']
+			|| $ec_term->description !== $ec_dept['description'];
+
+		if ( $ec_stale ) {
+			$ec_action = 'sync name and description';
+			++$ec_renamed;
+
+			if ( ! $ec_dry_run ) {
+				wp_update_term(
+					$ec_term->term_id,
+					'product_cat',
+					array(
+						'name'        => $ec_dept['name'],
+						'description' => $ec_dept['description'],
+					)
+				);
+			}
+		} else {
+			$ec_action = 'already correct';
+			++$ec_intact;
+		}
 	}
 
 	// Display order, so the navigation and the shop agree on the sequence.
