@@ -268,6 +268,40 @@ function electricchic_eager_first_product_image( array $attr ): array {
 	$attr['loading']       = 'eager';
 	$attr['fetchpriority'] = 'high';
 
+	/*
+	 * `sizes` has to be rewritten along with `loading`, because the value
+	 * WordPress emits stops being valid the moment this filter runs.
+	 *
+	 * WordPress writes sizes="auto, (max-width: 796px) 100vw, 796px". The
+	 * `auto` keyword is defined ONLY for lazily-loaded images, so setting
+	 * loading="eager" makes the browser discard the whole attribute and assume
+	 * 100vw.
+	 *
+	 * WHAT THAT ACTUALLY COSTS — measured against the real candidate list
+	 * rather than estimated, after a first attempt got this wrong:
+	 *
+	 *   1440px @2x   no change      (both pick the largest candidate)
+	 *   1440px @1x   72KB -> 52KB
+	 *    390px @2x   54KB -> 52KB
+	 *
+	 * So this is a correctness fix worth about a quarter of the image on a
+	 * non-retina desktop, and nothing at all on a retina one. The weight of
+	 * these images was solved by converting them to WebP, not here — see
+	 * scripts/webp-product-images.php. Saying otherwise in this comment would
+	 * send the next person to tune the wrong thing.
+	 *
+	 * A caution for whoever measures this next: with a `w`-descriptor srcset,
+	 * `naturalWidth` is reported AFTER density correction, so it returns the
+	 * `sizes` value and not the file's pixel width. Comparing it against
+	 * width x devicePixelRatio produces a number that looks like waste and is
+	 * an artefact. Read the selected candidate's descriptor instead.
+	 *
+	 * The value below describes the hero's real upper bound: capped at 48vw
+	 * beside the copy, roughly 78vw once the layout stacks. It tracks
+	 * .ec-hero__stage in design-system.css and has to move with it.
+	 */
+	$attr['sizes'] = '(max-width: 860px) 78vw, 48vw';
+
 	// wp_get_attachment_image() adds decoding="async" by default, which tells
 	// the browser it may paint the page without waiting. For the LCP image
 	// that is the wrong instruction.
@@ -320,7 +354,8 @@ function electricchic_render_category_nav(): string {
 		return '';
 	}
 
-	$cards = '';
+	$stocked = '';
+	$soon    = array();
 
 	foreach ( electricchic_departments() as $slug ) {
 		$term = get_term_by( 'slug', $slug, 'product_cat' );
@@ -333,60 +368,61 @@ function electricchic_render_category_nav(): string {
 		}
 
 		$count = (int) $term->count;
-		$name  = sprintf(
-			'<span class="ec-dept__name">%s</span>',
-			esc_html( $term->name )
-		);
-
-		if ( $count > 0 ) {
-			/* translators: %d: number of products in this department. */
-			$phrase = _n( '%d דגם', '%d דגמים', $count, 'electricchic' );
-			$note   = sprintf(
-				'<span class="ec-dept__count">%s</span>',
-				esc_html( sprintf( $phrase, $count ) )
-			);
-		} else {
-			$note = '<span class="ec-dept__empty">טרם התקבל מלאי</span>';
-		}
-
+		$name  = sprintf( '<span class="ec-dept__name">%s</span>', esc_html( $term->name ) );
 		$blurb = '' !== $term->description
 			? sprintf( '<span class="ec-dept__blurb">%s</span>', esc_html( $term->description ) )
 			: '';
 
-		if ( $count > 0 ) {
-			$cards .= sprintf(
-				'<a class="ec-dept" href="%s">%s%s%s<span class="ec-dept__go" aria-hidden="true">←</span></a>',
-				esc_url( (string) get_term_link( $term ) ),
-				$name,
-				$blurb,
-				$note
-			);
-
+		if ( $count < 1 ) {
+			$soon[] = esc_html( $term->name );
 			continue;
 		}
 
-		/*
-		 * Deliberately not an <a>. A link to a page with nothing on it costs a
-		 * customer a tap to learn what the card could have told them, and it
-		 * is the kind of dead end that makes a shop look abandoned.
-		 */
-		$cards .= sprintf(
-			'<div class="ec-dept ec-dept--empty">%s%s%s</div>',
+		/* translators: %d: number of products in this department. */
+		$phrase = _n( '%d דגם', '%d דגמים', $count, 'electricchic' );
+
+		$stocked .= sprintf(
+			'<a class="ec-dept" href="%s">%s%s<span class="ec-dept__count">%s</span><span class="ec-dept__go" aria-hidden="true">←</span></a>',
+			esc_url( (string) get_term_link( $term ) ),
 			$name,
 			$blurb,
-			$note
+			esc_html( sprintf( $phrase, $count ) )
 		);
 	}
 
-	if ( '' === $cards ) {
+	if ( '' === $stocked && array() === $soon ) {
 		return '';
 	}
 
-	return sprintf(
-		'<nav class="ec-depts" aria-label="%s">%s</nav>',
-		esc_attr__( 'מחלקות החנות', 'electricchic' ),
-		$cards
-	);
+	$out = '';
+
+	if ( '' !== $stocked ) {
+		$out .= sprintf(
+			'<nav class="ec-depts" aria-label="%s">%s</nav>',
+			esc_attr__( 'מחלקות החנות', 'electricchic' ),
+			$stocked
+		);
+	}
+
+	/*
+	 * The empty departments used to sit in the same row, at the same size, as
+	 * the ones that have stock. Measured on the rendered page, three of five
+	 * cards were not links: 60% of the width of the shop's primary way in was
+	 * dead. Honest, and unusable.
+	 *
+	 * One line instead. It still says exactly what it said before — these
+	 * departments exist and have no stock yet — and it stops them taking the
+	 * space of the two a customer can actually act on. Nothing is hidden; the
+	 * emphasis just matches what is true.
+	 */
+	if ( array() !== $soon ) {
+		$out .= sprintf(
+			'<p class="ec-depts__soon"><span class="ec-depts__soon-label">בקרוב</span>%s<span class="ec-depts__soon-note">טרם התקבל מלאי</span></p>',
+			implode( '<span class="ec-depts__sep" aria-hidden="true">·</span>', $soon )
+		);
+	}
+
+	return $out;
 }
 
 /**
@@ -405,3 +441,35 @@ function electricchic_register_blocks(): void {
 	);
 }
 add_action( 'init', 'electricchic_register_blocks' );
+
+/*
+ * Removed: add_filter( 'should_load_separate_core_block_assets', '__return_true' ).
+ *
+ * It is the textbook fix for a block theme loading one big core stylesheet,
+ * and it was measured here rather than assumed: 314KB of CSS across 13 files
+ * with it, and 314KB across 13 files without it. It works — only one core
+ * block file survives, the rest are inlined — and it changes nothing, because
+ * almost none of the weight is core's.
+ *
+ * The homepage's CSS is WooCommerce's:
+ *
+ *   woocommerce-rtl.css          86KB
+ *   packages-style-rtl.css       47KB
+ *   mini-cart-contents-rtl.css   43KB
+ *   woocommerce-layout-rtl.css   20KB
+ *   ...and seven more
+ *
+ * woocommerce-rtl.css looks like dead weight on a block theme and is not: the
+ * single-product template renders the gallery and the details table through
+ * WooCommerce's classic markup, and this theme's rules for
+ * `.woocommerce div.product` and `table.shop_attributes` build on top of it.
+ * Dropping it takes the product page's layout with it, on a different template
+ * from the one where the change was made.
+ *
+ * The mini-cart drawer is a further 55KB. That is a real feature and it stays,
+ * but it is the first thing to weigh if this budget ever starts to matter.
+ *
+ * Left as a note instead of a filter, because a line of configuration that
+ * provably does nothing is worse than no line: the next person reads it as
+ * "performance is handled here" and stops looking.
+ */

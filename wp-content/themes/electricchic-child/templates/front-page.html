@@ -9,15 +9,12 @@
 	<!-- wp:group {"className":"ec-hero","layout":{"type":"default"}} -->
 	<div class="wp-block-group ec-hero">
 		<!-- wp:group {"className":"ec-hero__wrap","layout":{"type":"default"}} -->
+		<!-- Copy first in the DOM, product second. They share one grid cell so the
+		     order is invisible on screen, but a screen reader reads the source: with
+		     the collection first, the first thing announced inside main was a bare
+		     "in stock in the shop, available for immediate collection" before the
+		     visitor had been told what the site is. -->
 		<div class="wp-block-group ec-hero__wrap">
-
-			<!-- wp:woocommerce/product-collection {"queryId":10,"className":"ec-hero__stage","query":{"perPage":1,"pages":1,"offset":0,"postType":"product","order":"desc","orderBy":"date","search":"","exclude":[],"inherit":false,"taxQuery":{},"isProductCollectionBlock":true,"featured":true,"woocommerceStockStatus":["instock","outofstock","onbackorder"],"woocommerceAttributes":[],"woocommerceHandPickedProducts":[]},"tagName":"div","displayLayout":{"type":"flex","columns":1,"shrinkColumns":false},"dimensions":{"widthType":"fill"},"queryContextIncludes":["collection"]} -->
-			<div class="wp-block-woocommerce-product-collection ec-hero__stage">
-				<!-- wp:woocommerce/product-template -->
-					<!-- wp:woocommerce/product-image {"showSaleBadge":false,"imageSizing":"single","isDescendentOfQueryLoop":true} /-->
-				<!-- /wp:woocommerce/product-template -->
-			</div>
-			<!-- /wp:woocommerce/product-collection -->
 
 			<!-- wp:group {"className":"ec-hero__copy","layout":{"type":"default"}} -->
 			<div class="wp-block-group ec-hero__copy">
@@ -45,6 +42,14 @@
 				<!-- /wp:buttons -->
 			</div>
 			<!-- /wp:group -->
+
+			<!-- wp:woocommerce/product-collection {"queryId":10,"className":"ec-hero__stage","query":{"perPage":1,"pages":1,"offset":0,"postType":"product","order":"desc","orderBy":"date","search":"","exclude":[],"inherit":false,"taxQuery":{},"isProductCollectionBlock":true,"featured":true,"woocommerceStockStatus":["instock","outofstock","onbackorder"],"woocommerceAttributes":[],"woocommerceHandPickedProducts":[]},"tagName":"div","displayLayout":{"type":"flex","columns":1,"shrinkColumns":false},"dimensions":{"widthType":"fill"},"queryContextIncludes":["collection"]} -->
+			<div class="wp-block-woocommerce-product-collection ec-hero__stage">
+				<!-- wp:woocommerce/product-template -->
+					<!-- wp:woocommerce/product-image {"showSaleBadge":false,"imageSizing":"single","isDescendentOfQueryLoop":true} /-->
+				<!-- /wp:woocommerce/product-template -->
+			</div>
+			<!-- /wp:woocommerce/product-collection -->
 
 		</div>
 		<!-- /wp:group -->
@@ -169,6 +174,64 @@
 				<!-- /wp:buttons -->
 			</div>
 			<!-- /wp:group -->
+		</div>
+		<!-- /wp:group -->
+	</section>
+	<!-- /wp:group -->
+
+	<!-- Where the shop is and when it is open — the first question a physical
+	     shop has to answer, and until now it was only in the footer. -->
+	<!-- wp:group {"tagName":"section","className":"ec-store","anchor":"ec-store","layout":{"type":"default"}} -->
+	<section class="wp-block-group ec-store" id="ec-store">
+		<!-- wp:group {"className":"ec-store__in","layout":{"type":"default"}} -->
+		<div class="wp-block-group ec-store__in">
+
+			<!-- wp:group {"layout":{"type":"default"}} -->
+			<div class="wp-block-group">
+				<!-- wp:paragraph {"className":"ec-eyebrow"} -->
+				<p class="ec-eyebrow">סוכן מורשה קורטז</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:heading {"level":2,"fontSize":"x-large"} -->
+				<h2 class="wp-block-heading has-x-large-font-size">אפשר פשוט<br>לבוא לראות.</h2>
+				<!-- /wp:heading -->
+
+				<!-- wp:paragraph -->
+				<p>אנחנו מוכרים את קורטז כסוכן מורשה, ומחזיקים חלק מהדגמים פיזית בחנות. מה שמסומן ירוק באתר נמצא כאן עכשיו — אפשר לבוא, לעלות עליו, ולקחת אותו באותו יום.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|60"}}},"layout":{"type":"flex"}} -->
+				<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--60)">
+					<!-- wp:button -->
+					<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="tel:+972524873436">052-4873436</a></div>
+					<!-- /wp:button -->
+					<!-- wp:button {"className":"is-style-outline"} -->
+					<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="https://wa.me/972524873436" rel="noopener">וואטסאפ</a></div>
+					<!-- /wp:button -->
+				</div>
+				<!-- /wp:buttons -->
+			</div>
+			<!-- /wp:group -->
+
+			<!-- Friday reads "טרם אושר" on purpose. Publishing an opening time
+			     nobody confirmed sends a real customer to a closed door. -->
+			<!-- wp:html -->
+			<dl class="ec-store__facts">
+				<dt>כתובת</dt>
+				<dd>דרך חיים ברלב 98, תל אביב-יפו</dd>
+
+				<dt>ראשון–חמישי</dt>
+				<dd>10:00–19:00</dd>
+
+				<dt>שישי</dt>
+				<dd class="ec-store__unconfirmed">טרם אושר</dd>
+
+				<dt>שבת</dt>
+				<dd>סגור</dd>
+			</dl>
+			<p class="ec-fine">שעות הפתיחה טעונות אישור מול החנות לפני עלייה לאוויר.</p>
+			<!-- /wp:html -->
+
 		</div>
 		<!-- /wp:group -->
 	</section>

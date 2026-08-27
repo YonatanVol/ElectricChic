@@ -891,11 +891,14 @@ i, em, .wp-block-post-content em {
 	}
 }
 
-@media (min-width: 1100px) {
-	/* Five across on a wide screen: the whole shop in one glance, which is the
-	   entire point of putting them here. */
+/* Sized by how many departments actually have stock, rather than fixed at
+   five. Two wide cards read as a choice; five, three of them dead, read as a
+   site that has not been finished. */
+@media (min-width: 700px) {
 	.ec-depts {
-		grid-template-columns: repeat(5, minmax(0, 1fr));
+		grid-auto-flow: column;
+		grid-auto-columns: minmax(0, 1fr);
+		grid-template-columns: none;
 	}
 }
 
@@ -961,6 +964,36 @@ a.ec-dept:focus-visible {
    away from the direction it points. */
 a.ec-dept:hover .ec-dept__go {
 	transform: translateX(-4px);
+}
+
+/* The departments with nothing in them yet. Still named, still honest, no
+   longer occupying the width of the ones a customer can act on. */
+.ec-depts__soon {
+	display: flex;
+	align-items: baseline;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin: var(--ec-space-4) 0 0;
+	padding-block-start: var(--ec-space-4);
+	border-top: 1px solid var(--ec-hair);
+	color: var(--ec-soft);
+	font-size: var(--ec-fs-sm);
+}
+
+.ec-depts__soon-label {
+	font-weight: 600;
+	color: var(--ec-back);
+}
+
+/* Never colour alone — the note spells out what the colour is hinting. */
+.ec-depts__soon-note {
+	margin-inline-start: auto;
+	font-size: var(--ec-fs-xs);
+	color: var(--ec-back);
+}
+
+.ec-depts__sep {
+	color: var(--ec-hair);
 }
 
 .ec-section--depts {
@@ -1199,4 +1232,110 @@ a.ec-dept:hover .ec-dept__go {
 .ec-hero__stage .wc-block-components-product-image img {
 	inline-size: auto;
 	max-inline-size: 100%;
+}
+
+/* ── The shop itself ──────────────────────────────────────────────────────
+
+   Where it is and when it is open. Obvious, and it was missing: measured on
+   the rendered homepage, neither the address nor the opening hours nor the
+   words "סוכן מורשה קורטז" appeared anywhere in <main>. For a shop whose whole
+   pitch is that you can walk in and collect the thing today, that is the one
+   question the page has to answer.
+
+   Warranty, returns and payment terms are NOT here. They are commercial and
+   legal commitments, they belong to the owner and his lawyer, and inventing
+   plausible ones on a demo going to the importer is exactly the failure this
+   project exists to prevent. */
+
+.ec-store {
+	background: var(--ec-ink);
+	color: var(--ec-paper);
+	padding-block: clamp(3rem, 8vw, 6.5rem);
+}
+
+.ec-store__in {
+	max-width: var(--ec-container);
+	margin-inline: auto;
+	padding-inline: clamp(1rem, 4vw, 3.375rem);
+	display: grid;
+	gap: clamp(2rem, 5vw, 5rem);
+	grid-template-columns: 1fr;
+	align-items: start;
+}
+
+@media (min-width: 900px) {
+	.ec-store__in {
+		grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+	}
+}
+
+.ec-store h2,
+.ec-store p {
+	color: var(--ec-paper);
+}
+
+.ec-store .ec-eyebrow {
+	color: var(--ec-paper);
+	opacity: 0.62;
+}
+
+/* Buttons invert: on the dark ground the solid one has to be light, or it
+   disappears into the section it is sitting on. */
+.ec-store .wp-block-button__link {
+	background: var(--ec-paper);
+	color: var(--ec-ink);
+	border-color: var(--ec-paper);
+}
+
+.ec-store .is-style-outline .wp-block-button__link {
+	background: transparent;
+	color: var(--ec-paper);
+}
+
+.ec-store .wp-block-button__link:hover {
+	background: #fff;
+	color: var(--ec-ink);
+}
+
+.ec-store .is-style-outline .wp-block-button__link:hover {
+	background: rgba(242, 241, 238, 0.12);
+	color: var(--ec-paper);
+}
+
+/* A definition list, because that is what this is: four labelled facts. It
+   reads correctly to a screen reader without any ARIA. */
+.ec-store__facts {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 0.5rem 1.5rem;
+	margin: 0;
+	font-size: var(--ec-fs-sm);
+}
+
+.ec-store__facts dt {
+	color: var(--ec-paper);
+	opacity: 0.58;
+	padding-block: 0.55rem;
+	border-top: 1px solid rgba(242, 241, 238, 0.14);
+}
+
+.ec-store__facts dd {
+	margin: 0;
+	padding-block: 0.55rem;
+	border-top: 1px solid rgba(242, 241, 238, 0.14);
+	font-variant-numeric: tabular-nums;
+	/* 10:00–19:00 is a Latin-first run inside an RTL block. */
+	unicode-bidi: plaintext;
+	text-align: start;
+}
+
+/* Marked, not quietly omitted. A visitor should be able to see that this one
+   is not yet a commitment. */
+.ec-store__unconfirmed {
+	color: #e2b04a;
+}
+
+.ec-store .ec-fine {
+	color: var(--ec-paper);
+	opacity: 0.55;
 }
