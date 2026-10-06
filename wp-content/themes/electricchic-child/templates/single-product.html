@@ -1,0 +1,74 @@
+<!-- wp:template-part {"slug":"header","tagName":"div"} /-->
+
+<!-- wp:group {"tagName":"main","className":"ec-section","layout":{"type":"default"}} -->
+<main class="wp-block-group ec-section">
+
+	<!-- wp:woocommerce/store-notices /-->
+	<!-- wp:woocommerce/breadcrumbs /-->
+
+	<!-- wp:columns {"className":"ec-pdp","anchor":"ec-pdp","style":{"spacing":{"blockGap":{"left":"var:preset|spacing|80","top":"var:preset|spacing|70"}}}} -->
+	<div class="wp-block-columns ec-pdp" id="ec-pdp">
+
+		<!-- wp:column {"width":"56%"} -->
+		<div class="wp-block-column" style="flex-basis:56%">
+			<!-- wp:woocommerce/product-image-gallery /-->
+		</div>
+		<!-- /wp:column -->
+
+		<!-- wp:column -->
+		<div class="wp-block-column">
+			<!-- wp:post-terms {"term":"product_cat","className":"ec-eyebrow"} /-->
+
+			<!-- wp:post-title {"level":1,"fontSize":"xx-large","fontFamily":"display","__woocommerceNamespace":"woocommerce/product-query/product-title"} /-->
+
+			<!-- wp:woocommerce/product-price {"isDescendentOfSingleProductTemplate":true,"fontSize":"x-large"} /-->
+
+			<!-- wp:post-excerpt {"excerptLength":60,"showMoreOnNewLine":false,"__woocommerceNamespace":"woocommerce/product-query/product-summary"} /-->
+
+			<!-- The availability badge and its notice are injected into this block. Do not remove it. -->
+			<!-- wp:woocommerce/add-to-cart-form /-->
+
+			<!-- wp:paragraph {"className":"ec-fine"} -->
+			<p class="ec-fine">מהירות מרבית 25 קמ״ש · מוגבל לפי התקן הישראלי</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:woocommerce/product-meta -->
+			<div class="wp-block-woocommerce-product-meta">
+				<!-- wp:group {"style":{"spacing":{"blockGap":"0.75rem"}},"layout":{"type":"flex","flexWrap":"wrap"}} -->
+				<div class="wp-block-group">
+					<!-- wp:woocommerce/product-sku /-->
+				</div>
+				<!-- /wp:group -->
+			</div>
+			<!-- /wp:woocommerce/product-meta -->
+		</div>
+		<!-- /wp:column -->
+
+	</div>
+	<!-- /wp:columns -->
+
+	<!-- The technical specification. is-style-minimal drops the tab chrome. -->
+	<!-- wp:woocommerce/product-details {"className":"is-style-minimal"} /-->
+
+	<!-- wp:group {"className":"ec-section__head","style":{"spacing":{"margin":{"top":"var:preset|spacing|80"}}},"layout":{"type":"default"}} -->
+	<div class="wp-block-group ec-section__head" style="margin-top:var(--wp--preset--spacing--80)">
+		<!-- wp:heading {"level":2,"fontSize":"x-large"} -->
+		<h2 class="wp-block-heading has-x-large-font-size">דגמים דומים</h2>
+		<!-- /wp:heading -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:woocommerce/product-collection {"className":"ec-grid","queryId":20,"query":{"perPage":3,"pages":1,"offset":0,"postType":"product","order":"asc","orderBy":"menu_order","search":"","exclude":[],"inherit":false,"taxQuery":{},"isProductCollectionBlock":true,"woocommerceStockStatus":["instock","outofstock","onbackorder"],"woocommerceAttributes":[],"woocommerceHandPickedProducts":[]},"collection":"woocommerce/product-collection/related","tagName":"div","displayLayout":{"type":"flex","columns":3,"shrinkColumns":true},"dimensions":{"widthType":"fill"},"queryContextIncludes":["collection"]} -->
+	<div class="wp-block-woocommerce-product-collection ec-grid">
+		<!-- wp:woocommerce/product-template -->
+			<!-- wp:woocommerce/product-image {"showSaleBadge":false,"imageSizing":"single","isDescendentOfQueryLoop":true} /-->
+			<!-- wp:post-title {"level":3,"isLink":true,"fontFamily":"display","__woocommerceNamespace":"woocommerce/product-collection/product-title"} /-->
+			<!-- wp:woocommerce/product-price {"isDescendentOfQueryLoop":true} /-->
+		<!-- /wp:woocommerce/product-template -->
+	</div>
+	<!-- /wp:woocommerce/product-collection -->
+
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"div"} /-->

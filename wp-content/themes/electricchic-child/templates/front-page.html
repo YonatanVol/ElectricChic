@@ -1,0 +1,243 @@
+<!-- wp:template-part {"slug":"header","tagName":"div"} /-->
+
+<!-- wp:group {"tagName":"main","layout":{"type":"default"}} -->
+<main class="wp-block-group">
+
+	<!-- wp:woocommerce/store-notices /-->
+
+	<!-- Hero: whichever product is flagged "מוצר מומלץ" in admin. No code change needed. -->
+	<!-- wp:group {"className":"ec-hero","layout":{"type":"default"}} -->
+	<div class="wp-block-group ec-hero">
+		<!-- wp:group {"className":"ec-hero__wrap","layout":{"type":"default"}} -->
+		<!-- Copy first in the DOM, product second. They share one grid cell so the
+		     order is invisible on screen, but a screen reader reads the source: with
+		     the collection first, the first thing announced inside main was a bare
+		     "in stock in the shop, available for immediate collection" before the
+		     visitor had been told what the site is. -->
+		<div class="wp-block-group ec-hero__wrap">
+
+			<!-- wp:group {"className":"ec-hero__copy","layout":{"type":"default"}} -->
+			<div class="wp-block-group ec-hero__copy">
+				<!-- wp:paragraph {"className":"ec-eyebrow ec-eyebrow--lat","fontFamily":"display"} -->
+				<p class="ec-eyebrow ec-eyebrow--lat has-display-font-family">TEL AVIV · CORTEZ</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:heading {"level":1,"className":"ec-hero__title"} -->
+				<h1 class="wp-block-heading ec-hero__title">חשמליים.<br>ומעבדה שיודעת<br><em>לתקן אותם.</em></h1>
+				<!-- /wp:heading -->
+
+				<!-- wp:paragraph {"className":"ec-hero__lead"} -->
+				<p class="ec-hero__lead">כל כלי שיוצא מכאן מורכב, מכוון ונבדק. ואפשר תמיד לחזור עם שאלה.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:buttons {"className":"ec-hero__acts","layout":{"type":"flex"}} -->
+				<div class="wp-block-buttons ec-hero__acts">
+					<!-- wp:button -->
+					<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/shop/">לכל הדגמים</a></div>
+					<!-- /wp:button -->
+					<!-- wp:button {"className":"is-style-outline"} -->
+					<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ec-lab">מעבדה ותיקונים</a></div>
+					<!-- /wp:button -->
+				</div>
+				<!-- /wp:buttons -->
+			</div>
+			<!-- /wp:group -->
+
+			<!-- wp:woocommerce/product-collection {"queryId":10,"className":"ec-hero__stage","query":{"perPage":1,"pages":1,"offset":0,"postType":"product","order":"desc","orderBy":"date","search":"","exclude":[],"inherit":false,"taxQuery":{},"isProductCollectionBlock":true,"featured":true,"woocommerceStockStatus":["instock","outofstock","onbackorder"],"woocommerceAttributes":[],"woocommerceHandPickedProducts":[]},"tagName":"div","displayLayout":{"type":"flex","columns":1,"shrinkColumns":false},"dimensions":{"widthType":"fill"},"queryContextIncludes":["collection"]} -->
+			<div class="wp-block-woocommerce-product-collection ec-hero__stage">
+				<!-- wp:woocommerce/product-template -->
+					<!-- wp:woocommerce/product-image {"showSaleBadge":false,"imageSizing":"single","isDescendentOfQueryLoop":true} /-->
+				<!-- /wp:woocommerce/product-template -->
+			</div>
+			<!-- /wp:woocommerce/product-collection -->
+
+		</div>
+		<!-- /wp:group -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- Five departments, rendered from the taxonomy. Empty ones say so. -->
+	<!-- wp:group {"className":"ec-section ec-section--depts","layout":{"type":"default"}} -->
+	<div class="wp-block-group ec-section ec-section--depts">
+		<!-- wp:group {"className":"ec-section__head","layout":{"type":"default"}} -->
+		<div class="wp-block-group ec-section__head">
+			<!-- wp:heading {"level":2,"fontSize":"x-large"} -->
+			<h2 class="wp-block-heading has-x-large-font-size">מה מחפשים?</h2>
+			<!-- /wp:heading -->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:electricchic/category-nav /-->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- THE LEGEND ─ the one thing this shop does that the competitors do not. -->
+	<!-- wp:group {"className":"ec-knows","layout":{"type":"default"}} -->
+	<div class="wp-block-group ec-knows">
+		<!-- wp:group {"className":"ec-knows__in","layout":{"type":"default"}} -->
+		<div class="wp-block-group ec-knows__in">
+			<!-- wp:heading {"level":2} -->
+			<h2 class="wp-block-heading">האתר יודע מה יש<br>ומה אין.</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:html -->
+			<ul>
+				<li style="--mark:#2c6b45">במלאי בחנות — אפשר לאסוף היום</li>
+				<li style="--mark:#2a5a86">זמין מקורטז — עם זמן אספקה מוצהר</li>
+				<li style="--mark:#8a5f18">נדרש אישור — נבדק לפני שנלקח כסף</li>
+				<li style="--mark:#8f2f28">הופסק ייצור — העמוד נשאר, הרכישה חסומה</li>
+			</ul>
+			<!-- /wp:html -->
+		</div>
+		<!-- /wp:group -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- Only products the availability model says are physically here. -->
+	<!-- wp:group {"className":"ec-section ec-grid","layout":{"type":"default"}} -->
+	<div class="wp-block-group ec-section ec-grid">
+		<!-- wp:group {"className":"ec-section__head","layout":{"type":"default"}} -->
+		<div class="wp-block-group ec-section__head">
+			<!-- wp:heading {"level":2,"fontSize":"x-large"} -->
+			<h2 class="wp-block-heading has-x-large-font-size">במלאי עכשיו בחנות</h2>
+			<!-- /wp:heading -->
+			<!-- wp:paragraph {"className":"ec-section__note"} -->
+			<p class="ec-section__note">אלה הכלים שנמצאים פיזית בחנות ואפשר לאסוף אותם היום. השאר מוזמנים מקורטז, עם זמן אספקה מוצהר.</p>
+			<!-- /wp:paragraph -->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- ec-available-now filters this to what can genuinely be collected today. -->
+		<!-- wp:woocommerce/product-collection {"className":"ec-available-now","queryId":13,"query":{"perPage":6,"pages":1,"offset":0,"postType":"product","order":"asc","orderBy":"menu_order","search":"","exclude":[],"inherit":false,"taxQuery":{},"isProductCollectionBlock":true,"featured":false,"woocommerceStockStatus":["instock"],"woocommerceAttributes":[],"woocommerceHandPickedProducts":[]},"tagName":"div","displayLayout":{"type":"flex","columns":3,"shrinkColumns":true},"dimensions":{"widthType":"fill"},"queryContextIncludes":["collection"]} -->
+		<div class="wp-block-woocommerce-product-collection ec-available-now">
+			<!-- wp:woocommerce/product-template -->
+				<!-- wp:woocommerce/product-image {"showSaleBadge":true,"imageSizing":"single","isDescendentOfQueryLoop":true} /-->
+				<!-- wp:post-title {"level":3,"isLink":true,"fontFamily":"display","__woocommerceNamespace":"woocommerce/product-collection/product-title"} /-->
+				<!-- wp:woocommerce/product-price {"isDescendentOfQueryLoop":true} /-->
+			<!-- /wp:woocommerce/product-template -->
+
+			<!-- wp:woocommerce/product-collection-no-results -->
+			<!-- wp:group {"layout":{"type":"default"}} -->
+			<div class="wp-block-group">
+				<!-- wp:paragraph {"className":"ec-section__note"} -->
+				<p class="ec-section__note">אין כרגע כלים במלאי בחנות. כל הדגמים ניתנים להזמנה מקורטז — בדקו בעמוד הדגם את זמן האספקה.</p>
+				<!-- /wp:paragraph -->
+			</div>
+			<!-- /wp:group -->
+			<!-- /wp:woocommerce/product-collection-no-results -->
+		</div>
+		<!-- /wp:woocommerce/product-collection -->
+
+		<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|70"}}}} -->
+		<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--70)">
+			<!-- wp:button {"className":"is-style-outline"} -->
+			<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/shop/">כל 24 הדגמים</a></div>
+			<!-- /wp:button -->
+		</div>
+		<!-- /wp:buttons -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- THE WORKSHOP -->
+	<!-- wp:group {"tagName":"section","className":"ec-lab","anchor":"ec-lab","layout":{"type":"default"}} -->
+	<section class="wp-block-group ec-lab" id="ec-lab">
+		<!-- wp:group {"className":"ec-lab__in","layout":{"type":"default"}} -->
+		<div class="wp-block-group ec-lab__in">
+			<!-- wp:heading {"level":2} -->
+			<h2 class="wp-block-heading">המעבדה היא<br>הסיבה שחוזרים.</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:group {"layout":{"type":"default"}} -->
+			<div class="wp-block-group">
+				<!-- wp:paragraph -->
+				<p>התחלנו כמעבדת תיקונים, ורק אחר כך התחלנו למכור. זה עדיין הסדר הנכון — מי שמוכר כלי שהוא לא יודע לתקן, מוכר לך בעיה.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:html -->
+				<ul>
+					<li>אבחון וטיפול בסוללות ובמנועים</li>
+					<li>כיוון בלמים הידראוליים</li>
+					<li>החלפת צמיגים ופנימיות</li>
+					<li>טיפול תקופתי לכלים חשמליים</li>
+				</ul>
+				<!-- /wp:html -->
+
+				<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|60"}}},"layout":{"type":"flex"}} -->
+				<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--60)">
+					<!-- wp:button -->
+					<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="tel:+972524873436">התקשרו</a></div>
+					<!-- /wp:button -->
+					<!-- wp:button {"className":"is-style-outline"} -->
+					<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="https://wa.me/972524873436" rel="noopener">וואטסאפ</a></div>
+					<!-- /wp:button -->
+				</div>
+				<!-- /wp:buttons -->
+			</div>
+			<!-- /wp:group -->
+		</div>
+		<!-- /wp:group -->
+	</section>
+	<!-- /wp:group -->
+
+	<!-- Where the shop is and when it is open — the first question a physical
+	     shop has to answer, and until now it was only in the footer. -->
+	<!-- wp:group {"tagName":"section","className":"ec-store","anchor":"ec-store","layout":{"type":"default"}} -->
+	<section class="wp-block-group ec-store" id="ec-store">
+		<!-- wp:group {"className":"ec-store__in","layout":{"type":"default"}} -->
+		<div class="wp-block-group ec-store__in">
+
+			<!-- wp:group {"layout":{"type":"default"}} -->
+			<div class="wp-block-group">
+				<!-- wp:paragraph {"className":"ec-eyebrow"} -->
+				<p class="ec-eyebrow">סוכן מורשה קורטז</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:heading {"level":2,"fontSize":"x-large"} -->
+				<h2 class="wp-block-heading has-x-large-font-size">אפשר פשוט<br>לבוא לראות.</h2>
+				<!-- /wp:heading -->
+
+				<!-- wp:paragraph -->
+				<p>אנחנו מוכרים את קורטז כסוכן מורשה, ומחזיקים חלק מהדגמים פיזית בחנות. מה שמסומן ירוק באתר נמצא כאן עכשיו — אפשר לבוא, לעלות עליו, ולקחת אותו באותו יום.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|60"}}},"layout":{"type":"flex"}} -->
+				<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--60)">
+					<!-- wp:button -->
+					<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="tel:+972524873436">052-4873436</a></div>
+					<!-- /wp:button -->
+					<!-- wp:button {"className":"is-style-outline"} -->
+					<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="https://wa.me/972524873436" rel="noopener">וואטסאפ</a></div>
+					<!-- /wp:button -->
+				</div>
+				<!-- /wp:buttons -->
+			</div>
+			<!-- /wp:group -->
+
+			<!-- Friday reads "טרם אושר" on purpose. Publishing an opening time
+			     nobody confirmed sends a real customer to a closed door. -->
+			<!-- wp:html -->
+			<dl class="ec-store__facts">
+				<dt>כתובת</dt>
+				<dd>דרך חיים ברלב 98, תל אביב-יפו</dd>
+
+				<dt>ראשון–חמישי</dt>
+				<dd>10:00–19:00</dd>
+
+				<dt>שישי</dt>
+				<dd class="ec-store__unconfirmed">טרם אושר</dd>
+
+				<dt>שבת</dt>
+				<dd>סגור</dd>
+			</dl>
+			<p class="ec-fine">שעות הפתיחה טעונות אישור מול החנות לפני עלייה לאוויר.</p>
+			<!-- /wp:html -->
+
+		</div>
+		<!-- /wp:group -->
+	</section>
+	<!-- /wp:group -->
+
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"div"} /-->
