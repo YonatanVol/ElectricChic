@@ -473,3 +473,79 @@ add_action( 'init', 'electricchic_register_blocks' );
  * provably does nothing is worse than no line: the next person reads it as
  * "performance is handled here" and stops looking.
  */
+
+/**
+ * The arriving half of the product morph, and the render block that makes it
+ * possible.
+ *
+ * WHY THIS IS INLINE IN <head> AND NOT IN ec-motion.js
+ *
+ * A cross-document view transition names the element that should fly on the
+ * page being LEFT (ec-motion.js does that in `pageswap`, which fires long after
+ * a deferred script has loaded) and on the page being ARRIVED AT. The arriving
+ * side is announced by `pagereveal`, and that event fires at the new document's
+ * first rendering opportunity — before a deferred script has attached
+ * anything. Registered from ec-motion.js the listener was never present when
+ * the event fired; measured on a real click, the morph completed on zero
+ * navigations. It has to be in the head, inline, before any render.
+ *
+ * WHY THE PRODUCT PAGE RENDER-BLOCKS ON ITS OWN TOP BLOCK
+ *
+ * `pagereveal` can fire with the body only partly parsed. If the gallery image
+ * is not in the DOM yet, there is nothing to name and the product flies into
+ * nothing. `<link rel="expect" blocking="render">` holds the first render until
+ * the element with that id has been fully parsed; the id is on the columns
+ * block that holds the gallery, so by the time the page is revealed the image
+ * exists. It costs nothing: that block is at the top of the page and is HTML,
+ * not images.
+ *
+ * If a product is ever rendered through a per-product Site Editor template
+ * that lacks the id, the browser waits for the parser to finish instead —
+ * bounded by the page length, never indefinite, and the morph simply does
+ * not run on that page.
+ *
+ * Only the product page is blocked. On the way BACK the list page is restored
+ * from the back-forward cache with its DOM complete, so the card exists at
+ * reveal time without any help. A fresh load of a list page may reveal before
+ * the clicked card is parsed and then simply crossfades, which is the correct
+ * fallback and is not worth render-blocking a 24-product grid for.
+ *
+ * The name and storage key here MUST match ec-motion.js.
+ */
+function electricchic_print_morph_landing(): void {
+	if ( is_product() ) {
+		echo '<link rel="expect" href="#ec-pdp" blocking="render">' . "\n";
+	}
+
+	$script = <<<'JS'
+(function () {
+	if (!('onpagereveal' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { return; }
+	var NAME = 'ec-product', KEY = 'ec:morph';
+	window.addEventListener('pagereveal', function (event) {
+		var path = null;
+		try { path = sessionStorage.getItem(KEY); sessionStorage.removeItem(KEY); } catch (e) {}
+		// Recorded so a missing morph can be diagnosed from the DOM: did the
+		// event fire, and did the browser actually start a transition?
+		document.documentElement.setAttribute('data-ec-reveal', event.viewTransition ? 'transition' : 'plain');
+		if (!event.viewTransition) { return; }
+		var target = document.querySelector('.woocommerce-product-gallery__image img');
+		if (!target && path) {
+			var links = document.querySelectorAll('.wc-block-components-product-image > a');
+			for (var i = 0; i < links.length; i++) {
+				if (links[i].pathname === path) { target = links[i].querySelector('img'); break; }
+			}
+		}
+		if (!target) { return; }
+		target.style.viewTransitionName = NAME;
+		document.documentElement.setAttribute('data-ec-morph', 'running');
+		event.viewTransition.finished.then(function () {
+			target.style.viewTransitionName = '';
+			document.documentElement.setAttribute('data-ec-morph', 'done');
+		});
+	});
+})();
+JS;
+
+	wp_print_inline_script_tag( $script, array( 'id' => 'electricchic-morph-landing' ) );
+}
+add_action( 'wp_head', 'electricchic_print_morph_landing', 1 );

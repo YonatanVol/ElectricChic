@@ -353,7 +353,6 @@ i, em, .wp-block-post-content em {
 .wc-block-components-product-image {
 	position: relative;
 	margin-bottom: var(--ec-space-4);
-	transition: transform 0.35s var(--ec-ease);
 }
 
 .ec-grid li.wc-block-product:hover .wc-block-components-product-image {
@@ -614,12 +613,32 @@ i, em, .wp-block-post-content em {
 	margin: 0;
 }
 
-/* ── Motion ──────────────────────────────────────────────────────────────── */
+/* ── Motion ──────────────────────────────────────────────────────────────
 
+   THE RULES, so the next effect added here keeps the page feeling smooth
+   rather than busy:
+
+     · Hover and press never change layout. A transform, an opacity, a
+       shadow — never a size, a margin, a font weight.
+     · Response to input is short and firm: ~200ms for hover, ~120ms for a
+       press, one strong ease-out (--ec-ease), no bounce.
+     · Entrances may be longer (500–700ms) because nobody is waiting on them,
+       and they are staggered so a screen assembles rather than pops.
+     · Everything respects prefers-reduced-motion, including the page
+       transition itself.
+     · Nothing is hidden by the stylesheet. .ec-reveal is added by the
+       script, after it has proved it can reveal, so a blocked script never
+       leaves a blank page. */
+
+/* Scroll reveal — index-staggered. --i is set by the script and capped there
+   at 8, so a long grid does not make its last row wait. */
 .ec-reveal {
 	opacity: 0;
-	transform: translateY(18px);
-	transition: opacity 0.75s var(--ec-ease), transform 0.75s var(--ec-ease);
+	transform: translateY(16px);
+	transition:
+		opacity 0.6s var(--ec-ease),
+		transform 0.6s var(--ec-ease);
+	transition-delay: calc(var(--i, 0) * 60ms);
 }
 
 .ec-reveal.is-in {
@@ -627,10 +646,123 @@ i, em, .wp-block-post-content em {
 	transform: none;
 }
 
+/* The department card declares its own hover transition further down this
+   file at the same specificity, and later wins — so on these the reveal
+   transition was being replaced wholesale and the card popped instead of
+   fading. Measured: transition-property on a.ec-dept.ec-reveal had no
+   opacity in it. Two classes beat one regardless of order, and the hover
+   fade is carried along so it keeps working. */
+.ec-dept.ec-reveal {
+	transition:
+		background-color 0.25s var(--ec-ease),
+		opacity 0.6s var(--ec-ease),
+		transform 0.6s var(--ec-ease);
+	transition-delay: 0s, calc(var(--i, 0) * 60ms), calc(var(--i, 0) * 60ms);
+}
+
+/* Hero entrance — the one place the page animates without being asked.
+   The product settles into the frame; the copy follows it in, line by line.
+   Keyframes rather than the reveal class because this runs on load, not on
+   scroll, and must not depend on the script. */
+@keyframes ec-settle {
+	from { opacity: 0; transform: translateY(14px) scale(0.985); }
+	to   { opacity: 1; transform: none; }
+}
+
+@keyframes ec-rise {
+	from { opacity: 0; transform: translateY(10px); }
+	to   { opacity: 1; transform: none; }
+}
+
+.ec-hero__stage {
+	animation: ec-settle 0.7s var(--ec-ease) both;
+}
+
+.ec-hero__copy > * {
+	animation: ec-rise 0.5s var(--ec-ease) both;
+}
+
+.ec-hero__copy > :nth-child(1) { animation-delay: 80ms; }
+.ec-hero__copy > :nth-child(2) { animation-delay: 150ms; }
+.ec-hero__copy > :nth-child(3) { animation-delay: 220ms; }
+.ec-hero__copy > :nth-child(4) { animation-delay: 290ms; }
+
+/* Hero parallax — the product drifts up slightly slower than the page as
+   the hero scrolls away. Scroll-driven, so it costs nothing per frame and
+   needs no script. Browsers without animation-timeline ignore the block
+   and the product simply scrolls with the page. */
+@supports (animation-timeline: scroll()) {
+	@keyframes ec-drift {
+		to { transform: translateY(-36px); }
+	}
+
+	.ec-hero__stage .wc-block-components-product-image {
+		animation: ec-drift linear both;
+		animation-timeline: scroll(root);
+		animation-range: 0 60vh;
+	}
+}
+
+/* Press feedback on every button, not only core's. */
+.wp-block-button__link,
+.wc-block-components-button,
+.woocommerce a.button,
+.woocommerce button.button {
+	transition:
+		background-color 0.2s var(--ec-ease),
+		color 0.2s var(--ec-ease),
+		transform 0.12s var(--ec-ease),
+		box-shadow 0.2s var(--ec-ease);
+}
+
+.wp-block-button__link:active,
+.wc-block-components-button:active,
+.woocommerce a.button:active,
+.woocommerce button.button:active {
+	transform: scale(0.97);
+}
+
+/* Card hover — the lift already exists; the contact shadow deepens with it,
+   so the machine reads as lifted off the surface rather than nudged up. The
+   shadow is an opacity change on a pseudo-element: no layout, no repaint of
+   the image. */
+.ec-grid li.wc-block-product .wc-block-components-product-image {
+	transition: transform 0.2s var(--ec-ease);
+}
+
+.ec-grid li.wc-block-product .wc-block-components-product-image::after {
+	content: "";
+	position: absolute;
+	inset: auto 12% -2% 12%;
+	height: 4%;
+	border-radius: 50%;
+	background: radial-gradient(50% 50% at 50% 50%, rgba(24, 21, 16, 0.42) 0%, transparent 70%);
+	filter: blur(8px);
+	opacity: 0;
+	transition: opacity 0.2s var(--ec-ease);
+	pointer-events: none;
+}
+
+.ec-grid li.wc-block-product:hover .wc-block-components-product-image::after {
+	opacity: 1;
+}
+
+/* WooCommerce's gallery starts at opacity 0 inline and fades itself in with
+   its own script. With a shared-element transition in play that is a second
+   fade on top of the morph, and worse: the new-page snapshot can be taken
+   while the gallery is still invisible, so the product flies into nothing.
+   The inline style can only be beaten with !important. */
+.woocommerce-product-gallery {
+	opacity: 1 !important;
+	transition: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
 	*, *::before, *::after {
 		animation-duration: 0.001ms !important;
+		animation-delay: 0ms !important;
 		transition-duration: 0.001ms !important;
+		transition-delay: 0ms !important;
 	}
 
 	.ec-reveal {
@@ -640,6 +772,12 @@ i, em, .wp-block-post-content em {
 
 	.ec-grid li.wc-block-product:hover .wc-block-components-product-image {
 		transform: none;
+	}
+
+	/* Duration means nothing to a scroll-driven animation — its progress is
+	   the scroll position, not time — so the parallax has to go entirely. */
+	.ec-hero__stage .wc-block-components-product-image {
+		animation: none !important;
 	}
 }
 
@@ -655,17 +793,22 @@ i, em, .wp-block-post-content em {
 /* ── Cross-document view transitions ──────────────────────────────────────
 
    The prototype faked navigation with a hash router so it could animate
-   between screens. On the real site the navigations are real, and the CSS
-   rule below gets the same morph without a router: the browser animates
-   between two genuine page loads.
+   between screens. On the real site the navigations are real, and the rule
+   below gets the same effect without a router: the browser animates between
+   two genuine page loads. Where it is unsupported, a navigation is simply a
+   navigation — the correct fallback, and it needs no code.
 
-   Everything the prototype needed JavaScript for — the re-entrancy guard, the
-   view-transition-name bookkeeping, awaiting decode — is the browser's problem
-   here. Where the rule is unsupported the navigation is simply a navigation,
-   which is the correct fallback and needs no code.
+   Two layers:
+
+     root        the whole page crossfades, 260ms.
+     ec-product  the ONE image that carries across — the card the visitor
+                 clicked, morphing into the product page's main image, and
+                 back again on return. The name is assigned just in time by
+                 ec-motion.js and removed straight after; see there for why
+                 it cannot live in this stylesheet.
 
    `plus-lighter` is the default blend for the old/new pair and it destroys a
-   transparent PNG, which is every product image we own. */
+   transparent image, which is every product image we own. */
 
 @view-transition {
 	navigation: auto;
@@ -676,6 +819,40 @@ i, em, .wp-block-post-content em {
 	mix-blend-mode: normal;
 	animation-duration: 260ms;
 	animation-timing-function: var(--ec-ease);
+}
+
+/* The flying product. Longer than the crossfade so the eye can follow it,
+   and it sits above the crossfading page. */
+::view-transition-group(ec-product) {
+	animation-duration: 420ms;
+	animation-timing-function: var(--ec-ease);
+	z-index: 10;
+}
+
+::view-transition-old(ec-product),
+::view-transition-new(ec-product) {
+	mix-blend-mode: normal;
+	/* Both snapshots scale to the group's box, so the image never stretches
+	   mid-flight between a landscape card and a portrait gallery. */
+	height: 100%;
+	width: 100%;
+	object-fit: contain;
+	animation: none;
+}
+
+/* Only one side present — leaving a product page for one that does not
+   show that product, or a list page that revealed before the card was
+   parsed. With no partner to morph into, the lone snapshot would sit sharp
+   above the crossfade and then vanish; give it back a fade. */
+@keyframes ec-vt-out { to { opacity: 0; } }
+@keyframes ec-vt-in  { from { opacity: 0; } }
+
+::view-transition-old(ec-product):only-child {
+	animation: ec-vt-out 260ms var(--ec-ease) both;
+}
+
+::view-transition-new(ec-product):only-child {
+	animation: ec-vt-in 260ms var(--ec-ease) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
