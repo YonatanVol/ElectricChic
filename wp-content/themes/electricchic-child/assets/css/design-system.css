@@ -1339,3 +1339,1399 @@ a.ec-dept:hover .ec-dept__go {
 	color: var(--ec-paper);
 	opacity: 0.55;
 }
+
+/* =============================================================================
+   PART II — the site as a whole: header, motion, product page, catalogue,
+   cart and checkout.
+
+   Everything below keeps three rules, because each has been broken on this
+   project before and each costs a real person something:
+
+     · Hover never changes layout. A fill fades, an opacity shifts, a transform
+       moves a thing two pixels. Nothing reflows under the pointer.
+     · Interactive responses are short and firm — about 0.2s — and ambient
+       reveals are longer and softer. A button that takes 0.6s to respond
+       feels broken; a section that snaps in feels cheap.
+     · Transforms and opacity only, for anything that moves. The compositor
+       does the work and the main thread stays free for the page.
+   ============================================================================= */
+
+/* ── Motion tokens ────────────────────────────────────────────────────── */
+
+:root {
+	--ec-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+	--ec-ease-firm: cubic-bezier(0.2, 0.8, 0.2, 1);
+	--ec-dur-tap: 0.2s;
+	--ec-dur-fade: 0.15s;
+	--ec-dur-reveal: 0.6s;
+	--ec-banner-h: 0px;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────── */
+
+.ec-head {
+	/* Sits under the demo banner while both are stuck. Measured by the
+	   script; zero on a live site. */
+	top: var(--ec-banner-h);
+}
+
+.ec-head__in {
+	padding-block: 0.5rem;
+	min-height: 64px;
+}
+
+.ec-head__lead {
+	min-width: 0;
+}
+
+.ec-head__brand a {
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+}
+
+/* Navigation links: 44px targets, colour fades, no underline jump. */
+.ec-nav a {
+	position: relative;
+	white-space: nowrap;
+	transition: color var(--ec-dur-fade);
+}
+
+/* The current page is marked with a short rule that grows from the centre
+   — transform only, so nothing beside it moves. */
+.ec-nav .wp-block-navigation-item__content::after {
+	content: "";
+	position: absolute;
+	inset-inline: 0;
+	bottom: 0.35rem;
+	height: 1px;
+	background: currentColor;
+	transform: scaleX(0);
+	transition: transform var(--ec-dur-tap) var(--ec-ease-firm);
+}
+
+.ec-nav .wp-block-navigation-item__content:hover::after,
+.ec-nav .current-menu-item .wp-block-navigation-item__content::after {
+	transform: scaleX(1);
+}
+
+/* Links that exist for the phone overlay only. The navigation block opens
+   its overlay below 600px; above that these would duplicate the icons. */
+@media (min-width: 600px) {
+	.ec-nav .ec-nav__overlay-only {
+		display: none;
+	}
+}
+
+/* The actions: every control is a 44px square, labels only where they fit. */
+.ec-head__acts {
+	flex: none;
+}
+
+.ec-head__icon {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	min-width: 44px;
+	min-height: 44px;
+	padding-inline: 0.5rem;
+	border-radius: 999px;
+	color: var(--ec-ink);
+	text-decoration: none;
+	transition: background var(--ec-dur-fade);
+}
+
+.ec-head__icon:hover,
+.ec-head__icon:focus-visible {
+	background: var(--ec-sink);
+	text-decoration: none;
+}
+
+.ec-head__icon-label {
+	font-size: var(--ec-fs-sm);
+	font-variant-numeric: tabular-nums;
+	unicode-bidi: plaintext;
+}
+
+@media (max-width: 1180px) {
+	.ec-head__icon-label {
+		display: none;
+	}
+}
+
+/* Below 600px the overlay carries phone and WhatsApp; the icons would be
+   a third copy, and the row needs the room for the search. */
+@media (max-width: 599px) {
+	.ec-head__icon--phone,
+	.ec-head__icon--whatsapp {
+		display: none;
+	}
+}
+
+/* WooCommerce's account and cart controls, sized to the same square. */
+.ec-head__account .wc-block-customer-account__link,
+.ec-head__cart .wc-block-mini-cart__button {
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0;
+	border-radius: 999px;
+	color: var(--ec-ink);
+	transition: background var(--ec-dur-fade);
+}
+
+.ec-head__account .wc-block-customer-account__link:hover,
+.ec-head__cart .wc-block-mini-cart__button:hover {
+	background: var(--ec-sink);
+	text-decoration: none;
+}
+
+/* The badge acknowledges a change with one short bump. */
+.wc-block-mini-cart__badge {
+	background: var(--ec-ink);
+	color: var(--ec-paper);
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+}
+
+.wc-block-mini-cart__badge.is-bump {
+	animation: ec-bump 0.45s var(--ec-ease-firm);
+}
+
+@keyframes ec-bump {
+	0%   { transform: scale(1); }
+	35%  { transform: scale(1.35); }
+	100% { transform: scale(1); }
+}
+
+/* ── Search: an icon that opens a field ───────────────────────────────── */
+
+.ec-search.wp-block-search {
+	margin: 0;
+}
+
+.ec-search .wp-block-search__inside-wrapper {
+	display: flex;
+	align-items: center;
+	flex-direction: row-reverse;
+	gap: 0;
+	border: 0;
+	padding: 0;
+}
+
+.ec-search .wp-block-search__button {
+	min-width: 44px;
+	min-height: 44px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 999px;
+	background: transparent;
+	color: var(--ec-ink);
+	cursor: pointer;
+	transition: background var(--ec-dur-fade);
+}
+
+.ec-search .wp-block-search__button:hover,
+.ec-search .wp-block-search__button:focus-visible {
+	background: var(--ec-sink);
+	color: var(--ec-ink);
+}
+
+.ec-search .wp-block-search__button svg {
+	fill: currentColor;
+	width: 22px;
+	height: 22px;
+}
+
+/* The field slides open from the icon. Width is the one layout property
+   animated on this site, and it is animated here because the field is the
+   last thing in its row: nothing to its left moves, and the row is already
+   as wide as the viewport. */
+.ec-search .wp-block-search__input {
+	width: 0;
+	min-width: 0;
+	max-width: 0;
+	min-height: 44px;
+	padding: 0;
+	margin: 0;
+	border: 0;
+	border-bottom: 1px solid var(--ec-ink);
+	border-radius: 0;
+	background: transparent;
+	color: var(--ec-ink);
+	font: inherit;
+	font-size: 16px;
+	opacity: 0;
+	transition: max-width var(--ec-dur-tap) var(--ec-ease-firm), opacity var(--ec-dur-fade), padding var(--ec-dur-tap);
+}
+
+.ec-search:not(.wp-block-search__searchfield-hidden) .wp-block-search__input {
+	width: auto;
+	max-width: min(42vw, 280px);
+	padding-inline: 0.5rem;
+	opacity: 1;
+}
+
+.ec-search .wp-block-search__input:focus {
+	outline: none;
+	border-bottom-color: var(--ec-ink);
+	box-shadow: none;
+}
+
+/* ── Phone menu overlay ───────────────────────────────────────────────── */
+
+.wp-block-navigation__responsive-container.is-menu-open {
+	padding: calc(var(--ec-banner-h) + 1.5rem) clamp(1.25rem, 6vw, 2.5rem) 2rem;
+	background: var(--ec-paper);
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-content {
+	gap: 0;
+	align-items: stretch;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container {
+	gap: 0;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item {
+	border-bottom: 1px solid var(--ec-hair);
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item__content {
+	display: block;
+	padding-block: 1rem;
+	font-size: var(--ec-fs-xl);
+	font-weight: 300;
+	color: var(--ec-ink);
+}
+
+/* The two ways to reach a person: smaller, together, at the end. */
+.wp-block-navigation__responsive-container.is-menu-open .ec-nav__contact .wp-block-navigation-item__content {
+	font-size: var(--ec-fs-base);
+	font-weight: 500;
+	padding-block: 0.8rem;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .ec-nav__contact:first-of-type {
+	margin-top: 1rem;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item__content::after {
+	content: none;
+}
+
+/* Items arrive one after another when the overlay opens. The container's
+   own transition is WordPress's; this only staggers the rows inside it. */
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item {
+	animation: ec-rise var(--ec-dur-reveal) var(--ec-ease-out) both;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item:nth-child(2) { animation-delay: 0.04s; }
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item:nth-child(3) { animation-delay: 0.08s; }
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item:nth-child(4) { animation-delay: 0.12s; }
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item:nth-child(5) { animation-delay: 0.16s; }
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item:nth-child(6) { animation-delay: 0.2s; }
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item:nth-child(7) { animation-delay: 0.24s; }
+
+.wp-block-navigation__responsive-container-close {
+	color: var(--ec-ink);
+}
+
+/* ── The hero, choreographed ──────────────────────────────────────────
+
+   Four lines of copy rise in sequence; the machine rolls in from the edge
+   of the page, forward — these are cut-outs facing left, so forward is
+   leftward — and its shadow settles with it. One second, once, on first
+   paint. Nothing loops.
+
+   Not when the page arrives through a morph (html.ec-morphing): the image
+   is already in motion from the previous page and a second entrance on
+   top of it would read as a stutter. */
+
+@keyframes ec-rise {
+	from { opacity: 0; transform: translateY(14px); }
+	to   { opacity: 1; transform: none; }
+}
+
+@keyframes ec-roll-in {
+	from { opacity: 0; transform: translateX(3.5%); }
+	to   { opacity: 1; transform: none; }
+}
+
+.ec-hero__copy > * {
+	animation: ec-rise 0.7s var(--ec-ease-out) both;
+}
+
+.ec-hero__copy > :nth-child(1) { animation-delay: 0.05s; }
+.ec-hero__copy > :nth-child(2) { animation-delay: 0.13s; }
+.ec-hero__copy > :nth-child(3) { animation-delay: 0.22s; }
+.ec-hero__copy > :nth-child(4) { animation-delay: 0.3s; }
+
+.ec-hero__stage .wc-block-components-product-image {
+	animation: ec-roll-in 1s var(--ec-ease-out) 0.08s both;
+}
+
+html.ec-morphing .ec-hero__copy > *,
+html.ec-morphing .ec-hero__stage .wc-block-components-product-image {
+	animation: none;
+}
+
+/* Parallax on scroll, where the browser can drive it off the main thread.
+   The machine drifts up a little slower than the page, the copy a little
+   faster and fading, so the two separate as the visitor leaves the hero.
+   Browsers without scroll-driven animations get no drift, which is the
+   right fallback and needs no code. */
+@supports (animation-timeline: scroll()) {
+	@keyframes ec-drift-stage {
+		to { transform: translateY(-9vh); }
+	}
+
+	@keyframes ec-drift-copy {
+		to { transform: translateY(-16vh); opacity: 0.35; }
+	}
+
+	.ec-hero__stage {
+		animation: ec-drift-stage linear both;
+		animation-timeline: scroll(root);
+		animation-range: 0 90vh;
+	}
+
+	.ec-hero__copy {
+		animation: ec-drift-copy linear both;
+		animation-timeline: scroll(root);
+		animation-range: 0 90vh;
+	}
+}
+
+/* ── Reveal, refined ──────────────────────────────────────────────────
+   Shorter and lower than the first version: 14px over 0.6s reads as
+   arriving; 18px over 0.75s read as loading. The delay is set inline by the
+   script, per batch, so a row of cards lands as a row. */
+
+.ec-reveal {
+	opacity: 0;
+	transform: translateY(14px);
+	transition: opacity var(--ec-dur-reveal) var(--ec-ease-out), transform var(--ec-dur-reveal) var(--ec-ease-out);
+}
+
+.ec-reveal.is-in {
+	opacity: 1;
+	transform: none;
+}
+
+/* A revealed element must not keep its stagger delay for the hover
+   transitions that come later. */
+.ec-reveal.is-in .wc-block-components-product-image {
+	transition-delay: 0s;
+}
+
+/* ── Cards: a lift you can feel ───────────────────────────────────────── */
+
+.wc-block-components-product-image {
+	transition: transform var(--ec-dur-tap) var(--ec-ease-firm);
+}
+
+.ec-grid li.wc-block-product:hover .wc-block-components-product-image {
+	transform: translateY(-5px);
+}
+
+/* The shadow stays on the ground while the machine lifts, and tightens as
+   the distance grows — which is what a shadow does. */
+.ec-grid li.wc-block-product .wc-block-components-product-image::after {
+	content: "";
+	position: absolute;
+	z-index: 0;
+	left: 18%;
+	right: 18%;
+	bottom: -2px;
+	height: 10px;
+	border-radius: 50%;
+	background: radial-gradient(50% 50% at 50% 50%, rgba(24, 21, 16, 0.28) 0%, transparent 70%);
+	filter: blur(5px);
+	transition: transform var(--ec-dur-tap) var(--ec-ease-firm), opacity var(--ec-dur-tap);
+	pointer-events: none;
+}
+
+.ec-grid li.wc-block-product:hover .wc-block-components-product-image::after {
+	transform: translateY(5px) scaleX(0.92);
+	opacity: 0.7;
+}
+
+/* Titles: a hairline grows under the name on hover, transform only. */
+.ec-grid .wc-block-components-product-title a {
+	position: relative;
+}
+
+.ec-grid .wc-block-components-product-title a::after {
+	content: "";
+	position: absolute;
+	inset-inline: 0;
+	bottom: 0.5rem;
+	height: 1px;
+	background: currentColor;
+	transform: scaleX(0);
+	transform-origin: right center;
+	transition: transform var(--ec-dur-tap) var(--ec-ease-firm);
+}
+
+.ec-grid li.wc-block-product:hover .wc-block-components-product-title a::after {
+	transform: scaleX(1);
+}
+
+/* ── Buttons: press, lift, and show progress ──────────────────────────── */
+
+.wp-block-button__link,
+.wc-block-components-button,
+.woocommerce a.button,
+.woocommerce button.button,
+.ec-buybar__cta {
+	position: relative;
+	transition: background var(--ec-dur-tap), color var(--ec-dur-tap), transform var(--ec-dur-tap) var(--ec-ease-firm), box-shadow var(--ec-dur-tap);
+}
+
+.wp-block-button__link:hover,
+.woocommerce button.button:hover,
+.ec-buybar__cta:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 6px 16px -8px rgba(25, 23, 19, 0.5);
+}
+
+.wp-block-button__link:active,
+.woocommerce button.button:active,
+.ec-buybar__cta:active {
+	transform: scale(0.97);
+	box-shadow: none;
+}
+
+/* Anything slower than half a second shows progress. The form post that
+   follows "add to cart" is exactly that on a phone. */
+.is-busy {
+	pointer-events: none;
+	color: transparent !important;
+}
+
+.is-busy::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	margin: auto;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	border: 2px solid rgba(242, 241, 238, 0.35);
+	border-top-color: var(--ec-paper);
+	animation: ec-spin 0.7s linear infinite;
+}
+
+@keyframes ec-spin {
+	to { transform: rotate(360deg); }
+}
+
+/* ── The morph between pages ──────────────────────────────────────────
+
+   ec-motion.js names the tapped card's image and the product page's stage
+   image `ec-product`, and the browser animates one into the other across
+   the navigation. The root cross-fade is set earlier in this file; this
+   gives the moving image its own, slightly longer timing and keeps the
+   two snapshots from blending through plus-lighter, which bleaches a
+   transparent cut-out. */
+
+::view-transition-group(ec-product) {
+	animation-duration: 440ms;
+	animation-timing-function: var(--ec-ease-out);
+}
+
+::view-transition-image-pair(ec-product) {
+	isolation: auto;
+}
+
+::view-transition-old(ec-product),
+::view-transition-new(ec-product) {
+	mix-blend-mode: normal;
+	object-fit: contain;
+	animation-duration: 440ms;
+	height: 100%;
+}
+
+/* ── The product page ─────────────────────────────────────────────────── */
+
+.ec-crumbs {
+	font-size: var(--ec-fs-xs);
+	color: var(--ec-soft);
+	margin-bottom: var(--ec-space-6);
+}
+
+.ec-crumbs a {
+	display: inline-block;
+	padding-block: 0.7rem;
+	color: var(--ec-soft);
+}
+
+.ec-crumbs a:hover {
+	color: var(--ec-ink);
+}
+
+/* The stage: the same lit ground as the hero, keyed to the pointer. The
+   gallery used to carry this on its own class; the column carries it now,
+   so a product without a gallery still stands on something. */
+.ec-pdp__stage {
+	position: relative;
+	--ec-lx: 50%;
+	background: radial-gradient(120% 92% at var(--ec-lx) 4%, var(--ec-lift) 0%, var(--ec-paper) 52%, var(--ec-sink) 100%);
+	border-radius: 4px;
+	padding: clamp(1.25rem, 4vw, 3.75rem) clamp(1rem, 3vw, 2.75rem);
+	align-self: start;
+	overflow: clip;
+}
+
+@media (min-width: 782px) {
+	.ec-pdp__stage {
+		position: sticky;
+		top: calc(var(--ec-banner-h) + 80px);
+	}
+}
+
+.ec-pdp__stage .woocommerce-product-gallery {
+	background: none;
+	padding: 0;
+	/* WooCommerce writes opacity:0 inline and lifts it from JavaScript.
+	   Overridden so the one image a visitor came for is never invisible
+	   while a script loads — and the morph needs it painted on first frame. */
+	opacity: 1 !important;
+}
+
+.ec-pdp__stage .woocommerce-product-gallery__image img {
+	margin-inline: auto;
+	max-height: min(68svh, 720px);
+	width: auto;
+	object-fit: contain;
+}
+
+.ec-pdp__stage .woocommerce-product-gallery__trigger {
+	inset-inline-end: 0.75rem;
+	inset-inline-start: auto;
+	top: 0.75rem;
+	width: 44px;
+	height: 44px;
+	border-radius: 999px;
+	background: var(--ec-lift);
+	border: 1px solid var(--ec-hair);
+	opacity: 0.85;
+	transition: opacity var(--ec-dur-fade);
+}
+
+.ec-pdp__stage .woocommerce-product-gallery__trigger:hover {
+	opacity: 1;
+}
+
+.ec-pdp__buy .ec-eyebrow a {
+	color: var(--ec-soft);
+}
+
+.ec-pdp__title {
+	margin: 0.35rem 0 0.75rem;
+}
+
+.ec-pdp__price {
+	margin-bottom: 1rem;
+}
+
+.ec-pdp__summary {
+	color: var(--ec-soft);
+	max-width: 42ch;
+}
+
+/* The form: quantity and button on one row, badge and notice beneath. */
+.ec-pdp__form form.cart {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem;
+	margin: var(--ec-space-6) 0 0;
+}
+
+.ec-pdp__form .quantity {
+	display: inline-flex;
+	margin: 0;
+}
+
+.ec-pdp__form .quantity .qty {
+	width: 4.5rem;
+	min-height: 48px;
+	text-align: center;
+	border-radius: 999px;
+	font-variant-numeric: tabular-nums;
+}
+
+.ec-pdp__form .single_add_to_cart_button {
+	min-height: 48px;
+	flex: 1 1 12rem;
+}
+
+.ec-pdp__form .ec-avail,
+.ec-pdp__form .ec-avail__notice {
+	flex-basis: 100%;
+}
+
+.ec-pdp__assure {
+	list-style: none;
+	margin: var(--ec-space-6) 0 0;
+	padding: 0;
+	display: grid;
+	gap: 0.6rem;
+	font-size: var(--ec-fs-sm);
+	color: var(--ec-soft);
+}
+
+.ec-pdp__assure li {
+	position: relative;
+	padding-inline-start: 1rem;
+}
+
+.ec-pdp__assure li::before {
+	content: "";
+	position: absolute;
+	inset-inline-start: 0;
+	top: 0.65em;
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	background: var(--ec-hair);
+}
+
+.ec-pdp__assure a {
+	color: var(--ec-ink);
+	text-decoration: underline;
+	text-underline-offset: 0.2em;
+}
+
+.ec-pdp__meta {
+	margin-top: var(--ec-space-6);
+	font-size: var(--ec-fs-xs);
+	color: var(--ec-soft);
+}
+
+/* The specification: a heading and a two-column table, with the values
+   given the weight. Rows reveal with the section. */
+.ec-pdp__spec {
+	margin-top: clamp(2.5rem, 7vw, 5rem);
+	max-width: 56rem;
+}
+
+.ec-pdp__spec-in h3 {
+	font-size: var(--ec-fs-xl);
+	font-weight: 300;
+	margin: 0 0 1rem;
+}
+
+.ec-pdp__spec-in .ec-spec-table th {
+	font-size: var(--ec-fs-sm);
+}
+
+.ec-pdp__spec-in .ec-spec-table td {
+	font-size: var(--ec-fs-base);
+	font-weight: 500;
+	color: var(--ec-ink);
+}
+
+/* ── The sticky purchase bar ──────────────────────────────────────────── */
+
+.ec-buybar {
+	position: fixed;
+	inset-inline: 0;
+	bottom: 0;
+	z-index: 60;
+	background: color-mix(in srgb, var(--ec-paper) 92%, transparent);
+	backdrop-filter: saturate(1.4) blur(14px);
+	border-top: 1px solid var(--ec-hair);
+	transform: translateY(100%);
+	transition: transform 0.28s var(--ec-ease-firm);
+	padding-bottom: env(safe-area-inset-bottom);
+}
+
+.ec-buybar.is-shown {
+	transform: none;
+}
+
+.ec-buybar__in {
+	max-width: var(--ec-container);
+	margin-inline: auto;
+	padding: 0.6rem clamp(1rem, 4vw, 3.375rem);
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	grid-template-areas: "meta cta" "avail cta";
+	align-items: center;
+	column-gap: 1rem;
+	row-gap: 0.1rem;
+}
+
+.ec-buybar__meta {
+	grid-area: meta;
+	display: flex;
+	align-items: baseline;
+	gap: 0.75rem;
+	min-width: 0;
+}
+
+.ec-buybar__name {
+	font-size: var(--ec-fs-base);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.ec-buybar__price {
+	font-variant-numeric: tabular-nums;
+	direction: ltr;
+	white-space: nowrap;
+}
+
+.ec-buybar__avail {
+	grid-area: avail;
+	margin: 0;
+	font-size: var(--ec-fs-xs);
+}
+
+.ec-buybar__cta {
+	grid-area: cta;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 48px;
+	padding-inline: 1.75rem;
+	border-radius: 999px;
+	border: 1px solid var(--ec-ink);
+	background: var(--ec-ink);
+	color: var(--ec-paper);
+	font: inherit;
+	font-size: var(--ec-fs-sm);
+	font-weight: 500;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+.ec-buybar__cta--ask {
+	background: transparent;
+	color: var(--ec-ink);
+}
+
+/* Sticky elements must not obscure focused controls — WCAG 2.2 2.4.11.
+   When the bar is up, the page scrolls focused fields clear of it. */
+html.has-buybar {
+	scroll-padding-bottom: calc(var(--ec-buybar-h, 72px) + 16px);
+}
+
+@media (min-width: 900px) {
+	.ec-buybar__in {
+		grid-template-columns: minmax(0, 1fr) auto auto;
+		grid-template-areas: "meta avail cta";
+		column-gap: 2rem;
+	}
+
+	.ec-buybar__avail {
+		font-size: var(--ec-fs-sm);
+	}
+}
+
+/* ── The WhatsApp button ──────────────────────────────────────────────
+
+   One 48px circle, bottom-left — the far corner from the thumb on a
+   right-to-left phone, so it is never where a customer is about to tap
+   something else. The label is drawn beside it on hover without moving
+   the circle. It rises above the purchase bar when that is up. */
+
+.ec-whats {
+	position: fixed;
+	inset-inline-end: clamp(0.75rem, 2.5vw, 1.5rem);
+	bottom: calc(clamp(0.75rem, 2.5vw, 1.5rem) + env(safe-area-inset-bottom));
+	z-index: 55;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 48px;
+	height: 48px;
+	border-radius: 999px;
+	background: var(--ec-ink);
+	color: var(--ec-paper);
+	box-shadow: 0 10px 24px -10px rgba(25, 23, 19, 0.55);
+	transition: transform var(--ec-dur-tap) var(--ec-ease-firm), bottom 0.28s var(--ec-ease-firm);
+}
+
+.ec-whats:hover {
+	transform: translateY(-2px);
+}
+
+.ec-whats:active {
+	transform: scale(0.95);
+}
+
+.ec-whats__label {
+	position: absolute;
+	inset-inline-start: calc(100% + 0.6rem);
+	top: 50%;
+	transform: translateY(-50%);
+	padding: 0.35rem 0.7rem;
+	border-radius: 999px;
+	background: var(--ec-ink);
+	color: var(--ec-paper);
+	font-size: var(--ec-fs-xs);
+	font-weight: 500;
+	white-space: nowrap;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity var(--ec-dur-fade);
+}
+
+@media (hover: hover) {
+	.ec-whats:hover .ec-whats__label,
+	.ec-whats:focus-visible .ec-whats__label {
+		opacity: 1;
+	}
+}
+
+html.has-buybar .ec-whats {
+	bottom: calc(var(--ec-buybar-h, 72px) + 0.75rem + env(safe-area-inset-bottom));
+}
+
+/* ── The catalogue: filters beside the grid ───────────────────────────── */
+
+.ec-catalogue__body {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: clamp(1.25rem, 3vw, 2.5rem);
+	align-items: start;
+}
+
+@media (min-width: 1000px) {
+	.ec-catalogue__body {
+		/* First column is the inline-start side — the right, here. */
+		grid-template-columns: 250px minmax(0, 1fr);
+		gap: clamp(2rem, 4vw, 4rem);
+	}
+
+	.ec-filters {
+		position: sticky;
+		top: calc(var(--ec-banner-h) + 84px);
+	}
+}
+
+.ec-filters {
+	font-size: var(--ec-fs-sm);
+}
+
+.ec-filters .wc-block-product-filters__content,
+.ec-filters .wc-block-product-filters__overlay-content {
+	gap: 1.75rem;
+}
+
+.ec-filters__title {
+	font-size: var(--ec-fs-xs);
+	font-weight: 600;
+	letter-spacing: 0;
+	color: var(--ec-soft);
+	margin: 0 0 0.6rem;
+}
+
+/* Chips: pills that fill on selection. */
+.ec-filters .wc-block-product-filter-chips__items {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.ec-filters .wc-block-product-filter-chips__item {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	min-height: 40px;
+	padding: 0.35rem 0.9rem;
+	border: 1px solid var(--ec-hair);
+	border-radius: 999px;
+	background: var(--ec-lift);
+	color: var(--ec-ink);
+	font: inherit;
+	font-size: var(--ec-fs-sm);
+	cursor: pointer;
+	transition: background var(--ec-dur-fade), border-color var(--ec-dur-fade), color var(--ec-dur-fade);
+}
+
+.ec-filters .wc-block-product-filter-chips__item:hover {
+	border-color: var(--ec-soft);
+}
+
+.ec-filters .wc-block-product-filter-chips__item[aria-checked="true"],
+.ec-filters .wc-block-product-filter-chips__item[aria-pressed="true"],
+.ec-filters .wc-block-product-filter-chips__item.is-selected {
+	background: var(--ec-ink);
+	border-color: var(--ec-ink);
+	color: var(--ec-paper);
+}
+
+.ec-filters .wc-block-product-filter-chips__count {
+	opacity: 0.6;
+	font-variant-numeric: tabular-nums;
+}
+
+/* Checkbox list: 44px rows, a square mark that fills. */
+.ec-filters .wc-block-product-filter-checkbox-list__items {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.ec-filters .wc-block-product-filter-checkbox-list__label {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	min-height: 44px;
+	cursor: pointer;
+}
+
+.ec-filters .wc-block-product-filter-checkbox-list__input {
+	width: 18px;
+	height: 18px;
+	margin: 0;
+	accent-color: var(--ec-ink);
+}
+
+.ec-filters .wc-block-product-filter-checkbox-list__count {
+	color: var(--ec-soft);
+	font-variant-numeric: tabular-nums;
+}
+
+/* Price slider in the house colours. */
+.ec-filters .wc-block-product-filter-price-slider__range input[type="range"] {
+	accent-color: var(--ec-ink);
+}
+
+.ec-filters .wc-block-product-filter-price-slider__content {
+	font-variant-numeric: tabular-nums;
+}
+
+.ec-filters .wc-block-product-filter-price-slider__left,
+.ec-filters .wc-block-product-filter-price-slider__right {
+	font-size: var(--ec-fs-sm);
+}
+
+.ec-filters input[type="text"],
+.ec-filters input[type="number"] {
+	border: 1px solid var(--ec-hair);
+	border-radius: 4px;
+	background: var(--ec-lift);
+	min-height: 40px;
+	font-size: 16px;
+}
+
+/* Active filters: what is applied, and one way to clear it. */
+.ec-filters .wc-block-product-filter-removable-chips__items {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.ec-filters .wc-block-product-filter-removable-chips__item {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	min-height: 36px;
+	padding: 0.2rem 0.5rem 0.2rem 0.8rem;
+	border-radius: 999px;
+	background: var(--ec-ink);
+	color: var(--ec-paper);
+	font-size: var(--ec-fs-xs);
+}
+
+.ec-filters .wc-block-product-filter-removable-chips__remove {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	border: 0;
+	border-radius: 50%;
+	background: transparent;
+	color: inherit;
+	cursor: pointer;
+}
+
+.ec-filters .wc-block-product-filter-removable-chips__remove svg {
+	fill: currentColor;
+}
+
+.ec-filters .wp-block-woocommerce-product-filter-clear-button {
+	margin-top: 0.5rem;
+}
+
+.ec-filters .wp-block-woocommerce-product-filter-clear-button .wp-block-button__link {
+	min-height: 40px;
+	padding-inline: 1.25rem;
+	background: transparent;
+	color: var(--ec-ink);
+	font-size: var(--ec-fs-xs);
+}
+
+/* The drawer on a phone: WooCommerce's overlay, in the house style. The
+   open button becomes a proper control; the sheet gets a rounded top,
+   the house ground and a sticky apply button. */
+.ec-filters .wc-block-product-filters__open-overlay {
+	min-height: 44px;
+	padding: 0 1rem;
+	border: 1px solid var(--ec-hair);
+	border-radius: 999px;
+	background: var(--ec-lift);
+	color: var(--ec-ink);
+	font-size: var(--ec-fs-sm);
+	font-weight: 500;
+	cursor: pointer;
+	gap: 0.4rem;
+	transition: background var(--ec-dur-fade);
+}
+
+.ec-filters .wc-block-product-filters__open-overlay:hover {
+	background: var(--ec-sink);
+}
+
+.ec-filters .wc-block-product-filters__overlay-dialog {
+	background: var(--ec-paper);
+	color: var(--ec-ink);
+	border-radius: 16px 16px 0 0;
+	top: auto;
+	max-height: 86vh;
+	transition: transform 0.32s var(--ec-ease-firm) !important;
+}
+
+.ec-filters .wc-block-product-filters__overlay-header {
+	padding: 1rem 1.25rem 0.5rem;
+}
+
+.ec-filters .wc-block-product-filters__close-overlay {
+	min-height: 44px;
+	min-width: 44px;
+	justify-content: center;
+	border-radius: 999px;
+	color: var(--ec-ink);
+	cursor: pointer;
+}
+
+.ec-filters .wc-block-product-filters__overlay-content {
+	padding: 0.5rem 1.25rem 1rem;
+	gap: 1.5rem;
+}
+
+.ec-filters .wc-block-product-filters__overlay-footer {
+	box-shadow: none;
+	border-top: 1px solid var(--ec-hair);
+	padding: 0.75rem 1.25rem calc(0.75rem + env(safe-area-inset-bottom));
+	background: var(--ec-paper);
+}
+
+.ec-filters .wc-block-product-filters__apply {
+	min-height: 48px;
+	border-radius: 999px;
+	background: var(--ec-ink);
+	color: var(--ec-paper);
+	border: 0;
+	font: inherit;
+	font-size: var(--ec-fs-sm);
+	font-weight: 500;
+}
+
+/* Sorting and results count, aligned with the filter row. */
+.ec-catalogue__tools {
+	font-size: var(--ec-fs-sm);
+	color: var(--ec-soft);
+}
+
+.ec-catalogue__tools select,
+.wc-block-catalog-sorting select {
+	min-height: 44px;
+	padding: 0.4rem 2rem 0.4rem 0.9rem;
+	border: 1px solid var(--ec-hair);
+	border-radius: 999px;
+	background: var(--ec-lift);
+	color: var(--ec-ink);
+	font: inherit;
+	font-size: var(--ec-fs-sm);
+}
+
+/* Pagination: every page number is a 44px target, not a nine-pixel digit. */
+.ec-pages {
+	margin-top: clamp(2rem, 5vw, 3.5rem);
+	gap: 0.25rem;
+}
+
+.ec-pages a,
+.ec-pages .page-numbers,
+.ec-pages .wp-block-query-pagination-previous,
+.ec-pages .wp-block-query-pagination-next {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding-inline: 0.75rem;
+	border-radius: 999px;
+	color: var(--ec-ink);
+	font-size: var(--ec-fs-sm);
+	font-variant-numeric: tabular-nums;
+	transition: background var(--ec-dur-fade);
+}
+
+.ec-pages a:hover {
+	background: var(--ec-sink);
+	text-decoration: none;
+}
+
+.ec-pages .page-numbers.current {
+	background: var(--ec-ink);
+	color: var(--ec-paper);
+}
+
+/* ── Cart, checkout, account ─────────────────────────────────────────── */
+
+.ec-commerce {
+	max-width: var(--ec-container);
+}
+
+.ec-commerce__title {
+	margin-bottom: clamp(1.25rem, 3vw, 2.5rem);
+}
+
+.ec-commerce .wp-block-woocommerce-cart,
+.ec-commerce .wp-block-woocommerce-checkout {
+	max-width: none;
+}
+
+/* WooCommerce's own form tokens, pointed at the house palette. */
+.ec-commerce,
+.wc-block-mini-cart__drawer {
+	--wc-form-border-color: var(--ec-hair);
+	--wc-form-border-width: 1px;
+	--wc-form-border-radius: 4px;
+	--wc-form-color-text: var(--ec-ink);
+}
+
+.ec-commerce .wc-block-components-text-input input,
+.ec-commerce .wc-block-components-select .components-custom-select-control__button,
+.ec-commerce .wc-block-components-combobox .components-combobox-control__input {
+	background: var(--ec-lift);
+	border-color: var(--ec-hair);
+	border-radius: 4px;
+	min-height: 48px;
+}
+
+.ec-commerce .wc-block-components-text-input input:focus,
+.ec-commerce .wc-block-components-combobox .components-combobox-control__input:focus {
+	border-color: var(--ec-ink);
+	box-shadow: 0 0 0 1px var(--ec-ink);
+}
+
+.ec-commerce .wc-block-components-checkout-step__title,
+.ec-commerce .wc-block-components-title,
+.ec-commerce .wc-block-cart__totals-title,
+.ec-commerce .wc-block-components-sidebar .wc-block-components-title {
+	font-weight: 500;
+	letter-spacing: 0;
+}
+
+.ec-commerce .wc-block-components-sidebar-layout .wc-block-components-sidebar,
+.ec-commerce .wc-block-cart__sidebar {
+	background: var(--ec-lift);
+	border: 1px solid var(--ec-hair);
+	border-radius: 6px;
+	padding: 1.25rem;
+}
+
+.ec-commerce .wc-block-cart-items__header,
+.ec-commerce .wc-block-cart-items__row,
+.ec-commerce .wc-block-components-totals-item {
+	border-color: var(--ec-hair);
+}
+
+.ec-commerce .wc-block-cart-item__image img {
+	background: transparent;
+	object-fit: contain;
+}
+
+.ec-commerce .wc-block-components-product-name {
+	font-family: 'Archivo', 'Heebo', sans-serif;
+	font-weight: 600;
+	color: var(--ec-ink);
+	text-decoration: none;
+}
+
+.ec-commerce .wc-block-components-quantity-selector {
+	border: 1px solid var(--ec-hair);
+	border-radius: 999px;
+	background: var(--ec-lift);
+}
+
+.ec-commerce .wc-block-components-quantity-selector input,
+.ec-commerce .wc-block-components-quantity-selector button {
+	min-height: 44px;
+	font-variant-numeric: tabular-nums;
+}
+
+.ec-commerce .wc-block-components-radio-control__option,
+.ec-commerce .wc-block-components-checkbox {
+	min-height: 44px;
+}
+
+.ec-commerce .wc-block-components-radio-control__input,
+.ec-commerce .wc-block-components-checkbox input {
+	accent-color: var(--ec-ink);
+}
+
+.ec-commerce .wc-block-components-checkout-place-order-button,
+.ec-commerce .wc-block-cart__submit-button {
+	min-height: 52px;
+	border-radius: 999px;
+	background: var(--ec-ink);
+	color: var(--ec-paper);
+	font-weight: 500;
+}
+
+.ec-commerce .wc-block-components-checkout-place-order-button:hover,
+.ec-commerce .wc-block-cart__submit-button:hover {
+	background: #000;
+	color: var(--ec-paper);
+}
+
+/* The empty cart: the icon WooCommerce draws is a frown. The shop is not
+   sad that the cart is empty, and neither is the customer. */
+.ec-commerce .wc-block-cart__empty-cart__title::before {
+	display: none;
+}
+
+.ec-commerce .wc-block-cart__empty-cart__title {
+	font-size: var(--ec-fs-xl);
+	font-weight: 300;
+}
+
+/* The mini-cart drawer. */
+.wc-block-mini-cart__drawer {
+	background: var(--ec-paper);
+	color: var(--ec-ink);
+}
+
+.wc-block-mini-cart__drawer .wc-block-components-drawer__close {
+	min-width: 44px;
+	min-height: 44px;
+}
+
+.wc-block-mini-cart__drawer .wc-block-mini-cart__title {
+	font-weight: 300;
+}
+
+.wc-block-mini-cart__drawer .wc-block-mini-cart__footer {
+	border-top: 1px solid var(--ec-hair);
+	background: var(--ec-lift);
+}
+
+.wc-block-mini-cart__drawer .wc-block-mini-cart__footer-actions .wc-block-components-button {
+	border-radius: 999px;
+	min-height: 48px;
+}
+
+.wc-block-mini-cart__drawer .wc-block-mini-cart__footer-actions .wc-block-components-button.outlined {
+	background: transparent;
+	color: var(--ec-ink);
+	border-color: var(--ec-ink);
+}
+
+/* My account: the legacy shortcode layout, given the container width and
+   44px navigation rows. */
+.woocommerce-account .ec-page {
+	max-width: var(--ec-container);
+}
+
+.woocommerce-account .ec-page .wp-block-post-content {
+	max-width: none;
+}
+
+.woocommerce-MyAccount-navigation ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	border-top: 1px solid var(--ec-hair);
+}
+
+.woocommerce-MyAccount-navigation li {
+	border-bottom: 1px solid var(--ec-hair);
+}
+
+.woocommerce-MyAccount-navigation a {
+	display: block;
+	padding: 0.8rem 0;
+	min-height: 44px;
+	color: var(--ec-soft);
+	text-decoration: none;
+	transition: color var(--ec-dur-fade);
+}
+
+.woocommerce-MyAccount-navigation a:hover,
+.woocommerce-MyAccount-navigation .is-active a {
+	color: var(--ec-ink);
+}
+
+.woocommerce-account .woocommerce-form-login,
+.woocommerce-account .woocommerce-form-register {
+	border: 1px solid var(--ec-hair);
+	border-radius: 6px;
+	background: var(--ec-lift);
+	padding: clamp(1.25rem, 3vw, 2rem);
+	max-width: 32rem;
+}
+
+.woocommerce-account .woocommerce-form-login .button,
+.woocommerce-account .woocommerce-form-register .button {
+	border-radius: 999px;
+	min-height: 48px;
+}
+
+/* ── Targets that were measured short ─────────────────────────────────── */
+
+.ec-foot a {
+	display: inline-block;
+	padding-block: 0.6rem;
+}
+
+.ec-foot .ec-foot__links a {
+	padding-block: 0.6rem;
+}
+
+/* ── Reduced motion, for everything above ─────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+	.ec-hero__copy > *,
+	.ec-hero__stage .wc-block-components-product-image,
+	.ec-hero__stage,
+	.ec-hero__copy,
+	.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item,
+	.wc-block-mini-cart__badge.is-bump {
+		animation: none;
+	}
+
+	.ec-buybar,
+	.ec-whats,
+	.ec-search .wp-block-search__input {
+		transition: none;
+	}
+
+	.ec-grid li.wc-block-product:hover .wc-block-components-product-image::after,
+	.ec-grid li.wc-block-product:hover .wc-block-components-product-title a::after,
+	.wp-block-button__link:hover,
+	.ec-whats:hover {
+		transform: none;
+	}
+
+	::view-transition-group(ec-product),
+	::view-transition-old(ec-product),
+	::view-transition-new(ec-product) {
+		animation: none;
+	}
+}

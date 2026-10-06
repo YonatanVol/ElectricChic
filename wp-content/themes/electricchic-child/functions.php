@@ -473,3 +473,131 @@ add_action( 'init', 'electricchic_register_blocks' );
  * provably does nothing is worse than no line: the next person reads it as
  * "performance is handled here" and stops looking.
  */
+
+/* ── Reaching a person ─────────────────────────────────────────────────── */
+
+/**
+ * The shop's WhatsApp number, international format, digits only.
+ *
+ * Also written literally into the block templates, which cannot call PHP.
+ * If it changes, it changes in parts/header.html, parts/footer.html and
+ * templates/front-page.html as well — grep for the old value.
+ */
+const ELECTRICCHIC_WHATSAPP = '972524873436';
+
+/**
+ * The WhatsApp link, with the page's context already in the message.
+ *
+ * Design principle 5 in the master plan: WhatsApp is an escape hatch, not
+ * the product. On a product page the message names the product, so the
+ * shop knows what is being asked about before it answers, and the customer
+ * does not have to type a model name from memory.
+ *
+ * The message passes through `electricchic_whatsapp_message` so the core
+ * plugin's enquiry flow can replace it without touching the theme.
+ *
+ * @return string
+ */
+function electricchic_whatsapp_url(): string {
+	$message = 'היי, יש לי שאלה.';
+
+	if ( is_product() ) {
+		$product = wc_get_product( get_queried_object_id() );
+
+		if ( $product instanceof WC_Product ) {
+			$message = sprintf( 'היי, יש לי שאלה על %s', $product->get_name() ) . "\n" . $product->get_permalink();
+		}
+	}
+
+	/**
+	 * Filters the pre-filled WhatsApp message.
+	 *
+	 * @param string $message The message, plain text.
+	 */
+	$message = (string) apply_filters( 'electricchic_whatsapp_message', $message );
+
+	return 'https://wa.me/' . ELECTRICCHIC_WHATSAPP . '?text=' . rawurlencode( $message );
+}
+
+/**
+ * The floating WhatsApp button.
+ *
+ * One button, 48px, bottom-start corner, on every page except checkout:
+ * mid-payment the only thing a customer should be looking at is the form.
+ *
+ * @return void
+ */
+function electricchic_render_whatsapp_button(): void {
+	if ( is_admin() || ( function_exists( 'is_checkout' ) && is_checkout() ) ) {
+		return;
+	}
+
+	printf(
+		'<a class="ec-whats" href="%s" rel="noopener" aria-label="%s"><svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5a8.5 8.5 0 0 0-7.3 12.9L3.6 20.4l4.1-1.1A8.5 8.5 0 1 0 12 3.5z"/><path d="M9.2 8.6c.2-.4.4-.4.6-.4h.5c.2 0 .4 0 .5.4l.7 1.6c.1.2.1.3 0 .5l-.4.6c-.1.2-.2.3 0 .5a6.2 6.2 0 0 0 2.9 2.6c.2.1.4.1.5-.1l.7-.8c.2-.2.3-.2.5-.1l1.6.8c.2.1.4.2.4.3 0 .3-.1 1-.5 1.4-.4.4-1.2.8-1.7.7A8.3 8.3 0 0 1 8.4 11c-.2-.6 0-1.6.8-2.4z"/></svg><span class="ec-whats__label">%s</span></a>',
+		esc_url( electricchic_whatsapp_url() ),
+		esc_attr__( 'כתבו לנו בוואטסאפ', 'electricchic' ),
+		esc_html__( 'וואטסאפ', 'electricchic' )
+	);
+}
+add_action( 'wp_footer', 'electricchic_render_whatsapp_button' );
+
+/* ── Product page: the sticky purchase bar ─────────────────────────────── */
+
+/**
+ * The bar that follows the buy button once it has scrolled away.
+ *
+ * Master plan §9.6: sticky add-to-cart with price and availability. The
+ * markup is rendered here; ec-motion.js shows it when the real button is
+ * above the viewport and routes its click to the real form, so the bar
+ * never submits anything of its own and can never disagree with the page.
+ *
+ * Whether the product can be bought is WooCommerce's answer — which the
+ * core plugin's purchasability guard has already filtered — not a second
+ * opinion formed here. A product that cannot be bought gets the WhatsApp
+ * link in the same place, because the next thing that customer wants is to
+ * ask a person.
+ *
+ * @return void
+ */
+function electricchic_render_buy_bar(): void {
+	if ( ! function_exists( 'is_product' ) || ! is_product() ) {
+		return;
+	}
+
+	$product = wc_get_product( get_queried_object_id() );
+
+	if ( ! $product instanceof WC_Product ) {
+		return;
+	}
+
+	$can_buy = $product->is_purchasable() && $product->is_in_stock();
+
+	$action = $can_buy
+		? sprintf(
+			'<button type="button" class="ec-buybar__cta wp-element-button" data-ec-buybar-cta>%s</button>',
+			esc_html__( 'הוספה לסל', 'electricchic' )
+		)
+		: sprintf(
+			'<a class="ec-buybar__cta ec-buybar__cta--ask wp-element-button" href="%s" rel="noopener">%s</a>',
+			esc_url( electricchic_whatsapp_url() ),
+			esc_html__( 'שאלו אותנו', 'electricchic' )
+		);
+
+	printf(
+		'<div class="ec-buybar" data-ec-buybar hidden role="region" aria-label="%1$s">
+			<div class="ec-buybar__in">
+				<div class="ec-buybar__meta">
+					<span class="ec-buybar__name ec-model-name">%2$s</span>
+					<span class="ec-buybar__price">%3$s</span>
+				</div>
+				<p class="ec-buybar__avail ec-avail" data-ec-buybar-avail><span class="ec-avail__dot" aria-hidden="true"></span></p>
+				%4$s
+			</div>
+		</div>',
+		esc_attr__( 'רכישה מהירה', 'electricchic' ),
+		esc_html( $product->get_name() ),
+		wp_kses_post( $product->get_price_html() ),
+		$action // Built above from escaped parts.
+	);
+}
+add_action( 'wp_footer', 'electricchic_render_buy_bar' );
