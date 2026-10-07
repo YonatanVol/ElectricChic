@@ -2900,3 +2900,17 @@ html.has-buybar .ec-whats {
 	height: 24px;
 	accent-color: var(--ec-ink);
 }
+
+/* WooCommerce sizes the notice dismiss at 16px with a selector this file
+   cannot outrank politely. Still measured 16px after the rule above. */
+.wc-block-components-notice-banner .wc-block-components-notice-banner__dismiss {
+	min-width: 44px !important;
+	min-height: 44px !important;
+	width: 44px;
+	height: 44px;
+	padding: 0 !important;
+	margin: -12px !important;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
