@@ -615,3 +615,38 @@ function electricchic_render_buy_bar(): void {
 	);
 }
 add_action( 'wp_footer', 'electricchic_render_buy_bar' );
+
+/* ── Search results title ──────────────────────────────────────────────── */
+
+/**
+ * The search results heading: the term, and only the term.
+ *
+ * The query-title block prints "Search results for: …" on this install
+ * whatever its showPrefix attribute says, and in English, because WordPress
+ * 7's Hebrew pack has not caught up with the block. The template writes the
+ * prefix as an eyebrow of its own; this leaves the heading to the term, in
+ * the block's own markup so the font-size class still applies.
+ *
+ * @param string               $content Rendered block HTML.
+ * @param array<string, mixed> $block   Parsed block.
+ * @return string
+ */
+function electricchic_search_title( string $content, array $block ): string {
+	if ( 'core/query-title' !== ( $block['blockName'] ?? '' ) || ! is_search() ) {
+		return $content;
+	}
+
+	$class = (string) ( $block['attrs']['className'] ?? '' );
+
+	if ( ! str_contains( $class, 'ec-search-title' ) ) {
+		return $content;
+	}
+
+	return (string) preg_replace(
+		'/>.*<\/h1>/su',
+		'>' . esc_html( get_search_query() ) . '</h1>',
+		$content,
+		1
+	);
+}
+add_filter( 'render_block', 'electricchic_search_title', 10, 2 );

@@ -9,7 +9,13 @@
 	<div class="wp-block-group ec-section__head">
 		<!-- wp:group {"layout":{"type":"default"}} -->
 		<div class="wp-block-group">
-			<!-- wp:query-title {"type":"search","showPrefix":true,"showSearchTerm":true,"fontSize":"x-large"} /-->
+			<!-- The prefix is written here, not taken from the block: the
+			     block's own reads "Search results for:" on this install
+			     because WordPress 7's Hebrew pack has not caught up with it. -->
+			<!-- wp:paragraph {"className":"ec-eyebrow"} -->
+			<p class="ec-eyebrow">תוצאות חיפוש</p>
+			<!-- /wp:paragraph -->
+			<!-- wp:query-title {"type":"search","showPrefix":false,"showSearchTerm":true,"fontSize":"x-large","className":"ec-search-title"} /-->
 		</div>
 		<!-- /wp:group -->
 
