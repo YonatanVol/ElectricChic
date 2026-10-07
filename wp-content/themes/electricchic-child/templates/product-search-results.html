@@ -1,0 +1,71 @@
+<!-- wp:template-part {"slug":"header","tagName":"div"} /-->
+
+<!-- wp:group {"tagName":"main","className":"ec-section ec-catalogue","layout":{"type":"default"}} -->
+<main class="wp-block-group ec-section ec-catalogue">
+
+	<!-- wp:woocommerce/store-notices /-->
+
+	<!-- wp:group {"className":"ec-section__head","layout":{"type":"default"}} -->
+	<div class="wp-block-group ec-section__head">
+		<!-- wp:group {"layout":{"type":"default"}} -->
+		<div class="wp-block-group">
+			<!-- The prefix is written here, not taken from the block: the
+			     block's own reads "Search results for:" on this install
+			     because WordPress 7's Hebrew pack has not caught up with it. -->
+			<!-- wp:paragraph {"className":"ec-eyebrow"} -->
+			<p class="ec-eyebrow">תוצאות חיפוש</p>
+			<!-- /wp:paragraph -->
+			<!-- wp:query-title {"type":"search","showPrefix":false,"showSearchTerm":true,"fontSize":"x-large","className":"ec-search-title"} /-->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"className":"ec-catalogue__tools","style":{"spacing":{"blockGap":"1rem"}},"layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"bottom"}} -->
+		<div class="wp-block-group ec-catalogue__tools">
+			<!-- wp:woocommerce/product-results-count /-->
+			<!-- wp:woocommerce/catalog-sorting /-->
+		</div>
+		<!-- /wp:group -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:woocommerce/product-collection {"className":"ec-grid","queryId":0,"query":{"perPage":24,"pages":0,"offset":0,"postType":"product","order":"asc","orderBy":"menu_order","search":"","exclude":[],"inherit":true,"taxQuery":{},"isProductCollectionBlock":true,"woocommerceStockStatus":["instock","outofstock","onbackorder"],"woocommerceAttributes":[],"woocommerceHandPickedProducts":[]},"tagName":"div","displayLayout":{"type":"flex","columns":3,"shrinkColumns":true},"dimensions":{"widthType":"fill"},"queryContextIncludes":["collection"]} -->
+	<div class="wp-block-woocommerce-product-collection ec-grid">
+		<!-- wp:woocommerce/product-template -->
+			<!-- wp:woocommerce/product-image {"showSaleBadge":true,"imageSizing":"single","isDescendentOfQueryLoop":true} /-->
+			<!-- wp:post-title {"level":3,"isLink":true,"fontFamily":"display","__woocommerceNamespace":"woocommerce/product-collection/product-title"} /-->
+			<!-- wp:woocommerce/product-price {"isDescendentOfQueryLoop":true} /-->
+		<!-- /wp:woocommerce/product-template -->
+
+		<!-- wp:query-pagination {"className":"ec-pages","layout":{"type":"flex","justifyContent":"center"}} -->
+			<!-- wp:query-pagination-previous /-->
+			<!-- wp:query-pagination-numbers /-->
+			<!-- wp:query-pagination-next /-->
+		<!-- /wp:query-pagination -->
+
+		<!-- wp:woocommerce/product-collection-no-results -->
+		<!-- wp:group {"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
+		<div class="wp-block-group">
+			<!-- wp:paragraph {"className":"ec-section__note"} -->
+			<p class="ec-section__note">לא נמצא דגם בשם הזה. נסו שם קצר יותר, או עברו על כל הדגמים — ואם משהו חסר, שאלו אותנו בוואטסאפ.</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|50"}}},"layout":{"type":"flex"}} -->
+			<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--50)">
+				<!-- wp:button -->
+				<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/shop/">לכל הדגמים</a></div>
+				<!-- /wp:button -->
+				<!-- wp:button {"className":"is-style-outline"} -->
+				<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="https://wa.me/972524873436" rel="noopener">וואטסאפ</a></div>
+				<!-- /wp:button -->
+			</div>
+			<!-- /wp:buttons -->
+		</div>
+		<!-- /wp:group -->
+		<!-- /wp:woocommerce/product-collection-no-results -->
+	</div>
+	<!-- /wp:woocommerce/product-collection -->
+
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"div"} /-->

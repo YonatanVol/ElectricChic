@@ -149,7 +149,7 @@ exists**), then #11 child theme, #12 core plugin skeleton.
 | Item | Blocker |
 |---|---|
 | #06 deploy workflows | **Managed host not chosen.** Requirements: staging, SSH, WP-CLI, Redis, daily backups, PHP 8.2+ |
-| JS/CSS tooling (rest of #03) | **`registry.npmjs.org` unreachable** — TLS reset. Packagist and GitHub are fine. `npm install` cannot complete. A mirror is a supply-chain decision for the user, not something to swap in silently |
+| JS/CSS tooling (rest of #03) | Registry reachable again (2026-10-07). `package.json` now carries Playwright as **verification tooling only** (`npm run audit:pages`, `audit:frames`; see `docs/ux/motion.md`). ESLint/Stylelint and the block editor script for the departments block are still not set up |
 
 ### Known deviations from the plan, deliberate and documented
 

@@ -1,0 +1,54 @@
+<!-- wp:group {"tagName":"header","className":"ec-head","layout":{"type":"constrained","contentSize":"1560px"}} -->
+<header class="wp-block-group ec-head">
+	<!-- wp:group {"className":"ec-head__in","layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"space-between","verticalAlignment":"center"}} -->
+	<div class="wp-block-group ec-head__in">
+
+		<!-- Right side in RTL: the way in. The navigation block draws its own
+		     menu button below 600px, so on a phone this group is [☰ wordmark]
+		     and on a desktop it is [wordmark · links]. -->
+		<!-- wp:group {"className":"ec-head__lead","style":{"spacing":{"blockGap":"1.75rem"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+		<div class="wp-block-group ec-head__lead">
+			<!-- wp:navigation {"overlayMenu":"mobile","icon":"menu","overlayBackgroundColor":"paper","overlayTextColor":"ink","className":"ec-nav","layout":{"type":"flex","justifyContent":"right","flexWrap":"nowrap"},"style":{"spacing":{"blockGap":"1.5rem"}}} -->
+				<!-- wp:navigation-link {"label":"כל הדגמים","url":"/shop/","kind":"custom","isTopLevelLink":true} /-->
+				<!-- wp:navigation-link {"label":"אופניים חשמליים","url":"/product-category/e-bikes/","kind":"custom","isTopLevelLink":true} /-->
+				<!-- wp:navigation-link {"label":"קורקינטים חשמליים","url":"/product-category/scooters/","kind":"custom","isTopLevelLink":true} /-->
+				<!-- wp:navigation-link {"label":"מעבדה ותיקונים","url":"/#ec-lab","kind":"custom","isTopLevelLink":true} /-->
+				<!-- wp:navigation-link {"label":"החנות ושעות פתיחה","url":"/#ec-store","kind":"custom","isTopLevelLink":true,"className":"ec-nav__overlay-only"} /-->
+				<!-- The two ways to reach a person. Shown inside the phone
+				     overlay only; on a desktop the same links sit in the
+				     actions group beside the search. -->
+				<!-- wp:navigation-link {"label":"052-4873436","url":"tel:+972524873436","kind":"custom","isTopLevelLink":true,"className":"ec-nav__overlay-only ec-nav__contact"} /-->
+				<!-- wp:navigation-link {"label":"וואטסאפ","url":"https://wa.me/972524873436","kind":"custom","isTopLevelLink":true,"className":"ec-nav__overlay-only ec-nav__contact"} /-->
+			<!-- /wp:navigation -->
+
+			<!-- wp:site-title {"level":0,"className":"ec-head__brand"} /-->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- Left side in RTL: the actions. Icons at 44px each, labels only
+		     where there is room. -->
+		<!-- wp:group {"className":"ec-head__acts","style":{"spacing":{"blockGap":"0.25rem"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+		<div class="wp-block-group ec-head__acts">
+
+			<!-- wp:html -->
+			<a class="ec-head__icon ec-head__icon--phone" href="tel:+972524873436" aria-label="התקשרו לחנות: 052-4873436">
+				<svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6.6 3.5h2.9l1.4 4.2-2.1 1.4a11.5 11.5 0 0 0 6.1 6.1l1.4-2.1 4.2 1.4v2.9a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg>
+				<span class="ec-head__icon-label">052-4873436</span>
+			</a>
+			<a class="ec-head__icon ec-head__icon--whatsapp" href="https://wa.me/972524873436" rel="noopener" aria-label="כתבו לנו בוואטסאפ">
+				<svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5a8.5 8.5 0 0 0-7.3 12.9L3.6 20.4l4.1-1.1A8.5 8.5 0 1 0 12 3.5z"/><path d="M9.2 8.6c.2-.4.4-.4.6-.4h.5c.2 0 .4 0 .5.4l.7 1.6c.1.2.1.3 0 .5l-.4.6c-.1.2-.2.3 0 .5a6.2 6.2 0 0 0 2.9 2.6c.2.1.4.1.5-.1l.7-.8c.2-.2.3-.2.5-.1l1.6.8c.2.1.4.2.4.3 0 .3-.1 1-.5 1.4-.4.4-1.2.8-1.7.7A8.3 8.3 0 0 1 8.4 11c-.2-.6 0-1.6.8-2.4z"/></svg>
+			</a>
+			<!-- /wp:html -->
+
+			<!-- wp:search {"label":"חיפוש דגם","showLabel":false,"placeholder":"חיפוש דגם…","buttonText":"חיפוש","buttonPosition":"button-only","buttonUseIcon":true,"query":{"post_type":"product"},"className":"ec-search"} /-->
+
+			<!-- wp:woocommerce/customer-account {"displayStyle":"icon_only","iconStyle":"line","className":"ec-head__account"} /-->
+
+			<!-- wp:woocommerce/mini-cart {"miniCartIcon":"bag","hasHiddenPrice":true,"className":"ec-head__cart"} /-->
+		</div>
+		<!-- /wp:group -->
+
+	</div>
+	<!-- /wp:group -->
+</header>
+<!-- /wp:group -->
