@@ -21,6 +21,47 @@ Release scheme for this project (master plan §16.10):
 ## [Unreleased]
 
 ### Added
+- The storefront, finished to the standard a customer pays for (`electricchic-child`):
+  - **Header.** Search that opens from its icon, phone and WhatsApp, account and
+    bag — every control a 44px target. The phone overlay carries the contact
+    links and the store section; items arrive in sequence.
+  - **Motion system.** Hero entrance choreography (copy rises in four beats,
+    the machine rolls in forward), scroll-driven parallax where the browser
+    supports it, staggered reveals computed per batch, a card lift with a
+    grounded shadow, a cross-document morph of the tapped product image into
+    its page, a mini-cart badge bump, a spinner on add-to-cart, smooth in-page
+    anchors. Transforms and opacity only; hover never changes layout; every
+    entry point honours reduced motion; nothing is load-bearing in JavaScript.
+    The pointer-driven studio light now moves only the hero and the product
+    stage — on `:root` it re-rasterised every catalogue cut-out per pointer move.
+  - **Product page.** Sticky lit stage, the specification without the two empty
+    tabs, an assurance list of facts the shop stands behind, a sticky purchase
+    bar that submits the real form and copies the page's own availability badge
+    (one source of truth), and a WhatsApp button whose message names the product.
+  - **Catalogue.** WooCommerce product filters — department chips, availability,
+    price — beside the grid on a desktop and as a drawer on a phone; a product
+    search results template; 44px pagination.
+  - **Cart, checkout, account** templates in the house style; the empty cart
+    offers what is physically in the shop.
+  - `scripts/audit-pages.mjs` — the verification method: screenshots at 1440 and
+    390, horizontal overflow, touch targets under 24px, badge-per-card parity,
+    console errors and frame gaps, in a real Chromium via Playwright.
+- `docs/ux/motion.md` — the motion rules, where each piece lives, and how it
+  was measured.
+
+### Fixed
+- The sticky header never stuck, on any page, since the block templates landed.
+  Three causes, each measured: `overflow-x: clip` on `body` and on `html` made
+  each a scroll container that sticky resolved against; and the template-part
+  wrapper was exactly the header's height, so the header had no room to stick
+  in. The wrapper is now the sticky element.
+- The phone menu rendered as a strip inside the header: `backdrop-filter` makes
+  its element the containing block for fixed descendants. Moved to a
+  pseudo-element.
+- Cart page copy saved in English inside the page content ("Your cart is
+  currently empty!", "New in store") — replaced in the page, not the theme.
+- A missing MOVIX image size (404 on the shop page) regenerated.
+
 - Repository initialised on `main` with `.gitignore` in the first commit (Issue #01).
 - `docs/` skeleton: architecture, decisions (ADRs), UX, operations, testing,
   releases, security, data governance.
