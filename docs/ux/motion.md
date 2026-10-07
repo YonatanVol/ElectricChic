@@ -41,11 +41,11 @@ And two that follow from the project's own rules:
 
 | Piece | Where | Mechanism |
 |---|---|---|
-| Hero entrance: copy in four beats, machine rolls in forward | CSS `@keyframes ec-rise`, `ec-roll-in` | Once, on first paint. Suppressed under `html.ec-morphing` so it never plays over a page morph |
+| Hero entrance: the machine settles, the copy rises in four beats | CSS `@keyframes ec-settle`, `ec-rise` | Once, on first paint. Suppressed under `html[data-ec-reveal="transition"]` so it never plays over a page morph |
 | Hero parallax | CSS `animation-timeline: scroll(root)` inside `@supports` | Browsers without it get no drift, which is the right fallback |
-| Staggered reveals | JS `IntersectionObserver` sets `transition-delay` per batch | Everything entering in one callback is one group, 55ms apart, capped at 8 |
-| Card lift and grounded shadow | CSS on `.ec-grid li:hover` | Image lifts 5px; the shadow stays on the ground and tightens |
-| Product morph between pages | JS `pageswap` / `pagereveal` + CSS `::view-transition-group(ec-product)` | Names only the tapped card's image and the destination stage image, at the last moment |
+| Staggered reveals | JS `IntersectionObserver`; each element gets its index as `--i`, CSS turns it into a delay | 60ms a step, capped at 8. Anything already on screen when the script runs is left alone, so nothing above the fold blinks |
+| Card lift and grounded shadow | CSS on `.ec-grid li:hover` | Image lifts 6px; a contact shadow fades in beneath it |
+| Product morph between pages | Leaving: JS `pageswap` in `ec-motion.js`. Arriving: an inline `<head>` script printed by `electricchic_print_morph_landing()`, plus `<link rel="expect" blocking="render">` on the product page | Names only the clicked card's image and the destination stage image, just in time. The arriving listener cannot live in the deferred file: measured, it lost the race to `pagereveal` on six of eight navigations |
 | Studio light follows the pointer | JS writes `--ec-lx` once per frame | On the hero and the product stage only — never on `:root` |
 | Sticky purchase bar | PHP renders, JS shows | A scroll listener reading one rectangle per frame. Not an observer: see below |
 | Mini-cart badge bump | JS `MutationObserver` + CSS `ec-bump` | 0.45s, once per change |
@@ -71,6 +71,15 @@ Recorded so nobody re-learns them.
   at any sampled moment, so the purchase bar never appeared on a phone.
 - **Driving a `filter` from `:root` touches every element that reads it.** The
   pointer light on `:root` re-rasterised two dozen catalogue cut-outs per move.
+- **`pagereveal` fires before a deferred script exists.** The arriving half of
+  the morph has to be inline in `<head>`; from `ec-motion.js` it won the race
+  twice in eight tries, by under ten milliseconds each time.
+- **`esc_url()` strips newlines.** A WhatsApp message built with `"\n"` between
+  the product name and its address arrived as "Cortez XMAX 48http://…".
+- **WooCommerce's stock-status filter is not the availability model.** Ticking
+  "out of stock" listed sixteen products whose cards said "special order". There
+  is no availability filter until the core plugin provides one keyed on the
+  resolved state.
 
 ---
 

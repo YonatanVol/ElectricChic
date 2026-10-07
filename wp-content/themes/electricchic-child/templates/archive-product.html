@@ -58,19 +58,11 @@
 			</div>
 			<!-- /wp:woocommerce/product-filter-taxonomy -->
 
-			<!-- Stock status in WooCommerce's terms. The availability model
-			     refines these on each card; the filter narrows to what can
-			     be bought at all. -->
-			<!-- wp:woocommerce/product-filter-status {"displayStyle":"woocommerce/product-filter-checkbox-list","hideEmpty":true} -->
-			<div class="wp-block-woocommerce-product-filter-status">
-				<!-- wp:heading {"level":3,"className":"ec-filters__title"} -->
-				<h3 class="wp-block-heading ec-filters__title">זמינות</h3>
-				<!-- /wp:heading -->
-				<!-- wp:woocommerce/product-filter-checkbox-list {"lock":{"remove":true}} -->
-				<div class="wp-block-woocommerce-product-filter-checkbox-list wc-block-product-filter-checkbox-list"></div>
-				<!-- /wp:woocommerce/product-filter-checkbox-list -->
-			</div>
-			<!-- /wp:woocommerce/product-filter-status -->
+			<!-- No availability filter, on purpose. WooCommerce's stock-status
+			     filter queries _stock_status, not the availability resolver, so
+			     "out of stock" returned sixteen products whose own cards said
+			     "special order" or "confirmation required". A filter keyed on
+			     the resolved state belongs to the core plugin. -->
 
 			<!-- wp:woocommerce/product-filter-price -->
 			<div class="wp-block-woocommerce-product-filter-price">

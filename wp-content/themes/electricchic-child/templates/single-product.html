@@ -6,8 +6,8 @@
 	<!-- wp:woocommerce/store-notices /-->
 	<!-- wp:woocommerce/breadcrumbs {"className":"ec-crumbs"} /-->
 
-	<!-- wp:columns {"className":"ec-pdp","style":{"spacing":{"blockGap":{"left":"var:preset|spacing|80","top":"var:preset|spacing|60"}}}} -->
-	<div class="wp-block-columns ec-pdp">
+	<!-- wp:columns {"className":"ec-pdp","anchor":"ec-pdp","style":{"spacing":{"blockGap":{"left":"var:preset|spacing|80","top":"var:preset|spacing|60"}}}} -->
+	<div class="wp-block-columns ec-pdp" id="ec-pdp">
 
 		<!-- The stage. Lit ground, one product, three-layer contact shadow.
 		     The main image also carries the view-transition name that the
@@ -38,12 +38,15 @@
 			<p class="ec-fine ec-pdp__compliance">מהירות מרבית 25 קמ״ש · מוגבל לפי התקן הישראלי</p>
 			<!-- /wp:paragraph -->
 
-			<!-- What the shop stands behind. Facts only: the workshop is real
-			     and so is the number. Warranty terms are the owner's to state. -->
+			<!-- Only what is true for every product in the catalogue. "Or
+			     delivery" and "assembled in the lab" are per-product facts
+			     (shipping class, _ec_requires_assembly) that the core plugin
+			     will state when it has them; written here as constants they
+			     would be wrong for the first accessory. Warranty terms are the
+			     owner's to state. -->
 			<!-- wp:html -->
 			<ul class="ec-pdp__assure">
-				<li>מורכב, מכוון ונבדק במעבדה לפני המסירה</li>
-				<li>איסוף מהחנות בתל אביב, או משלוח</li>
+				<li>איסוף מהחנות בתל אביב</li>
 				<li>שאלה לפני שקונים? <a href="https://wa.me/972524873436" rel="noopener">וואטסאפ</a> או <a href="tel:+972524873436">052-4873436</a></li>
 			</ul>
 			<!-- /wp:html -->

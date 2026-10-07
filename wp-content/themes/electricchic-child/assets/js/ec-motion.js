@@ -1,11 +1,12 @@
 /**
  * The pieces of motion that CSS alone cannot express.
  *
- * Everything that can be CSS is CSS: the hero choreography, the scroll
- * parallax, the card lift, the reveal easing, the cross-document page morph.
- * This file exists only for the parts that need a live value — where the
- * pointer is, whether an element has been seen, which card was tapped, how
- * far the buy button has scrolled away.
+ * Everything that CAN be CSS is CSS: the page crossfade, the hero entrance,
+ * the parallax, the card lift, the reveal easing, the press feedback. This
+ * file exists only for the parts that need a live value — where the pointer
+ * is, whether an element has been seen, whether the page has scrolled, which
+ * product the visitor just clicked so its image can carry across to the next
+ * page, and how far the buy button has scrolled away.
  *
  * Deliberately dependency-free and deferred. It must never be load-bearing:
  * with JavaScript off, every element it touches is already in its final,
@@ -16,34 +17,36 @@
  *   · Nothing here changes layout in response to hover or scroll. Transforms
  *     and opacity only, so the compositor does the work and the main thread
  *     stays free for the page.
- *   · Nothing writes to the DOM more than once per frame.
- *   · Reduced motion is honoured at every entry point, not just one.
+ *   · Nothing runs per frame unless the frame actually changed something.
+ *   · Every effect is gated on prefers-reduced-motion and switches off
+ *     mid-session if the preference changes.
  */
 ( function () {
 	'use strict';
 
-	var doc = document;
-	var root = doc.documentElement;
+	var doc    = document;
+	var html   = doc.documentElement;
 	var reduce = window.matchMedia( '(prefers-reduced-motion: reduce)' );
-	var hover = window.matchMedia( '(hover: hover)' );
+	var hover  = window.matchMedia( '(hover: hover)' );
+
+	/* ── The demo banner's height ───────────────────────────────────────
+	   Sticky above the header. Its height is a CSS variable so the header,
+	   the sticky product stage and the filter column all sit under it
+	   rather than behind it. Zero on a live site. */
+	var banner = doc.querySelector( '.ec-demo-banner' );
+
+	var measureBanner = function () {
+		html.style.setProperty( '--ec-banner-h', ( banner ? banner.getBoundingClientRect().height : 0 ) + 'px' );
+	};
+
+	measureBanner();
+	window.addEventListener( 'resize', measureBanner, { passive: true } );
 
 	/* ── Sticky header ──────────────────────────────────────────────────
 	   A scroll-driven animation would do this in CSS, but it is still
 	   unsupported in Safari and this is the one piece of chrome on every
 	   page. A passive listener with a class toggle works everywhere. */
 	var head = doc.querySelector( '.ec-head' );
-
-	/* The demo banner is sticky above the header. Its height is a CSS
-	   variable so the header, the sticky product stage and the filter
-	   column all sit under it rather than behind it. Zero on a live site. */
-	var banner = doc.querySelector( '.ec-demo-banner' );
-
-	var measureBanner = function () {
-		root.style.setProperty( '--ec-banner-h', ( banner ? banner.getBoundingClientRect().height : 0 ) + 'px' );
-	};
-
-	measureBanner();
-	window.addEventListener( 'resize', measureBanner, { passive: true } );
 
 	if ( head ) {
 		var stuck = false;
@@ -63,47 +66,65 @@
 		onScroll();
 	}
 
-	/* ── Reveal on scroll, staggered ───────────────────────────────────
+	/* ── Staggered reveal on scroll ─────────────────────────────────────
 	   Elements start hidden ONLY once this script has confirmed it can
 	   reveal them. Adding .ec-reveal in the markup would mean a browser
 	   that fails to run this file shows a permanently blank page — the
 	   single worst failure mode available here.
 
-	   The stagger is computed per batch: everything that enters the
-	   viewport in the same observer callback is one group, and each member
-	   waits 55ms longer than the one before it. Cards in a row therefore
-	   arrive as a row, not as a single block and not as a slow drip. */
+	   Each element gets its index within its group as --i, and the CSS
+	   turns that into a delay. The index is capped: a grid of twenty-four
+	   cards must not make the last row wait a second and a half, so after
+	   eight the delay stops growing and the rest arrive together. */
 	if ( ! reduce.matches && 'IntersectionObserver' in window ) {
-		var targets = doc.querySelectorAll(
-			'.ec-grid li.wc-block-product, .ec-lab__in, .ec-knows__in, .ec-store__in, .ec-section--depts .ec-section__head, .ec-depts, .ec-pdp__spec-in, .ec-grid ~ .ec-section__head, .ec-catalogue .ec-section__head'
+		var groups = [
+			'.ec-grid .wc-block-product-template',
+			'.ec-depts',
+			'.ec-knows ul',
+			'.ec-lab ul',
+			'.ec-spec-table tbody'
+		];
+
+		var singles = doc.querySelectorAll(
+			'.ec-section__head, .ec-knows__in > h2, .ec-lab__in > h2, .ec-store__in > *, .ec-depts__soon, .ec-pdp__spec-in > h3'
 		);
 
-		if ( targets.length ) {
-			var io = new IntersectionObserver(
-				function ( entries ) {
-					var i = 0;
-
-					entries.forEach( function ( entry ) {
-						if ( ! entry.isIntersecting ) {
-							return;
-						}
-
-						// Capped so a tall batch never makes the last card
-						// wait longer than a visitor would.
-						entry.target.style.transitionDelay = Math.min( i, 8 ) * 55 + 'ms';
+		var io = new IntersectionObserver(
+			function ( entries ) {
+				entries.forEach( function ( entry ) {
+					if ( entry.isIntersecting ) {
 						entry.target.classList.add( 'is-in' );
 						io.unobserve( entry.target );
-						i += 1;
-					} );
-				},
-				{ rootMargin: '0px 0px -10% 0px', threshold: 0.06 }
-			);
+					}
+				} );
+			},
+			{ rootMargin: '0px 0px -10% 0px', threshold: 0.06 }
+		);
 
-			targets.forEach( function ( el ) {
-				el.classList.add( 'ec-reveal' );
-				io.observe( el );
+		var fold = window.innerHeight;
+
+		var arm = function ( el, index ) {
+			// Already on screen when the script runs. Hiding it now would
+			// paint it, drop it to zero, and fade it back — a blink on every
+			// fresh load for everything above the fold. Leave it as it is.
+			if ( el.getBoundingClientRect().top < fold ) {
+				return;
+			}
+
+			el.classList.add( 'ec-reveal' );
+			el.style.setProperty( '--i', String( Math.min( index, 8 ) ) );
+			io.observe( el );
+		};
+
+		groups.forEach( function ( selector ) {
+			doc.querySelectorAll( selector ).forEach( function ( group ) {
+				Array.prototype.forEach.call( group.children, arm );
 			} );
-		}
+		} );
+
+		singles.forEach( function ( el ) {
+			arm( el, 0 );
+		} );
 	}
 
 	/* ── Pointer-driven light ───────────────────────────────────────────
@@ -154,7 +175,8 @@
 	/* ── In-page anchors ────────────────────────────────────────────────
 	   scroll-behavior is deliberately `auto` on the root — see the CSS —
 	   so the smooth scroll to #ec-lab and #ec-store is driven here, where
-	   it can respect reduced motion and the sticky header's height. */
+	   it can respect reduced motion and the height of whatever is stuck
+	   at the top: the header, and the demo banner above it. */
 	doc.addEventListener( 'click', function ( event ) {
 		var link = event.target.closest( 'a[href*="#"]' );
 
@@ -182,7 +204,10 @@
 
 		event.preventDefault();
 
-		var offset = ( head ? head.getBoundingClientRect().height : 0 ) + 12;
+		// The header's bottom edge, not its height: the sticky stack starts
+		// under the demo banner, and height alone landed #ec-lab 33px under
+		// the header on this build.
+		var offset = ( head ? head.getBoundingClientRect().bottom : 0 ) + 12;
 		var top = target.getBoundingClientRect().top + window.scrollY - offset;
 
 		window.scrollTo( { top: top, behavior: reduce.matches ? 'auto' : 'smooth' } );
@@ -191,82 +216,128 @@
 		target.focus( { preventScroll: true } );
 	} );
 
-	/* ── Cross-document morph: the product you tapped is the one that
-	   grows into its page ────────────────────────────────────────────────
+	/* ── The product carries across to the next page ───────────────────
 
-	   @view-transition in the CSS already cross-fades every navigation. The
-	   two listeners below add the part that makes it feel physical: the
-	   image inside the card that was clicked is given a view-transition
-	   name on the way out, and the product page's main image is given the
-	   same name on the way in, so the browser animates one into the other.
+	   Clicking a card morphs its image into the product page's main image;
+	   coming back morphs it home. This is the one effect the prototype
+	   needed a router for, and the browser now does it between two real
+	   page loads: the CSS declares the cross-document transition, and this
+	   block only decides WHICH element carries the shared name.
 
-	   Names are assigned at the last moment and only to the pair involved.
-	   Naming every card up front would have the browser snapshot two dozen
-	   images on every navigation, most of them off screen. */
+	   The name is assigned just in time and removed straight after. Giving
+	   every card a name in the stylesheet would make each one animate on
+	   its own during every navigation, which reads as a glitch, and two
+	   elements sharing a name aborts the transition outright.
+
+	   Which product is in flight is remembered in sessionStorage, because
+	   the new document has no other way to know what was clicked. That
+	   store throws inside some sandboxed frames, so every access is
+	   guarded — losing the morph is fine, throwing on navigation is not. */
 	var MORPH = 'ec-product';
+	var KEY   = 'ec:morph';
 
-	var productImageOnPage = function () {
-		return doc.querySelector( '.ec-pdp__stage .woocommerce-product-gallery__image img, .ec-pdp__stage img' );
+	var remember = function ( value ) {
+		try {
+			window.sessionStorage.setItem( KEY, value );
+		} catch ( e ) {}
 	};
 
-	var cardImageFor = function ( href ) {
-		var links = doc.querySelectorAll( 'li.wc-block-product a[href], .ec-hero__stage a[href]' );
+	// The image a card link leads with, or the product page's main image.
+	var imageFor = function ( link ) {
+		return link ? link.querySelector( 'img' ) : null;
+	};
 
-		for ( var i = 0; i < links.length; i++ ) {
-			if ( links[ i ].href === href ) {
-				var card = links[ i ].closest( 'li.wc-block-product, .ec-hero__stage' );
-				var img = card ? card.querySelector( 'img' ) : null;
+	var pageImage = function () {
+		return doc.querySelector( '.woocommerce-product-gallery__image img' );
+	};
 
-				if ( img ) {
-					return img;
-				}
-			}
+	var name = function ( el ) {
+		if ( el ) {
+			el.style.viewTransitionName = MORPH;
 		}
+	};
 
-		return null;
+	var unname = function ( el ) {
+		if ( el ) {
+			el.style.viewTransitionName = '';
+		}
 	};
 
 	if ( ! reduce.matches && 'onpageswap' in window ) {
+		// Which card was clicked, captured before the navigation starts.
+		var clicked = null;
+
+		doc.addEventListener(
+			'click',
+			function ( event ) {
+				// A modified click opens a new tab or window; nothing flies.
+				if ( 0 !== event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey ) {
+					clicked = null;
+					return;
+				}
+
+				var link = event.target.closest( '.wc-block-components-product-image > a' );
+				clicked = link ? link : null;
+			},
+			true
+		);
+
+		// The destination of the navigation that is actually happening.
+		var destination = function ( event ) {
+			try {
+				return new URL( event.activation.entry.url ).pathname;
+			} catch ( e ) {
+				return null;
+			}
+		};
+
+		// Leaving: name the element that should fly.
 		window.addEventListener( 'pageswap', function ( event ) {
-			if ( ! event.viewTransition || ! event.activation || ! event.activation.entry ) {
-				return;
-			}
-
-			// Leaving a listing for a product: the tapped card's image.
-			// Leaving a product page: its stage image, which the next page
-			// picks up if it has a card for it. An unmatched name simply
-			// fades, which is the correct fallback and needs no code.
-			var img = cardImageFor( event.activation.entry.url ) || productImageOnPage();
-
-			if ( img ) {
-				img.style.viewTransitionName = MORPH;
-			}
-		} );
-
-		window.addEventListener( 'pagereveal', function ( event ) {
 			if ( ! event.viewTransition ) {
 				return;
 			}
 
-			// The entrance choreography must not run on top of a morph: the
-			// hero would slide in while the image is still arriving.
-			root.classList.add( 'ec-morphing' );
+			var current = pageImage();
+			var flying  = null;
 
-			var from = navigation && navigation.activation && navigation.activation.from ? navigation.activation.from.url : '';
-			var img = productImageOnPage() || cardImageFor( from );
-
-			if ( img ) {
-				img.style.viewTransitionName = MORPH;
+			if ( current ) {
+				// Leaving a product page: its image goes home.
+				remember( window.location.pathname );
+				flying = current;
+			} else if ( clicked && clicked.pathname === destination( event ) ) {
+				// Leaving a list for the product that was clicked. Back and
+				// Forward also fire pageswap, and the last-clicked card has
+				// nothing to do with where those go.
+				remember( clicked.pathname );
+				flying = imageFor( clicked );
 			}
 
-			event.viewTransition.finished.then( function () {
-				if ( img ) {
-					img.style.viewTransitionName = '';
-				}
+			clicked = null;
 
-				root.classList.remove( 'ec-morphing' );
+			if ( ! flying ) {
+				return;
+			}
+
+			name( flying );
+
+			// This page may come back from the back-forward cache exactly as
+			// it was left. A name left on it then meets the next card's name,
+			// two elements share one, and the browser aborts the whole
+			// transition — crossfade included. Clear it once the flight ends.
+			event.viewTransition.finished.then( function () {
+				unname( flying );
 			} );
 		} );
+
+		/*
+		 * The ARRIVING half is not here. `pagereveal` fires at the new page's
+		 * first rendering opportunity, which is before a deferred script has
+		 * attached anything, so a listener registered from this file lost
+		 * the race on six of eight navigations measured. It lives in a tiny
+		 * inline script in <head>, printed by electricchic_print_morph_landing()
+		 * in functions.php. The two halves share the name and the storage key
+		 * above; change one and the other must follow.
+		 */
 	}
 
 	/* ── Product page: the sticky purchase bar ─────────────────────────
@@ -277,11 +348,11 @@
 	var bar = doc.querySelector( '[data-ec-buybar]' );
 
 	if ( bar ) {
-		var form = doc.querySelector( 'form.cart' );
+		var form   = doc.querySelector( 'form.cart' );
 		var anchor = form ? form.querySelector( '.single_add_to_cart_button' ) : doc.querySelector( '.ec-avail-instead' );
-		var badge = doc.querySelector( '.ec-pdp__form .ec-avail, .ec-avail-instead .ec-avail' );
-		var line = bar.querySelector( '[data-ec-buybar-avail]' );
-		var cta = bar.querySelector( '[data-ec-buybar-cta]' );
+		var badge  = doc.querySelector( '.ec-pdp__form .ec-avail, .ec-avail-instead .ec-avail' );
+		var line   = bar.querySelector( '[data-ec-buybar-avail]' );
+		var cta    = bar.querySelector( '[data-ec-buybar-cta]' );
 
 		if ( badge && line ) {
 			line.textContent = badge.textContent.trim();
@@ -302,10 +373,19 @@
 		}
 
 		var setBarHeight = function () {
-			root.style.setProperty( '--ec-buybar-h', bar.getBoundingClientRect().height + 'px' );
+			html.style.setProperty( '--ec-buybar-h', bar.getBoundingClientRect().height + 'px' );
 		};
 
 		var shown = false;
+
+		// Once the slide-out ends the bar is removed from the accessibility
+		// tree and the tab order. Without this a keyboard user could tab
+		// into an "add to cart" button sitting invisibly below the viewport.
+		bar.addEventListener( 'transitionend', function () {
+			if ( ! shown ) {
+				bar.hidden = true;
+			}
+		} );
 
 		var show = function ( next ) {
 			if ( next === shown ) {
@@ -313,16 +393,27 @@
 			}
 
 			shown = next;
-			bar.hidden = false;
-			setBarHeight();
-			// Two frames: `hidden` has to clear before the transition can
-			// start from the off-screen position.
-			window.requestAnimationFrame( function () {
+
+			if ( shown ) {
+				bar.hidden = false;
+				setBarHeight();
+				// Two frames: `hidden` has to clear before the transition
+				// can start from the off-screen position.
 				window.requestAnimationFrame( function () {
-					bar.classList.toggle( 'is-shown', shown );
-					root.classList.toggle( 'has-buybar', shown );
+					window.requestAnimationFrame( function () {
+						bar.classList.add( 'is-shown' );
+						html.classList.add( 'has-buybar' );
+					} );
 				} );
-			} );
+			} else {
+				bar.classList.remove( 'is-shown' );
+				html.classList.remove( 'has-buybar' );
+
+				// Reduced motion means no transition, so no transitionend.
+				if ( reduce.matches ) {
+					bar.hidden = true;
+				}
+			}
 		};
 
 		if ( anchor ) {
@@ -372,11 +463,11 @@
 				button.setAttribute( 'aria-busy', 'true' );
 			}
 
-			var bar2 = doc.querySelector( '[data-ec-buybar-cta]' );
+			var barCta = doc.querySelector( '[data-ec-buybar-cta]' );
 
-			if ( bar2 ) {
-				bar2.classList.add( 'is-busy' );
-				bar2.setAttribute( 'aria-busy', 'true' );
+			if ( barCta ) {
+				barCta.classList.add( 'is-busy' );
+				barCta.setAttribute( 'aria-busy', 'true' );
 			}
 		} );
 	}

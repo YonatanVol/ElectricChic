@@ -106,7 +106,7 @@ html {
 	   LTR and pushed fixed bars off the client box. */
 	direction: rtl;
 
-	/* No overflow-x: clip here either. Measured: with it, the demo banner
+	/* No overflow-x: clip here. Measured: with it, the demo banner
 	   scrolled away with the page (position:sticky resolves against the
 	   nearest scroll container, and a root with any overflow value other
 	   than visible is one). Horizontal overflow is prevented at its sources
@@ -130,12 +130,13 @@ body {
 	font-family: 'Heebo', system-ui, -apple-system, 'Segoe UI', sans-serif;
 	font-size: var(--ec-fs-base);
 	line-height: 1.62;
-	/* No overflow here, on purpose. `overflow-x: clip` on body made body a
-	   scroll container of its own, and position:sticky resolves against the
-	   nearest scroll container — so the header and the demo banner stuck to
-	   a box that scrolled away with the page. Measured: at scrollY 600 the
-	   header sat at -556px. The clip on <html> above is what stops
-	   horizontal scrolling, and it is enough. */
+	/* No overflow here either, on purpose. `overflow-x: clip` on body made
+	   body a scroll container of its own, and position:sticky resolves
+	   against the nearest scroll container — so the header and the demo
+	   banner stuck to a box that scrolled away with the page. Measured: at
+	   scrollY 600 the header sat at -556px. Horizontal overflow is prevented
+	   at its sources (the hero and the product stage clip themselves) and
+	   the audit script asserts scrollWidth equals clientWidth. */
 }
 
 img {
@@ -362,7 +363,6 @@ i, em, .wp-block-post-content em {
 .wc-block-components-product-image {
 	position: relative;
 	margin-bottom: var(--ec-space-4);
-	transition: transform 0.35s var(--ec-ease);
 }
 
 .ec-grid li.wc-block-product:hover .wc-block-components-product-image {
@@ -623,12 +623,32 @@ i, em, .wp-block-post-content em {
 	margin: 0;
 }
 
-/* ── Motion ──────────────────────────────────────────────────────────────── */
+/* ── Motion ──────────────────────────────────────────────────────────────
 
+   THE RULES, so the next effect added here keeps the page feeling smooth
+   rather than busy:
+
+     · Hover and press never change layout. A transform, an opacity, a
+       shadow — never a size, a margin, a font weight.
+     · Response to input is short and firm: ~200ms for hover, ~120ms for a
+       press, one strong ease-out (--ec-ease), no bounce.
+     · Entrances may be longer (500–700ms) because nobody is waiting on them,
+       and they are staggered so a screen assembles rather than pops.
+     · Everything respects prefers-reduced-motion, including the page
+       transition itself.
+     · Nothing is hidden by the stylesheet. .ec-reveal is added by the
+       script, after it has proved it can reveal, so a blocked script never
+       leaves a blank page. */
+
+/* Scroll reveal — index-staggered. --i is set by the script and capped there
+   at 8, so a long grid does not make its last row wait. */
 .ec-reveal {
 	opacity: 0;
-	transform: translateY(18px);
-	transition: opacity 0.75s var(--ec-ease), transform 0.75s var(--ec-ease);
+	transform: translateY(16px);
+	transition:
+		opacity 0.6s var(--ec-ease),
+		transform 0.6s var(--ec-ease);
+	transition-delay: calc(var(--i, 0) * 60ms);
 }
 
 .ec-reveal.is-in {
@@ -636,10 +656,123 @@ i, em, .wp-block-post-content em {
 	transform: none;
 }
 
+/* The department card declares its own hover transition further down this
+   file at the same specificity, and later wins — so on these the reveal
+   transition was being replaced wholesale and the card popped instead of
+   fading. Measured: transition-property on a.ec-dept.ec-reveal had no
+   opacity in it. Two classes beat one regardless of order, and the hover
+   fade is carried along so it keeps working. */
+.ec-dept.ec-reveal {
+	transition:
+		background-color 0.25s var(--ec-ease),
+		opacity 0.6s var(--ec-ease),
+		transform 0.6s var(--ec-ease);
+	transition-delay: 0s, calc(var(--i, 0) * 60ms), calc(var(--i, 0) * 60ms);
+}
+
+/* Hero entrance — the one place the page animates without being asked.
+   The product settles into the frame; the copy follows it in, line by line.
+   Keyframes rather than the reveal class because this runs on load, not on
+   scroll, and must not depend on the script. */
+@keyframes ec-settle {
+	from { opacity: 0; transform: translateY(14px) scale(0.985); }
+	to   { opacity: 1; transform: none; }
+}
+
+@keyframes ec-rise {
+	from { opacity: 0; transform: translateY(10px); }
+	to   { opacity: 1; transform: none; }
+}
+
+.ec-hero__stage {
+	animation: ec-settle 0.7s var(--ec-ease) both;
+}
+
+.ec-hero__copy > * {
+	animation: ec-rise 0.5s var(--ec-ease) both;
+}
+
+.ec-hero__copy > :nth-child(1) { animation-delay: 80ms; }
+.ec-hero__copy > :nth-child(2) { animation-delay: 150ms; }
+.ec-hero__copy > :nth-child(3) { animation-delay: 220ms; }
+.ec-hero__copy > :nth-child(4) { animation-delay: 290ms; }
+
+/* Hero parallax — the product drifts up slightly slower than the page as
+   the hero scrolls away. Scroll-driven, so it costs nothing per frame and
+   needs no script. Browsers without animation-timeline ignore the block
+   and the product simply scrolls with the page. */
+@supports (animation-timeline: scroll()) {
+	@keyframes ec-drift {
+		to { transform: translateY(-36px); }
+	}
+
+	.ec-hero__stage .wc-block-components-product-image {
+		animation: ec-drift linear both;
+		animation-timeline: scroll(root);
+		animation-range: 0 60vh;
+	}
+}
+
+/* Press feedback on every button, not only core's. */
+.wp-block-button__link,
+.wc-block-components-button,
+.woocommerce a.button,
+.woocommerce button.button {
+	transition:
+		background-color 0.2s var(--ec-ease),
+		color 0.2s var(--ec-ease),
+		transform 0.12s var(--ec-ease),
+		box-shadow 0.2s var(--ec-ease);
+}
+
+.wp-block-button__link:active,
+.wc-block-components-button:active,
+.woocommerce a.button:active,
+.woocommerce button.button:active {
+	transform: scale(0.97);
+}
+
+/* Card hover — the lift already exists; the contact shadow deepens with it,
+   so the machine reads as lifted off the surface rather than nudged up. The
+   shadow is an opacity change on a pseudo-element: no layout, no repaint of
+   the image. */
+.ec-grid li.wc-block-product .wc-block-components-product-image {
+	transition: transform 0.2s var(--ec-ease);
+}
+
+.ec-grid li.wc-block-product .wc-block-components-product-image::after {
+	content: "";
+	position: absolute;
+	inset: auto 12% -2% 12%;
+	height: 4%;
+	border-radius: 50%;
+	background: radial-gradient(50% 50% at 50% 50%, rgba(24, 21, 16, 0.42) 0%, transparent 70%);
+	filter: blur(8px);
+	opacity: 0;
+	transition: opacity 0.2s var(--ec-ease);
+	pointer-events: none;
+}
+
+.ec-grid li.wc-block-product:hover .wc-block-components-product-image::after {
+	opacity: 1;
+}
+
+/* WooCommerce's gallery starts at opacity 0 inline and fades itself in with
+   its own script. With a shared-element transition in play that is a second
+   fade on top of the morph, and worse: the new-page snapshot can be taken
+   while the gallery is still invisible, so the product flies into nothing.
+   The inline style can only be beaten with !important. */
+.woocommerce-product-gallery {
+	opacity: 1 !important;
+	transition: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
 	*, *::before, *::after {
 		animation-duration: 0.001ms !important;
+		animation-delay: 0ms !important;
 		transition-duration: 0.001ms !important;
+		transition-delay: 0ms !important;
 	}
 
 	.ec-reveal {
@@ -649,6 +782,12 @@ i, em, .wp-block-post-content em {
 
 	.ec-grid li.wc-block-product:hover .wc-block-components-product-image {
 		transform: none;
+	}
+
+	/* Duration means nothing to a scroll-driven animation — its progress is
+	   the scroll position, not time — so the parallax has to go entirely. */
+	.ec-hero__stage .wc-block-components-product-image {
+		animation: none !important;
 	}
 }
 
@@ -664,17 +803,22 @@ i, em, .wp-block-post-content em {
 /* ── Cross-document view transitions ──────────────────────────────────────
 
    The prototype faked navigation with a hash router so it could animate
-   between screens. On the real site the navigations are real, and the CSS
-   rule below gets the same morph without a router: the browser animates
-   between two genuine page loads.
+   between screens. On the real site the navigations are real, and the rule
+   below gets the same effect without a router: the browser animates between
+   two genuine page loads. Where it is unsupported, a navigation is simply a
+   navigation — the correct fallback, and it needs no code.
 
-   Everything the prototype needed JavaScript for — the re-entrancy guard, the
-   view-transition-name bookkeeping, awaiting decode — is the browser's problem
-   here. Where the rule is unsupported the navigation is simply a navigation,
-   which is the correct fallback and needs no code.
+   Two layers:
+
+     root        the whole page crossfades, 260ms.
+     ec-product  the ONE image that carries across — the card the visitor
+                 clicked, morphing into the product page's main image, and
+                 back again on return. The name is assigned just in time by
+                 ec-motion.js and removed straight after; see there for why
+                 it cannot live in this stylesheet.
 
    `plus-lighter` is the default blend for the old/new pair and it destroys a
-   transparent PNG, which is every product image we own. */
+   transparent image, which is every product image we own. */
 
 @view-transition {
 	navigation: auto;
@@ -685,6 +829,40 @@ i, em, .wp-block-post-content em {
 	mix-blend-mode: normal;
 	animation-duration: 260ms;
 	animation-timing-function: var(--ec-ease);
+}
+
+/* The flying product. Longer than the crossfade so the eye can follow it,
+   and it sits above the crossfading page. */
+::view-transition-group(ec-product) {
+	animation-duration: 420ms;
+	animation-timing-function: var(--ec-ease);
+	z-index: 10;
+}
+
+::view-transition-old(ec-product),
+::view-transition-new(ec-product) {
+	mix-blend-mode: normal;
+	/* Both snapshots scale to the group's box, so the image never stretches
+	   mid-flight between a landscape card and a portrait gallery. */
+	height: 100%;
+	width: 100%;
+	object-fit: contain;
+	animation: none;
+}
+
+/* Only one side present — leaving a product page for one that does not
+   show that product, or a list page that revealed before the card was
+   parsed. With no partner to morph into, the lone snapshot would sit sharp
+   above the crossfade and then vanish; give it back a fade. */
+@keyframes ec-vt-out { to { opacity: 0; } }
+@keyframes ec-vt-in  { from { opacity: 0; } }
+
+::view-transition-old(ec-product):only-child {
+	animation: ec-vt-out 260ms var(--ec-ease) both;
+}
+
+::view-transition-new(ec-product):only-child {
+	animation: ec-vt-in 260ms var(--ec-ease) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1054,9 +1232,12 @@ a.ec-dept:hover .ec-dept__go {
 
 /* ── Header, sticky ──────────────────────────────────────────────────────── */
 
+/* position:sticky is NOT here. The header's template-part wrapper is the
+   sticky element — see "The header sticks from its WRAPPER" near the end
+   of this file — because a sticky element cannot leave its parent's box,
+   and that wrapper is exactly the header's height. */
 .ec-head {
-	position: sticky;
-	top: 0;
+	position: relative;
 	z-index: 40;
 	border-bottom: 1px solid transparent;
 	transition: border-color 0.3s;
@@ -1394,12 +1575,6 @@ a.ec-dept:hover .ec-dept__go {
 
 /* ── Header ───────────────────────────────────────────────────────────── */
 
-.ec-head {
-	/* Sits under the demo banner while both are stuck. Measured by the
-	   script; zero on a live site. */
-	top: var(--ec-banner-h);
-}
-
 .ec-head__in {
 	padding-block: 0.5rem;
 	min-height: 64px;
@@ -1597,6 +1772,17 @@ a.ec-dept:hover .ec-dept__go {
 	opacity: 1;
 }
 
+/* Without JavaScript nothing can open the field, and a zero-width required
+   input behind a submit button is a validation bubble on nothing. */
+@media (scripting: none) {
+	.ec-search .wp-block-search__input {
+		width: auto;
+		max-width: min(42vw, 280px);
+		padding-inline: 0.5rem;
+		opacity: 1;
+	}
+}
+
 .ec-search .wp-block-search__input:focus {
 	outline: none;
 	border-bottom-color: var(--ec-ink);
@@ -1623,7 +1809,7 @@ a.ec-dept:hover .ec-dept__go {
 	border-bottom: 1px solid var(--ec-hair);
 }
 
-.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item__content {
+.ec-nav .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item__content {
 	display: block;
 	padding-block: 1rem;
 	font-size: var(--ec-fs-xl);
@@ -1632,13 +1818,14 @@ a.ec-dept:hover .ec-dept__go {
 }
 
 /* The two ways to reach a person: smaller, together, at the end. */
-.wp-block-navigation__responsive-container.is-menu-open .ec-nav__contact .wp-block-navigation-item__content {
+.ec-nav .wp-block-navigation__responsive-container.is-menu-open .ec-nav__contact .wp-block-navigation-item__content {
 	font-size: var(--ec-fs-base);
 	font-weight: 500;
 	padding-block: 0.8rem;
 }
 
-.wp-block-navigation__responsive-container.is-menu-open .ec-nav__contact:first-of-type {
+/* The first contact row, after the last plain overlay-only row. */
+.wp-block-navigation__responsive-container.is-menu-open .ec-nav__overlay-only:not(.ec-nav__contact) + .ec-nav__contact {
 	margin-top: 1rem;
 }
 
@@ -1663,127 +1850,18 @@ a.ec-dept:hover .ec-dept__go {
 	color: var(--ec-ink);
 }
 
-/* ── The hero, choreographed ──────────────────────────────────────────
-
-   Four lines of copy rise in sequence; the machine rolls in from the edge
-   of the page, forward — these are cut-outs facing left, so forward is
-   leftward — and its shadow settles with it. One second, once, on first
-   paint. Nothing loops.
-
-   Not when the page arrives through a morph (html.ec-morphing): the image
-   is already in motion from the previous page and a second entrance on
-   top of it would read as a stutter. */
-
-@keyframes ec-rise {
-	from { opacity: 0; transform: translateY(14px); }
-	to   { opacity: 1; transform: none; }
-}
-
-@keyframes ec-roll-in {
-	from { opacity: 0; transform: translateX(3.5%); }
-	to   { opacity: 1; transform: none; }
-}
-
-.ec-hero__copy > * {
-	animation: ec-rise 0.7s var(--ec-ease-out) both;
-}
-
-.ec-hero__copy > :nth-child(1) { animation-delay: 0.05s; }
-.ec-hero__copy > :nth-child(2) { animation-delay: 0.13s; }
-.ec-hero__copy > :nth-child(3) { animation-delay: 0.22s; }
-.ec-hero__copy > :nth-child(4) { animation-delay: 0.3s; }
-
-.ec-hero__stage .wc-block-components-product-image {
-	animation: ec-roll-in 1s var(--ec-ease-out) 0.08s both;
-}
-
-html.ec-morphing .ec-hero__copy > *,
-html.ec-morphing .ec-hero__stage .wc-block-components-product-image {
+/* ── Arriving through a morph ──────────────────────────────────────────
+   The hero entrance (ec-settle / ec-rise, in the Motion section above)
+   must not play on a page that is arriving through a view transition: the
+   image is already in flight from the previous page, and a second entrance
+   on top of the crossfade reads as a stutter. The inline head script sets
+   this attribute before the first render. */
+html[data-ec-reveal="transition"] .ec-hero__stage,
+html[data-ec-reveal="transition"] .ec-hero__copy > * {
 	animation: none;
 }
 
-/* Parallax on scroll, where the browser can drive it off the main thread.
-   The machine drifts up a little slower than the page, the copy a little
-   faster and fading, so the two separate as the visitor leaves the hero.
-   Browsers without scroll-driven animations get no drift, which is the
-   right fallback and needs no code. */
-@supports (animation-timeline: scroll()) {
-	@keyframes ec-drift-stage {
-		to { transform: translateY(-9vh); }
-	}
-
-	@keyframes ec-drift-copy {
-		to { transform: translateY(-16vh); opacity: 0.35; }
-	}
-
-	.ec-hero__stage {
-		animation: ec-drift-stage linear both;
-		animation-timeline: scroll(root);
-		animation-range: 0 90vh;
-	}
-
-	.ec-hero__copy {
-		animation: ec-drift-copy linear both;
-		animation-timeline: scroll(root);
-		animation-range: 0 90vh;
-	}
-}
-
-/* ── Reveal, refined ──────────────────────────────────────────────────
-   Shorter and lower than the first version: 14px over 0.6s reads as
-   arriving; 18px over 0.75s read as loading. The delay is set inline by the
-   script, per batch, so a row of cards lands as a row. */
-
-.ec-reveal {
-	opacity: 0;
-	transform: translateY(14px);
-	transition: opacity var(--ec-dur-reveal) var(--ec-ease-out), transform var(--ec-dur-reveal) var(--ec-ease-out);
-}
-
-.ec-reveal.is-in {
-	opacity: 1;
-	transform: none;
-}
-
-/* A revealed element must not keep its stagger delay for the hover
-   transitions that come later. */
-.ec-reveal.is-in .wc-block-components-product-image {
-	transition-delay: 0s;
-}
-
-/* ── Cards: a lift you can feel ───────────────────────────────────────── */
-
-.wc-block-components-product-image {
-	transition: transform var(--ec-dur-tap) var(--ec-ease-firm);
-}
-
-.ec-grid li.wc-block-product:hover .wc-block-components-product-image {
-	transform: translateY(-5px);
-}
-
-/* The shadow stays on the ground while the machine lifts, and tightens as
-   the distance grows — which is what a shadow does. */
-.ec-grid li.wc-block-product .wc-block-components-product-image::after {
-	content: "";
-	position: absolute;
-	z-index: 0;
-	left: 18%;
-	right: 18%;
-	bottom: -2px;
-	height: 10px;
-	border-radius: 50%;
-	background: radial-gradient(50% 50% at 50% 50%, rgba(24, 21, 16, 0.28) 0%, transparent 70%);
-	filter: blur(5px);
-	transition: transform var(--ec-dur-tap) var(--ec-ease-firm), opacity var(--ec-dur-tap);
-	pointer-events: none;
-}
-
-.ec-grid li.wc-block-product:hover .wc-block-components-product-image::after {
-	transform: translateY(5px) scaleX(0.92);
-	opacity: 0.7;
-}
-
-/* Titles: a hairline grows under the name on hover, transform only. */
+/* A hairline grows under the card title on hover — transform only. */
 .ec-grid .wc-block-components-product-title a {
 	position: relative;
 }
@@ -1806,13 +1884,23 @@ html.ec-morphing .ec-hero__stage .wc-block-components-product-image {
 
 /* ── Buttons: press, lift, and show progress ──────────────────────────── */
 
+/* The base transition and the press are in the Motion section above; this
+   adds the lift. The purchase bar's button is not a WordPress button and
+   needs the same treatment by name. */
 .wp-block-button__link,
 .wc-block-components-button,
 .woocommerce a.button,
 .woocommerce button.button,
 .ec-buybar__cta {
 	position: relative;
-	transition: background var(--ec-dur-tap), color var(--ec-dur-tap), transform var(--ec-dur-tap) var(--ec-ease-firm), box-shadow var(--ec-dur-tap);
+}
+
+.ec-buybar__cta {
+	transition:
+		background-color 0.2s var(--ec-ease),
+		color 0.2s var(--ec-ease),
+		transform 0.12s var(--ec-ease),
+		box-shadow 0.2s var(--ec-ease);
 }
 
 .wp-block-button__link:hover,
@@ -1822,8 +1910,6 @@ html.ec-morphing .ec-hero__stage .wc-block-components-product-image {
 	box-shadow: 0 6px 16px -8px rgba(25, 23, 19, 0.5);
 }
 
-.wp-block-button__link:active,
-.woocommerce button.button:active,
 .ec-buybar__cta:active {
 	transform: scale(0.97);
 	box-shadow: none;
@@ -1851,32 +1937,6 @@ html.ec-morphing .ec-hero__stage .wc-block-components-product-image {
 
 @keyframes ec-spin {
 	to { transform: rotate(360deg); }
-}
-
-/* ── The morph between pages ──────────────────────────────────────────
-
-   ec-motion.js names the tapped card's image and the product page's stage
-   image `ec-product`, and the browser animates one into the other across
-   the navigation. The root cross-fade is set earlier in this file; this
-   gives the moving image its own, slightly longer timing and keeps the
-   two snapshots from blending through plus-lighter, which bleaches a
-   transparent cut-out. */
-
-::view-transition-group(ec-product) {
-	animation-duration: 440ms;
-	animation-timing-function: var(--ec-ease-out);
-}
-
-::view-transition-image-pair(ec-product) {
-	isolation: auto;
-}
-
-::view-transition-old(ec-product),
-::view-transition-new(ec-product) {
-	mix-blend-mode: normal;
-	object-fit: contain;
-	animation-duration: 440ms;
-	height: 100%;
 }
 
 /* ── The product page ─────────────────────────────────────────────────── */
@@ -2075,6 +2135,14 @@ html.ec-morphing .ec-hero__stage .wc-block-components-product-image {
 	padding-bottom: env(safe-area-inset-bottom);
 }
 
+.ec-buybar:not(.is-shown) {
+	/* Delayed until the slide-out ends, so the bar is never focusable while
+	   it sits invisibly below the viewport. The script also sets `hidden`
+	   on transitionend; this is the belt to that brace. */
+	visibility: hidden;
+	transition: transform 0.28s var(--ec-ease-firm), visibility 0s 0.28s;
+}
+
 .ec-buybar.is-shown {
 	transform: none;
 }
@@ -2104,6 +2172,12 @@ html.ec-morphing .ec-hero__stage .wc-block-components-product-image {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	/* Direction from the content, so a Latin model name runs left-to-right
+	   and its ellipsis falls at its end ("Cortez XMAX …"), and a Hebrew name
+	   the day there is one does the same on its own side. `direction: ltr`
+	   fixed the first and would have broken the second. */
+	unicode-bidi: plaintext;
+	text-align: start;
 }
 
 .ec-buybar__price {
@@ -2732,10 +2806,6 @@ html.has-buybar .ec-whats {
 /* ── Reduced motion, for everything above ─────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
-	.ec-hero__copy > *,
-	.ec-hero__stage .wc-block-components-product-image,
-	.ec-hero__stage,
-	.ec-hero__copy,
 	.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item,
 	.wc-block-mini-cart__badge.is-bump {
 		animation: none;
@@ -2747,18 +2817,12 @@ html.has-buybar .ec-whats {
 		transition: none;
 	}
 
-	.ec-grid li.wc-block-product:hover .wc-block-components-product-image::after,
 	.ec-grid li.wc-block-product:hover .wc-block-components-product-title a::after,
 	.wp-block-button__link:hover,
 	.ec-whats:hover {
 		transform: none;
 	}
 
-	::view-transition-group(ec-product),
-	::view-transition-old(ec-product),
-	::view-transition-new(ec-product) {
-		animation: none;
-	}
 }
 
 /* Measured short on the rendered product page: breadcrumb links at 18px,
@@ -2787,12 +2851,27 @@ html.has-buybar .ec-whats {
 	max-width: 100%;
 }
 
+/* The two text fields are placed explicitly. Without this the left one
+   measured 0px wide and the right one took the row: WooCommerce's own grid
+   assumes a column far wider than the sidebar. */
 .ec-filters .wc-block-product-filter-price-slider__range {
-	grid-column: 1 / -1;
+	grid-area: 1 / 1 / 2 / 3;
+	width: 100%;
+	min-width: 0;
 }
 
-.ec-filters .wc-block-product-filter-price-slider__left,
-.ec-filters .wc-block-product-filter-price-slider__right,
+.ec-filters .wc-block-product-filter-price-slider__left {
+	grid-area: 2 / 1 / 3 / 2;
+	width: auto;
+	min-width: 0;
+}
+
+.ec-filters .wc-block-product-filter-price-slider__right {
+	grid-area: 2 / 2 / 3 / 3;
+	width: auto;
+	min-width: 0;
+}
+
 .ec-filters .wc-block-product-filter-price-slider__content input {
 	width: 100%;
 	min-width: 0;
@@ -2821,40 +2900,8 @@ html.has-buybar .ec-whats {
 	z-index: 40;
 }
 
-.ec-head {
-	position: relative;
-	top: auto;
-}
 
-/* The slider's two text fields, placed explicitly. Without this the left
-   one measured 0px wide and the right one took the row: WooCommerce's own
-   grid assumes a column far wider than the sidebar. */
-.ec-filters .wc-block-product-filter-price-slider__range {
-	grid-area: 1 / 1 / 2 / 3;
-	width: 100%;
-	min-width: 0;
-}
-
-.ec-filters .wc-block-product-filter-price-slider__left {
-	grid-area: 2 / 1 / 3 / 2;
-	width: auto;
-	min-width: 0;
-}
-
-.ec-filters .wc-block-product-filter-price-slider__right {
-	grid-area: 2 / 2 / 3 / 3;
-	width: auto;
-	min-width: 0;
-}
-
-/* On a phone the bar stacks: name, then price, then availability. The
-   model name is Latin, so it is isolated and runs left-to-right; before
-   this the ellipsis cut it from the wrong end — "…rtez XMAX 48". */
-.ec-buybar__name {
-	direction: ltr;
-	unicode-bidi: isolate;
-}
-
+/* On a phone the bar stacks: name, then price, then availability. */
 @media (max-width: 899px) {
 	.ec-buybar__meta {
 		flex-direction: column;

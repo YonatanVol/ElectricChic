@@ -32,6 +32,9 @@ Release scheme for this project (master plan §16.10):
     its page, a mini-cart badge bump, a spinner on add-to-cart, smooth in-page
     anchors. Transforms and opacity only; hover never changes layout; every
     entry point honours reduced motion; nothing is load-bearing in JavaScript.
+    Merges the parallel `feat/motion-system` commit of the same morning: its
+    inline arriving-side morph listener and render block, index-staggered
+    reveals and hero settle are the ones kept; the duplicates were removed.
     The pointer-driven studio light now moves only the hero and the product
     stage — on `:root` it re-rasterised every catalogue cut-out per pointer move.
   - **Product page.** Sticky lit stage, the specification without the two empty
@@ -61,6 +64,15 @@ Release scheme for this project (master plan §16.10):
 - Cart page copy saved in English inside the page content ("Your cart is
   currently empty!", "New in store") — replaced in the page, not the theme.
 - A missing MOVIX image size (404 on the shop page) regenerated.
+- From the independent review of the diff, all fixed: the WhatsApp message
+  glued the product name to its address (`esc_url()` strips the newline); the
+  catalogue's stock-status filter contradicted the availability model and is
+  gone; the purchase bar stayed keyboard-focusable after sliding away; the
+  theme would fatal with WooCommerce deactivated; the header search was unusable
+  without JavaScript; the product page asserted "or delivery" and "assembled in
+  the lab" for every product; phone-menu rows measured 35px; in-page anchors
+  landed under the sticky header on the demo build; the WhatsApp button hid on
+  the order-received page; duplicated and contradictory CSS.
 
 - Repository initialised on `main` with `.gitignore` in the first commit (Issue #01).
 - `docs/` skeleton: architecture, decisions (ADRs), UX, operations, testing,

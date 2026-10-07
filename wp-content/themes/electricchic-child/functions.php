@@ -479,9 +479,10 @@ add_action( 'init', 'electricchic_register_blocks' );
 /**
  * The shop's WhatsApp number, international format, digits only.
  *
- * Also written literally into the block templates, which cannot call PHP.
- * If it changes, it changes in parts/header.html, parts/footer.html and
- * templates/front-page.html as well — grep for the old value.
+ * Also written literally into the block templates, which cannot call PHP:
+ * parts/header.html, parts/footer.html, templates/front-page.html,
+ * templates/single-product.html and templates/product-search-results.html.
+ * If it changes, grep for the old value.
  */
 const ELECTRICCHIC_WHATSAPP = '972524873436';
 
@@ -501,11 +502,14 @@ const ELECTRICCHIC_WHATSAPP = '972524873436';
 function electricchic_whatsapp_url(): string {
 	$message = 'היי, יש לי שאלה.';
 
-	if ( is_product() ) {
+	if ( function_exists( 'is_product' ) && is_product() ) {
 		$product = wc_get_product( get_queried_object_id() );
 
 		if ( $product instanceof WC_Product ) {
-			$message = sprintf( 'היי, יש לי שאלה על %s', $product->get_name() ) . "\n" . $product->get_permalink();
+			// A visible separator, not a newline: esc_url() strips %0A from
+			// the final link as an injection guard, which glued the name to
+			// the address — "Cortez XMAX 48http://…" in the customer's chat.
+			$message = sprintf( 'היי, יש לי שאלה על %1$s — %2$s', $product->get_name(), $product->get_permalink() );
 		}
 	}
 
@@ -528,7 +532,9 @@ function electricchic_whatsapp_url(): string {
  * @return void
  */
 function electricchic_render_whatsapp_button(): void {
-	if ( is_admin() || ( function_exists( 'is_checkout' ) && is_checkout() ) ) {
+	// Hidden on the checkout form only. is_checkout() is also true on the
+	// order-received page, where a customer most plausibly has a question.
+	if ( is_admin() || ( function_exists( 'is_checkout' ) && is_checkout() && ! is_order_received_page() ) ) {
 		return;
 	}
 
@@ -650,3 +656,81 @@ function electricchic_search_title( string $content, array $block ): string {
 	);
 }
 add_filter( 'render_block', 'electricchic_search_title', 10, 2 );
+
+/* ── The arriving half of the product morph ───────────────────────────── */
+
+/**
+ * The arriving half of the product morph, and the render block that makes it
+ * possible.
+ *
+ * WHY THIS IS INLINE IN <head> AND NOT IN ec-motion.js
+ *
+ * A cross-document view transition names the element that should fly on the
+ * page being LEFT (ec-motion.js does that in `pageswap`, which fires long after
+ * a deferred script has loaded) and on the page being ARRIVED AT. The arriving
+ * side is announced by `pagereveal`, and that event fires at the new document's
+ * first rendering opportunity — before a deferred script has attached
+ * anything. Registered from ec-motion.js the listener lost the race on six of
+ * eight navigations measured, and the two it won it won by under ten
+ * milliseconds. It has to be in the head, inline, before any render.
+ *
+ * WHY THE PRODUCT PAGE RENDER-BLOCKS ON ITS OWN TOP BLOCK
+ *
+ * `pagereveal` can fire with the body only partly parsed. If the gallery image
+ * is not in the DOM yet, there is nothing to name and the product flies into
+ * nothing. `<link rel="expect" blocking="render">` holds the first render until
+ * the element with that id has been fully parsed; the id is on the columns
+ * block that holds the gallery, so by the time the page is revealed the image
+ * exists. It costs nothing: that block is at the top of the page and is HTML,
+ * not images.
+ *
+ * Only the product page is blocked. On the way BACK the list page is restored
+ * from the back-forward cache with its DOM complete, so the card exists at
+ * reveal time without any help.
+ *
+ * The attribute data-ec-reveal="transition" is set before the first render, so
+ * the stylesheet can hold the hero entrance back on a page that is arriving
+ * through a morph — otherwise the hero would settle in on top of the
+ * crossfade, which reads as a stutter.
+ *
+ * The name and storage key here MUST match ec-motion.js.
+ *
+ * @return void
+ */
+function electricchic_print_morph_landing(): void {
+	if ( function_exists( 'is_product' ) && is_product() ) {
+		echo '<link rel="expect" href="#ec-pdp" blocking="render">' . "\n";
+	}
+
+	$script = <<<'JS'
+(function () {
+	if (!('onpagereveal' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { return; }
+	var NAME = 'ec-product', KEY = 'ec:morph';
+	window.addEventListener('pagereveal', function (event) {
+		var path = null;
+		try { path = sessionStorage.getItem(KEY); sessionStorage.removeItem(KEY); } catch (e) {}
+		// Recorded so a missing morph can be diagnosed from the DOM: did the
+		// event fire, and did the browser actually start a transition?
+		document.documentElement.setAttribute('data-ec-reveal', event.viewTransition ? 'transition' : 'plain');
+		if (!event.viewTransition) { return; }
+		var target = document.querySelector('.woocommerce-product-gallery__image img');
+		if (!target && path) {
+			var links = document.querySelectorAll('.wc-block-components-product-image > a');
+			for (var i = 0; i < links.length; i++) {
+				if (links[i].pathname === path) { target = links[i].querySelector('img'); break; }
+			}
+		}
+		if (!target) { return; }
+		target.style.viewTransitionName = NAME;
+		document.documentElement.setAttribute('data-ec-morph', 'running');
+		event.viewTransition.finished.then(function () {
+			target.style.viewTransitionName = '';
+			document.documentElement.setAttribute('data-ec-morph', 'done');
+		});
+	});
+})();
+JS;
+
+	wp_print_inline_script_tag( $script, array( 'id' => 'electricchic-morph-landing' ) );
+}
+add_action( 'wp_head', 'electricchic_print_morph_landing', 1 );
