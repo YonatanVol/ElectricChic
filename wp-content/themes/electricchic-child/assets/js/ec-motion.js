@@ -33,6 +33,18 @@
 	   page. A passive listener with a class toggle works everywhere. */
 	var head = doc.querySelector( '.ec-head' );
 
+	/* The demo banner is sticky above the header. Its height is a CSS
+	   variable so the header, the sticky product stage and the filter
+	   column all sit under it rather than behind it. Zero on a live site. */
+	var banner = doc.querySelector( '.ec-demo-banner' );
+
+	var measureBanner = function () {
+		root.style.setProperty( '--ec-banner-h', ( banner ? banner.getBoundingClientRect().height : 0 ) + 'px' );
+	};
+
+	measureBanner();
+	window.addEventListener( 'resize', measureBanner, { passive: true } );
+
 	if ( head ) {
 		var stuck = false;
 
@@ -313,18 +325,32 @@
 			} );
 		};
 
-		if ( anchor && 'IntersectionObserver' in window ) {
-			var watch = new IntersectionObserver(
-				function ( entries ) {
-					var entry = entries[ 0 ];
-					// Above the viewport, not below it: a visitor who has not
-					// reached the button yet does not need a second one.
-					show( ! entry.isIntersecting && entry.boundingClientRect.top < 0 );
-				},
-				{ threshold: 0 }
-			);
+		if ( anchor ) {
+			/* A scroll listener, not an IntersectionObserver. The observer
+			   only reports CHANGES of intersection, and a button that is
+			   below the viewport on load and above it after one fast flick
+			   — a phone, every time — was never intersecting at any point
+			   the browser sampled, so the observer never fired and the bar
+			   never appeared. One rectangle read per frame is cheap. */
+			var ticking = false;
 
-			watch.observe( anchor );
+			var check = function () {
+				ticking = false;
+				// Above the viewport, not below it: a visitor who has not
+				// reached the button yet does not need a second one.
+				show( anchor.getBoundingClientRect().bottom < 0 );
+			};
+
+			var onScrollBar = function () {
+				if ( ! ticking ) {
+					ticking = true;
+					window.requestAnimationFrame( check );
+				}
+			};
+
+			window.addEventListener( 'scroll', onScrollBar, { passive: true } );
+			window.addEventListener( 'resize', onScrollBar, { passive: true } );
+			check();
 		}
 
 		window.addEventListener( 'resize', setBarHeight, { passive: true } );

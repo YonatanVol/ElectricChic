@@ -106,8 +106,12 @@ html {
 	   LTR and pushed fixed bars off the client box. */
 	direction: rtl;
 
-	/* html is the scrolling box, not body — clipping body does nothing. */
-	overflow-x: clip;
+	/* No overflow-x: clip here either. Measured: with it, the demo banner
+	   scrolled away with the page (position:sticky resolves against the
+	   nearest scroll container, and a root with any overflow value other
+	   than visible is one). Horizontal overflow is prevented at its sources
+	   — the hero and the product stage clip themselves — and the audit
+	   script asserts scrollWidth equals clientWidth on every page. */
 
 	/* Not `smooth`. It animates a scroll on every in-page navigation in
 	   Chrome and does nothing in Safari, so scroll position is driven
@@ -126,7 +130,12 @@ body {
 	font-family: 'Heebo', system-ui, -apple-system, 'Segoe UI', sans-serif;
 	font-size: var(--ec-fs-base);
 	line-height: 1.62;
-	overflow-x: clip;
+	/* No overflow here, on purpose. `overflow-x: clip` on body made body a
+	   scroll container of its own, and position:sticky resolves against the
+	   nearest scroll container — so the header and the demo banner stuck to
+	   a box that scrolled away with the page. Measured: at scrollY 600 the
+	   header sat at -556px. The clip on <html> above is what stops
+	   horizontal scrolling, and it is enough. */
 }
 
 img {
@@ -1049,10 +1058,23 @@ a.ec-dept:hover .ec-dept__go {
 	position: sticky;
 	top: 0;
 	z-index: 40;
+	border-bottom: 1px solid transparent;
+	transition: border-color 0.3s;
+}
+
+/* The frosted ground lives on a pseudo-element, NOT on the header itself.
+   A backdrop-filter makes its element the containing block for every
+   position:fixed descendant, and the navigation block's phone overlay is
+   exactly that: with the filter on the header, the "full-screen" menu was
+   a 180px strip pinned inside the header's box. Measured, then moved. */
+.ec-head::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
 	background: color-mix(in srgb, var(--ec-paper) 86%, transparent);
 	backdrop-filter: saturate(1.4) blur(14px);
-	border-bottom: 1px solid transparent;
-	transition: border-color 0.3s, background 0.3s;
+	transition: background 0.3s;
 }
 
 /* Set by the scroll listener rather than by a scroll-driven animation, because
@@ -1060,6 +1082,9 @@ a.ec-dept:hover .ec-dept__go {
    of chrome present on every page. */
 .ec-head.is-stuck {
 	border-bottom-color: var(--ec-hair);
+}
+
+.ec-head.is-stuck::before {
 	background: color-mix(in srgb, var(--ec-paper) 96%, transparent);
 }
 
@@ -2734,4 +2759,144 @@ html.has-buybar .ec-whats {
 	::view-transition-new(ec-product) {
 		animation: none;
 	}
+}
+
+/* Measured short on the rendered product page: breadcrumb links at 18px,
+   the two contact links in the assurance list at 21px, the filter
+   checkboxes at 14px. Padding, so wrapping text still centres. */
+.ec-crumbs a,
+.ec-pdp__assure a {
+	display: inline-block;
+	padding-block: 0.65rem;
+	margin-block: -0.65rem;
+}
+
+.ec-filters .wc-block-product-filter-checkbox-list__input {
+	min-width: 24px;
+	min-height: 24px;
+}
+
+/* The price slider's own layout assumes a wide column: two 200px inputs on
+   a 424px grid, inside a 250px sidebar. Measured overflowing 190px into
+   the product grid. Constrained to the column it is given. */
+.ec-filters .wc-block-product-filter-price-slider__content {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	gap: 0.5rem;
+	width: 100%;
+	max-width: 100%;
+}
+
+.ec-filters .wc-block-product-filter-price-slider__range {
+	grid-column: 1 / -1;
+}
+
+.ec-filters .wc-block-product-filter-price-slider__left,
+.ec-filters .wc-block-product-filter-price-slider__right,
+.ec-filters .wc-block-product-filter-price-slider__content input {
+	width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+.ec-filters .wc-block-product-filter-price-slider__content input {
+	text-align: center;
+	direction: ltr;
+}
+
+/* The mini-cart drawer slides rather than appears. */
+.wc-block-mini-cart__drawer {
+	transition: transform 0.32s var(--ec-ease-firm);
+}
+
+/* The header sticks from its WRAPPER, not from itself. The template-part
+   block renders <div class="wp-block-template-part"> around the header,
+   and a sticky element can never leave its parent's box — a parent exactly
+   the header's height pins it in place. Measured: at scrollY 600 the header
+   sat at -556px while declaring position:sticky. So the wrapper is the
+   sticky element, and the header inside it only paints. */
+.wp-block-template-part:has(> .ec-head) {
+	position: sticky;
+	top: var(--ec-banner-h);
+	z-index: 40;
+}
+
+.ec-head {
+	position: relative;
+	top: auto;
+}
+
+/* The slider's two text fields, placed explicitly. Without this the left
+   one measured 0px wide and the right one took the row: WooCommerce's own
+   grid assumes a column far wider than the sidebar. */
+.ec-filters .wc-block-product-filter-price-slider__range {
+	grid-area: 1 / 1 / 2 / 3;
+	width: 100%;
+	min-width: 0;
+}
+
+.ec-filters .wc-block-product-filter-price-slider__left {
+	grid-area: 2 / 1 / 3 / 2;
+	width: auto;
+	min-width: 0;
+}
+
+.ec-filters .wc-block-product-filter-price-slider__right {
+	grid-area: 2 / 2 / 3 / 3;
+	width: auto;
+	min-width: 0;
+}
+
+/* On a phone the bar stacks: name, then price, then availability. The
+   model name is Latin, so it is isolated and runs left-to-right; before
+   this the ellipsis cut it from the wrong end — "…rtez XMAX 48". */
+.ec-buybar__name {
+	direction: ltr;
+	unicode-bidi: isolate;
+}
+
+@media (max-width: 899px) {
+	.ec-buybar__meta {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0;
+	}
+
+	.ec-buybar__name {
+		max-width: 100%;
+	}
+
+	.ec-buybar__price {
+		font-size: var(--ec-fs-sm);
+	}
+}
+
+/* Three more targets measured short: the category eyebrow on the product
+   page (18px), the notice dismiss (16px) and the account form's
+   show-password toggle and checkbox. */
+.ec-pdp__buy .ec-eyebrow a {
+	display: inline-block;
+	padding-block: 0.7rem;
+	margin-block: -0.7rem;
+}
+
+.wc-block-components-notice-banner__dismiss.wc-block-components-button {
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0;
+	margin: -14px;
+}
+
+.woocommerce-account .show-password-input {
+	min-width: 44px;
+	min-height: 44px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.woocommerce-account .woocommerce-form__input-checkbox {
+	width: 24px;
+	height: 24px;
+	accent-color: var(--ec-ink);
 }

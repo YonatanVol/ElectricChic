@@ -597,7 +597,21 @@ function electricchic_render_buy_bar(): void {
 		esc_attr__( 'רכישה מהירה', 'electricchic' ),
 		esc_html( $product->get_name() ),
 		wp_kses_post( $product->get_price_html() ),
-		$action // Built above from escaped parts.
+		wp_kses(
+			$action,
+			array(
+				'button' => array(
+					'type'               => true,
+					'class'              => true,
+					'data-ec-buybar-cta' => true,
+				),
+				'a'      => array(
+					'href'  => true,
+					'class' => true,
+					'rel'   => true,
+				),
+			)
+		)
 	);
 }
 add_action( 'wp_footer', 'electricchic_render_buy_bar' );
