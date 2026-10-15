@@ -783,6 +783,12 @@ function electricchic_product_facts( WC_Product $product ): array {
 					$value .= ' אינץ׳';
 				}
 
+				// A chip shows the number. "ליתיום" is true of every battery
+				// in the catalogue and is still in the full table below;
+				// "עד" ("up to") is the supplier's hedge on a range that the
+				// chip's own label already frames. Nothing else is touched.
+				$value = trim( (string) preg_replace( array( '/\s*ליתיום\s*$/u', '/^עד\s+/u' ), '', $value ) );
+
 				$facts[ $label ] = $value;
 			}
 		}

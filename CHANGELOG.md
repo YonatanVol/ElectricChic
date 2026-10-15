@@ -52,6 +52,17 @@ Release scheme for this project (master plan §16.10):
 - `docs/ux/motion.md` — the motion rules, where each piece lives, and how it
   was measured.
 
+- **Night stage — the storefront redesigned after the owner's verdict that
+  the paper version was plain.** Studied first, on 2026-10-07, against
+  cowboy.com, apolloscooters.co, super73.com, niu.com, store.segway.com and
+  inokim.com: a near-black ground, one lime accent reserved for the primary
+  action, a 120px heavy headline, each Cortez cut-out lit from behind on a
+  floor line with a reflection, a four-fact trust strip under the hero, and
+  card tiles carrying the three numbers a buyer compares (range · battery ·
+  wheel) as chips read from each product's own spec table. No lifestyle
+  photography is faked: the day the importer's photo kit arrives the hero
+  takes a photograph and nothing else changes.
+
 ### Fixed
 - The sticky header never stuck, on any page, since the block templates landed.
   Three causes, each measured: `overflow-x: clip` on `body` and on `html` made

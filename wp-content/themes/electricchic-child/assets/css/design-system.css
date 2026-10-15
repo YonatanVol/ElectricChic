@@ -3134,7 +3134,7 @@ body {
 	position: absolute;
 	left: 8%;
 	right: 8%;
-	bottom: 24%;
+	bottom: 9%;
 	height: 1px;
 	background: linear-gradient(90deg, transparent, rgba(204, 255, 0, 0.55) 35%, rgba(244, 243, 239, 0.7) 50%, rgba(204, 255, 0, 0.55) 65%, transparent);
 	filter: blur(0.5px);
@@ -3171,11 +3171,29 @@ body {
 	max-width: 36ch;
 }
 
-.ec-hero__copy {
-	max-width: min(52vw, 720px);
+@media (min-width: 861px) {
+	.ec-hero__copy {
+		max-width: min(52vw, 720px);
+	}
 }
 
 @media (max-width: 860px) {
+	.ec-hero__copy {
+		max-width: none;
+	}
+
+	.ec-hero__title {
+		font-size: clamp(2.8rem, 14vw, 4.2rem);
+	}
+
+	.ec-hero__acts .wp-block-button {
+		flex: 1 1 10rem;
+	}
+
+	.ec-hero__acts .wp-block-button__link {
+		width: 100%;
+	}
+
 	.ec-hero::after {
 		bottom: 10%;
 	}
@@ -3189,15 +3207,27 @@ body {
 
 .ec-trust {
 	list-style: none;
-	margin: 0;
-	padding: 0 clamp(1rem, 4vw, 3.375rem);
-	max-width: var(--ec-container);
-	margin-inline: auto;
+	margin: 0 auto;
+	padding: 0;
+	max-width: calc(var(--ec-container) - 2 * clamp(1rem, 4vw, 3.375rem));
+	width: calc(100% - 2 * clamp(1rem, 4vw, 3.375rem));
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 1px;
-	background: var(--ec-hair);
 	border-block: 1px solid var(--ec-hair);
+}
+
+.ec-trust li + li {
+	border-inline-start: 1px solid var(--ec-hair);
+}
+
+@media (max-width: 899px) {
+	.ec-trust li:nth-child(3) {
+		border-inline-start: 0;
+	}
+
+	.ec-trust li:nth-child(n+3) {
+		border-top: 1px solid var(--ec-hair);
+	}
 }
 
 @media (min-width: 900px) {
@@ -3210,7 +3240,6 @@ body {
 	display: grid;
 	gap: 0.25rem;
 	padding: 1.1rem 1.25rem;
-	background: var(--ec-paper);
 }
 
 .ec-trust__k {
@@ -3593,8 +3622,39 @@ a.ec-dept:focus-visible {
 	padding-inline: 0.55rem;
 }
 
+/* A chip exists to show a number; it must never cut one short. Values
+   wrap rather than ellipsis — measured, "48V/15.6A" was rendering as
+   "48V/15…" in a three-across card. */
 .ec-grid .ec-chip__value {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
+	white-space: normal;
+	overflow-wrap: anywhere;
+	font-size: 0.8rem;
+}
+
+/* ── Fixes from looking at the night stage ───────────────────────────────── */
+
+/* The product's short description on this catalogue is the same battery
+   and range the chips beneath it show. Said once, as chips. A product whose
+   summary says something else keeps it: this only applies when chips
+   follow. */
+.ec-pdp__summary:has(+ .ec-chips) {
+	display: none;
+}
+
+.ec-pdp__buy .ec-chips {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.5rem;
+	max-width: 30rem;
+}
+
+.ec-pdp__buy .ec-chip {
+	min-width: 0;
+}
+
+/* The catalogue and the product page are working pages: the visitor came
+   for the products, not for air under the header. */
+.ec-section.ec-catalogue,
+.ec-section.ec-pdp-page {
+	padding-top: clamp(1.5rem, 3vw, 2.5rem);
 }
