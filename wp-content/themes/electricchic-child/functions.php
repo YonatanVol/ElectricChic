@@ -734,3 +734,132 @@ JS;
 	wp_print_inline_script_tag( $script, array( 'id' => 'electricchic-morph-landing' ) );
 }
 add_action( 'wp_head', 'electricchic_print_morph_landing', 1 );
+
+/* ── Spec chips: the three numbers a buyer compares ─────────────────────── */
+
+/**
+ * The specification rows worth showing on a card, read from the product's
+ * own description.
+ *
+ * The catalogue's specifications live as an .ec-spec-table inside the
+ * description — that is how the importer produced them, and the core plugin
+ * has no structured spec model yet. This reads the rows that a buyer actually
+ * compares between machines (range, battery, wheel) and nothing else. It
+ * invents no value: a product without the row shows no chip.
+ *
+ * Presentation only. The moment the plugin models specifications as data,
+ * the `electricchic_product_facts` filter hands it the job and this parser
+ * is dead code to delete.
+ *
+ * @param WC_Product $product The product.
+ * @return array<string, string> Label => value, in display order.
+ */
+function electricchic_product_facts( WC_Product $product ): array {
+	$wanted = array( 'טווח נסיעה', 'סוללה', 'גלגל' );
+	$facts  = array();
+	$html   = (string) $product->get_description();
+
+	if ( '' !== $html && str_contains( $html, 'ec-spec-table' ) ) {
+		$dom = new DOMDocument();
+		libxml_use_internal_errors( true );
+		$dom->loadHTML( '<?xml encoding="utf-8" ?><div>' . $html . '</div>' );
+		libxml_clear_errors();
+
+		foreach ( $dom->getElementsByTagName( 'tr' ) as $row ) {
+			$th = $row->getElementsByTagName( 'th' )->item( 0 );
+			$td = $row->getElementsByTagName( 'td' )->item( 0 );
+
+			if ( ! $th || ! $td ) {
+				continue;
+			}
+
+			$label = trim( $th->textContent ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			$value = trim( $td->textContent ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
+			if ( in_array( $label, $wanted, true ) && '' !== $value ) {
+				// A bare wheel number means inches on this catalogue; the
+				// supplier wrote it both ways. Said once, here, not invented.
+				if ( 'גלגל' === $label && is_numeric( $value ) ) {
+					$value .= ' אינץ׳';
+				}
+
+				$facts[ $label ] = $value;
+			}
+		}
+	}
+
+	$ordered = array();
+
+	foreach ( $wanted as $label ) {
+		if ( isset( $facts[ $label ] ) ) {
+			$ordered[ $label ] = $facts[ $label ];
+		}
+	}
+
+	/**
+	 * Filters the facts shown as chips on a product card.
+	 *
+	 * @param array<string, string> $ordered Label => value.
+	 * @param WC_Product            $product The product.
+	 */
+	return (array) apply_filters( 'electricchic_product_facts', $ordered, $product );
+}
+
+/**
+ * The chips' markup.
+ *
+ * @param WC_Product $product The product.
+ * @return string
+ */
+function electricchic_render_chips( WC_Product $product ): string {
+	$facts = electricchic_product_facts( $product );
+
+	if ( array() === $facts ) {
+		return '';
+	}
+
+	$items = '';
+
+	foreach ( $facts as $label => $value ) {
+		$items .= sprintf(
+			'<li class="ec-chip"><span class="ec-chip__label">%s</span><span class="ec-chip__value">%s</span></li>',
+			esc_html( (string) $label ),
+			esc_html( (string) $value )
+		);
+	}
+
+	return '<ul class="ec-chips" aria-label="' . esc_attr__( 'נתונים עיקריים', 'electricchic' ) . '">' . $items . '</ul>';
+}
+
+/**
+ * Chips under the price on every catalogue card, and under the summary on
+ * the product page.
+ *
+ * @param string               $content Rendered block HTML.
+ * @param array<string, mixed> $block   Parsed block.
+ * @return string
+ */
+function electricchic_append_chips( string $content, array $block ): string {
+	$name = (string) ( $block['blockName'] ?? '' );
+
+	if ( 'woocommerce/product-price' !== $name && 'core/post-excerpt' !== $name ) {
+		return $content;
+	}
+
+	$attrs = $block['attrs'] ?? array();
+	$card  = 'woocommerce/product-price' === $name && ! empty( $attrs['isDescendentOfQueryLoop'] );
+	$page  = 'core/post-excerpt' === $name && str_contains( (string) ( $attrs['className'] ?? '' ), 'ec-pdp__summary' );
+
+	if ( ! $card && ! $page ) {
+		return $content;
+	}
+
+	global $product;
+
+	if ( ! $product instanceof WC_Product ) {
+		return $content;
+	}
+
+	return $content . electricchic_render_chips( $product );
+}
+add_filter( 'render_block', 'electricchic_append_chips', 20, 2 );

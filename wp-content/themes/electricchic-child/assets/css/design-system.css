@@ -56,21 +56,27 @@
 :root {
 	/* Ground. Warm neutral rather than pure white — a cut-out on #fff has no
 	   air around it, and the shadow has nothing to fall on. */
-	--ec-paper: #f2f1ee;
-	--ec-lift: #fbfaf8;
-	--ec-sink: #e3e1da;
+	--ec-paper: #0a0a0c;
+	--ec-lift: #141418;
+	--ec-sink: #050506;
 
-	--ec-ink: #191713;
-	--ec-soft: #67635a;
-	--ec-hair: #dcd9d1;
+	--ec-ink: #f4f3ef;
+	--ec-soft: #a7a5ad;
+	--ec-hair: #26262c;
+
+	/* The accent. One colour, used for the primary action and the light
+	   that falls on the machines — never for a status. */
+	--ec-lime: #ccff00;
+	--ec-lime-dim: #9fcc00;
 
 	/* Availability. A separate scale on purpose, and never the brand colour:
 	   a page where "in stock" and "buy now" share a colour reads as though
-	   everything is on offer. Each badge carries text as well as colour. */
-	--ec-stock: #2c6b45;
-	--ec-supp: #2a5a86;
-	--ec-back: #8a5f18;
-	--ec-out: #8f2f28;
+	   everything is on offer. Each badge carries text as well as colour.
+	   Brightened for the dark ground; every one passes 4.5:1 on it. */
+	--ec-stock: #62d98a;
+	--ec-supp: #7fb4ff;
+	--ec-back: #f2c14e;
+	--ec-out: #ff7b70;
 
 	--ec-ease: cubic-bezier(0.16, 1, 0.3, 1);
 
@@ -118,7 +124,7 @@ html {
 	   explicitly instead. */
 	scroll-behavior: auto;
 
-	color-scheme: light;
+	color-scheme: dark;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	text-rendering: optimizeLegibility;
@@ -158,8 +164,8 @@ h1, h2, h3, h4,
 .wc-block-components-product-title,
 .product_title {
 	color: var(--ec-ink);
-	font-weight: 200;
-	line-height: 1.04;
+	font-weight: 900;
+	line-height: 1.0;
 	letter-spacing: 0;
 	text-wrap: balance;
 }
@@ -2960,4 +2966,635 @@ html.has-buybar .ec-whats {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+}
+
+/* =============================================================================
+   PART III — THE NIGHT STAGE
+
+   Studied before it was drawn: cowboy.com, apolloscooters.co, super73.com,
+   niu.com, store.segway.com and inokim.com (the Israeli competitor), captured
+   on 2026-10-07. What they share, and what the paper version lacked:
+
+     · A headline you cannot miss. 70–100px, heavy, three words.
+     · The machine on a STAGE, not on a page: a dark ground, a glow behind
+       the silhouette (Apollo's line-up tiles, Inokim's night road), a
+       reflection under the wheels. A black machine on a dark ground reads
+       as a crisp silhouette the moment there is light behind it.
+     · The three numbers a buyer compares, as chips on every model (Apollo,
+       Super73, Inokim: battery · range · wheel). Not a spec sheet — chips.
+     · A trust strip under the hero (Cowboy, NIU, Apollo): four facts.
+     · One accent colour on the one action that matters.
+
+   What they have and we do not: lifestyle photography. Nothing below fakes
+   it. The atmosphere is light, gradient and reflection on the real Cortez
+   cut-outs; the day Eli sends the importer's photo kit, the hero takes a
+   photograph and nothing else changes.
+   ============================================================================= */
+
+/* ── Ground ──────────────────────────────────────────────────────────────── */
+
+body {
+	background:
+		radial-gradient(90% 60% at 50% -10%, rgba(204, 255, 0, 0.07) 0%, transparent 60%),
+		var(--ec-paper);
+}
+
+::selection {
+	background-color: var(--ec-lime);
+	color: var(--ec-paper);
+}
+
+:focus-visible {
+	outline-color: var(--ec-lime);
+}
+
+.ec-eyebrow--lime {
+	color: var(--ec-lime);
+	font-weight: 700;
+	letter-spacing: 0;
+}
+
+/* ── Buttons: the accent is the action ───────────────────────────────────── */
+
+.wp-block-button__link,
+.wc-block-components-button,
+.woocommerce a.button,
+.woocommerce button.button,
+.ec-buybar__cta,
+.ec-filters .wc-block-product-filters__apply,
+.ec-commerce .wc-block-components-checkout-place-order-button,
+.ec-commerce .wc-block-cart__submit-button {
+	background: var(--ec-lime);
+	color: var(--ec-paper);
+	border-color: var(--ec-lime);
+	font-weight: 700;
+}
+
+.wp-block-button__link:hover,
+.wc-block-components-button:hover,
+.woocommerce a.button:hover,
+.woocommerce button.button:hover,
+.ec-buybar__cta:hover,
+.ec-commerce .wc-block-components-checkout-place-order-button:hover,
+.ec-commerce .wc-block-cart__submit-button:hover {
+	background: #e2ff4d;
+	color: var(--ec-paper);
+	box-shadow: 0 10px 30px -10px rgba(204, 255, 0, 0.55);
+}
+
+.is-style-outline .wp-block-button__link,
+.wp-block-button.is-style-outline > .wp-block-button__link,
+.ec-buybar__cta--ask,
+.wc-block-mini-cart__drawer .wc-block-mini-cart__footer-actions .wc-block-components-button.outlined {
+	background: transparent;
+	color: var(--ec-ink);
+	border-color: var(--ec-hair);
+}
+
+.is-style-outline .wp-block-button__link:hover,
+.wp-block-button.is-style-outline > .wp-block-button__link:hover,
+.ec-buybar__cta--ask:hover {
+	background: var(--ec-lift);
+	border-color: var(--ec-soft);
+	color: var(--ec-ink);
+	box-shadow: none;
+}
+
+.is-busy::after {
+	border-color: rgba(10, 10, 12, 0.3);
+	border-top-color: var(--ec-paper);
+}
+
+/* ── Header: dark glass ──────────────────────────────────────────────────── */
+
+.ec-head::before {
+	background: color-mix(in srgb, var(--ec-paper) 72%, transparent);
+	backdrop-filter: saturate(1.2) blur(18px);
+}
+
+.ec-head.is-stuck::before {
+	background: color-mix(in srgb, var(--ec-paper) 90%, transparent);
+}
+
+.wp-block-site-title a {
+	font-weight: 700;
+	letter-spacing: 0.12em;
+}
+
+.ec-head__icon:hover,
+.ec-head__icon:focus-visible,
+.ec-head__account .wc-block-customer-account__link:hover,
+.ec-head__cart .wc-block-mini-cart__button:hover,
+.ec-search .wp-block-search__button:hover,
+.ec-search .wp-block-search__button:focus-visible {
+	background: var(--ec-lift);
+}
+
+.wc-block-mini-cart__badge {
+	background: var(--ec-lime);
+	color: var(--ec-paper);
+}
+
+.ec-head__account .wc-block-customer-account__link,
+.ec-head__cart .wc-block-mini-cart__button,
+.ec-search .wp-block-search__button {
+	color: var(--ec-ink);
+}
+
+.wp-block-navigation__responsive-container.is-menu-open {
+	background: var(--ec-paper);
+}
+
+/* ── The hero: a machine under a light ───────────────────────────────────── */
+
+.ec-hero {
+	min-height: clamp(620px, 96svh, 980px);
+	background:
+		radial-gradient(55% 45% at 68% 78%, rgba(204, 255, 0, 0.28) 0%, rgba(204, 255, 0, 0.06) 45%, transparent 70%),
+		radial-gradient(70% 60% at var(--ec-lx) 0%, rgba(244, 243, 239, 0.08) 0%, transparent 60%),
+		linear-gradient(180deg, var(--ec-paper) 0%, #0e0e12 70%, var(--ec-paper) 100%);
+}
+
+/* The road: a floor plane the machine stands on, drawn as a bright
+   horizon line fading into the ground, and a faint perspective grid. */
+.ec-hero::before {
+	content: "";
+	position: absolute;
+	inset: auto 0 0 0;
+	height: 34%;
+	background:
+		linear-gradient(180deg, transparent 0%, rgba(204, 255, 0, 0.05) 40%, transparent 100%),
+		repeating-linear-gradient(90deg, rgba(244, 243, 239, 0.035) 0 1px, transparent 1px 7.5%);
+	mask-image: linear-gradient(180deg, transparent, #000 40%, transparent);
+	pointer-events: none;
+}
+
+.ec-hero::after {
+	content: "";
+	position: absolute;
+	left: 8%;
+	right: 8%;
+	bottom: 24%;
+	height: 1px;
+	background: linear-gradient(90deg, transparent, rgba(204, 255, 0, 0.55) 35%, rgba(244, 243, 239, 0.7) 50%, rgba(204, 255, 0, 0.55) 65%, transparent);
+	filter: blur(0.5px);
+	pointer-events: none;
+}
+
+.ec-hero__stage {
+	width: clamp(300px, 54vw, 820px);
+}
+
+.ec-hero__stage img {
+	max-height: min(66svh, 720px);
+	filter: drop-shadow(0 24px 30px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 60px rgba(204, 255, 0, 0.12));
+	/* The reflection. Blink and WebKit draw it; Firefox simply has no
+	   reflection, which is the correct fallback. */
+	-webkit-box-reflect: below -6px linear-gradient(transparent 62%, rgba(255, 255, 255, 0.16));
+}
+
+.ec-hero__title {
+	font-size: clamp(3rem, 9.2vw, 7.6rem);
+	font-weight: 900;
+	line-height: 0.98;
+	letter-spacing: 0;
+}
+
+.ec-hero__title em {
+	font-weight: 900;
+	color: var(--ec-lime);
+}
+
+.ec-hero__lead {
+	color: var(--ec-soft);
+	font-size: clamp(1.05rem, 1.6vw, 1.3rem);
+	max-width: 36ch;
+}
+
+.ec-hero__copy {
+	max-width: min(52vw, 720px);
+}
+
+@media (max-width: 860px) {
+	.ec-hero::after {
+		bottom: 10%;
+	}
+
+	.ec-hero__stage {
+		width: min(86vw, 460px);
+	}
+}
+
+/* ── The trust strip ─────────────────────────────────────────────────────── */
+
+.ec-trust {
+	list-style: none;
+	margin: 0;
+	padding: 0 clamp(1rem, 4vw, 3.375rem);
+	max-width: var(--ec-container);
+	margin-inline: auto;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1px;
+	background: var(--ec-hair);
+	border-block: 1px solid var(--ec-hair);
+}
+
+@media (min-width: 900px) {
+	.ec-trust {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+}
+
+.ec-trust li {
+	display: grid;
+	gap: 0.25rem;
+	padding: 1.1rem 1.25rem;
+	background: var(--ec-paper);
+}
+
+.ec-trust__k {
+	font-size: var(--ec-fs-sm);
+	font-weight: 700;
+	color: var(--ec-ink);
+}
+
+.ec-trust__v {
+	font-size: var(--ec-fs-xs);
+	color: var(--ec-soft);
+}
+
+.ec-trust__v a {
+	color: var(--ec-ink);
+	display: inline-block;
+	padding-block: 0.5rem;
+	margin-block: -0.5rem;
+}
+
+/* ── Cards: tiles with a light behind the machine ────────────────────────── */
+
+.ec-grid li.wc-block-product {
+	position: relative;
+	padding: clamp(1rem, 2vw, 1.5rem);
+	border-radius: 22px;
+	background:
+		radial-gradient(70% 45% at 50% 62%, rgba(204, 255, 0, 0.16) 0%, transparent 70%),
+		linear-gradient(180deg, #16161b 0%, #0f0f13 100%);
+	border: 1px solid var(--ec-hair);
+	transition: border-color var(--ec-dur-tap), box-shadow var(--ec-dur-tap);
+}
+
+.ec-grid li.wc-block-product:hover {
+	border-color: rgba(204, 255, 0, 0.35);
+	box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(204, 255, 0, 0.08);
+}
+
+/* Scooters and bikes get a different light, so a mixed grid reads as two
+   families without a label. */
+.ec-grid li.wc-block-product.product_cat-scooters {
+	background:
+		radial-gradient(70% 45% at 50% 62%, rgba(127, 180, 255, 0.14) 0%, transparent 70%),
+		linear-gradient(180deg, #16161b 0%, #0f0f13 100%);
+}
+
+.ec-grid li.wc-block-product .wc-block-components-product-image img {
+	filter: drop-shadow(0 18px 22px rgba(0, 0, 0, 0.65));
+}
+
+.ec-grid li.wc-block-product .wc-block-components-product-image::after {
+	background: radial-gradient(50% 50% at 50% 50%, rgba(204, 255, 0, 0.35) 0%, transparent 70%);
+}
+
+.wc-block-components-product-title,
+.wc-block-components-product-title a {
+	font-weight: 700;
+	font-size: clamp(1.05rem, 1.7vw, 1.35rem);
+}
+
+.wc-block-components-product-price {
+	color: var(--ec-ink);
+	font-weight: 700;
+}
+
+.wc-block-components-product-price del {
+	color: var(--ec-soft);
+}
+
+.wc-block-components-product-sale-badge {
+	background: var(--ec-lime);
+	color: var(--ec-paper);
+}
+
+/* ── Chips: battery · range · wheel ──────────────────────────────────────── */
+
+.ec-chips {
+	list-style: none;
+	margin: 0.9rem 0 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+}
+
+.ec-chip {
+	display: inline-flex;
+	flex-direction: column;
+	gap: 0.05rem;
+	padding: 0.4rem 0.7rem;
+	border-radius: 10px;
+	background: rgba(244, 243, 239, 0.06);
+	border: 1px solid rgba(244, 243, 239, 0.08);
+	min-width: 5.5rem;
+}
+
+.ec-chip__label {
+	font-size: 0.68rem;
+	color: var(--ec-soft);
+	line-height: 1.2;
+}
+
+.ec-chip__value {
+	font-size: var(--ec-fs-sm);
+	font-weight: 700;
+	color: var(--ec-ink);
+	line-height: 1.3;
+	font-variant-numeric: tabular-nums;
+	unicode-bidi: plaintext;
+}
+
+.ec-pdp__buy .ec-chips {
+	margin-top: 1.25rem;
+}
+
+.ec-pdp__buy .ec-chip {
+	padding: 0.6rem 0.9rem;
+	min-width: 7rem;
+}
+
+.ec-pdp__buy .ec-chip__value {
+	font-size: var(--ec-fs-lg);
+}
+
+/* ── Departments and sections on the dark ground ─────────────────────────── */
+
+.ec-depts {
+	background: var(--ec-hair);
+}
+
+.ec-dept {
+	background: var(--ec-lift);
+	border-radius: 0;
+}
+
+a.ec-dept:hover,
+a.ec-dept:focus-visible {
+	background: #1b1b21;
+}
+
+.ec-dept__name {
+	font-weight: 800;
+	font-size: var(--ec-fs-xl);
+}
+
+.ec-dept__go {
+	color: var(--ec-lime);
+}
+
+.ec-section__note,
+.ec-fine,
+.ec-crumbs,
+.ec-crumbs a {
+	color: var(--ec-soft);
+}
+
+/* The legend and the store section invert: on a dark site they are the
+   bright blocks, which is the rhythm Cowboy runs — dark, light, dark. */
+.ec-knows,
+.ec-store {
+	background: var(--ec-ink);
+	color: var(--ec-paper);
+}
+
+.ec-knows h2,
+.ec-store h2,
+.ec-store p,
+.ec-store__facts dt,
+.ec-store__facts dd {
+	color: var(--ec-paper);
+}
+
+.ec-knows li {
+	border-bottom-color: rgba(10, 10, 12, 0.14);
+	color: var(--ec-paper);
+}
+
+.ec-store__facts dt,
+.ec-store__facts dd {
+	border-top-color: rgba(10, 10, 12, 0.14);
+}
+
+.ec-store .wp-block-button__link {
+	background: var(--ec-paper);
+	color: var(--ec-ink);
+	border-color: var(--ec-paper);
+}
+
+.ec-store .is-style-outline .wp-block-button__link {
+	background: transparent;
+	color: var(--ec-paper);
+	border-color: rgba(10, 10, 12, 0.3);
+}
+
+.ec-store .wp-block-button__link:hover {
+	background: #000;
+	color: var(--ec-ink);
+	box-shadow: none;
+}
+
+.ec-store__unconfirmed {
+	color: #8a5f18;
+}
+
+.ec-lab {
+	background: var(--ec-lift);
+	border-color: var(--ec-hair);
+}
+
+.ec-lab li {
+	border-bottom-color: var(--ec-hair);
+}
+
+/* ── The product page stage ──────────────────────────────────────────────── */
+
+.ec-pdp__stage {
+	background:
+		radial-gradient(60% 50% at 50% 78%, rgba(204, 255, 0, 0.26) 0%, rgba(204, 255, 0, 0.05) 45%, transparent 70%),
+		radial-gradient(70% 60% at var(--ec-lx) 0%, rgba(244, 243, 239, 0.07) 0%, transparent 60%),
+		linear-gradient(180deg, #121216 0%, #0c0c10 100%);
+	border: 1px solid var(--ec-hair);
+	border-radius: 24px;
+}
+
+.ec-pdp__stage .woocommerce-product-gallery__image img {
+	filter: drop-shadow(0 24px 30px rgba(0, 0, 0, 0.7));
+	-webkit-box-reflect: below -4px linear-gradient(transparent 66%, rgba(255, 255, 255, 0.14));
+}
+
+.ec-pdp__stage .woocommerce-product-gallery__trigger {
+	background: var(--ec-lift);
+	border-color: var(--ec-hair);
+}
+
+.ec-pdp__title {
+	font-size: clamp(2.4rem, 5vw, 4.4rem);
+}
+
+.ec-pdp__price {
+	font-weight: 700;
+	font-size: var(--ec-fs-2xl);
+}
+
+.ec-pdp__assure li::before {
+	background: var(--ec-lime);
+}
+
+.ec-pdp__spec-in .ec-spec-table th,
+.ec-pdp__spec-in .ec-spec-table td {
+	border-top-color: var(--ec-hair);
+}
+
+.ec-avail__notice {
+	background: var(--ec-lift);
+}
+
+/* ── Forms, filters, cart and the rest, on the dark ground ───────────────── */
+
+.woocommerce input[type="text"],
+.woocommerce input[type="email"],
+.woocommerce input[type="tel"],
+.woocommerce input[type="number"],
+.woocommerce input[type="password"],
+.woocommerce textarea,
+.woocommerce select,
+.wc-block-components-text-input input,
+.ec-commerce .wc-block-components-text-input input,
+.ec-filters input[type="text"],
+.ec-filters input[type="number"],
+.ec-catalogue__tools select,
+.wc-block-catalog-sorting select,
+.ec-pdp__form .quantity .qty {
+	background: var(--ec-lift);
+	border-color: var(--ec-hair);
+	color: var(--ec-ink);
+	color-scheme: dark;
+}
+
+.ec-filters .wc-block-product-filter-chips__item {
+	background: var(--ec-lift);
+	border-color: var(--ec-hair);
+}
+
+.ec-filters .wc-block-product-filter-chips__item[aria-checked="true"],
+.ec-filters .wc-block-product-filter-chips__item[aria-pressed="true"],
+.ec-filters .wc-block-product-filter-chips__item.is-selected,
+.ec-filters .wc-block-product-filter-removable-chips__item,
+.ec-pages .page-numbers.current {
+	background: var(--ec-lime);
+	border-color: var(--ec-lime);
+	color: var(--ec-paper);
+}
+
+.ec-filters .wc-block-product-filter-price-slider__range input[type="range"],
+.ec-filters .wc-block-product-filter-checkbox-list__input,
+.ec-commerce .wc-block-components-radio-control__input,
+.ec-commerce .wc-block-components-checkbox input {
+	accent-color: var(--ec-lime);
+}
+
+.ec-filters .wc-block-product-filters__open-overlay,
+.ec-filters .wc-block-product-filters__overlay-dialog,
+.ec-filters .wc-block-product-filters__overlay-footer {
+	background: var(--ec-lift);
+	color: var(--ec-ink);
+}
+
+.ec-filters .wc-block-product-filters__overlay-dialog {
+	background: var(--ec-paper);
+}
+
+.ec-commerce .wc-block-components-sidebar-layout .wc-block-components-sidebar,
+.ec-commerce .wc-block-cart__sidebar,
+.woocommerce-account .woocommerce-form-login,
+.woocommerce-account .woocommerce-form-register,
+.wc-block-mini-cart__drawer,
+.wc-block-mini-cart__drawer .wc-block-mini-cart__footer {
+	background: var(--ec-lift);
+	border-color: var(--ec-hair);
+	color: var(--ec-ink);
+}
+
+.wc-block-mini-cart__drawer {
+	background: var(--ec-paper);
+}
+
+.woocommerce-message,
+.woocommerce-info,
+.woocommerce-error,
+.wc-block-components-notice-banner {
+	background: var(--ec-lift);
+	color: var(--ec-ink);
+	border-inline-start-color: var(--ec-lime);
+}
+
+.ec-buybar {
+	background: color-mix(in srgb, var(--ec-paper) 88%, transparent);
+	border-top-color: var(--ec-hair);
+}
+
+.ec-whats {
+	background: var(--ec-lime);
+	color: var(--ec-paper);
+	box-shadow: 0 12px 28px -10px rgba(204, 255, 0, 0.5);
+}
+
+.ec-whats__label {
+	background: var(--ec-ink);
+	color: var(--ec-paper);
+}
+
+.ec-foot,
+.wp-block-site-footer {
+	border-top-color: var(--ec-hair);
+}
+
+.ec-foot h2 {
+	font-weight: 700;
+	font-size: var(--ec-fs-base);
+}
+
+/* The gallery used to carry the lit-stage gradient itself, at a higher
+   specificity than the stage column's reset — on the dark ground that
+   painted a boxed rectangle behind the machine. Measured, then outranked. */
+.woocommerce div.product .ec-pdp__stage .woocommerce-product-gallery {
+	background: none;
+	padding: 0;
+}
+
+/* Chips in a card line up as one row of three equal cells, so a grid of
+   cards reads as a table without ruling lines. */
+.ec-grid .ec-chips {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.4rem;
+}
+
+.ec-grid .ec-chip {
+	min-width: 0;
+	padding-inline: 0.55rem;
+}
+
+.ec-grid .ec-chip__value {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }

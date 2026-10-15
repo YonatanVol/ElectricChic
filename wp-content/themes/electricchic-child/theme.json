@@ -13,22 +13,67 @@
 			"defaultGradients": false,
 			"customDuotone": false,
 			"palette": [
-				{ "slug": "paper", "color": "#f2f1ee", "name": "נייר" },
-				{ "slug": "lift",  "color": "#fbfaf8", "name": "נייר מואר" },
-				{ "slug": "sink",  "color": "#e3e1da", "name": "נייר מוצל" },
-				{ "slug": "ink",   "color": "#191713", "name": "דיו" },
-				{ "slug": "soft",  "color": "#67635a", "name": "דיו מעומעם" },
-				{ "slug": "hair",  "color": "#dcd9d1", "name": "קו" },
-				{ "slug": "stock", "color": "#2c6b45", "name": "במלאי בחנות" },
-				{ "slug": "supp",  "color": "#2a5a86", "name": "זמין מהספק" },
-				{ "slug": "back",  "color": "#8a5f18", "name": "נדרש אישור" },
-				{ "slug": "out",   "color": "#8f2f28", "name": "לא ניתן לרכישה" }
+				{
+					"slug": "paper",
+					"color": "#0a0a0c",
+					"name": "לילה"
+				},
+				{
+					"slug": "lift",
+					"color": "#141418",
+					"name": "לילה מואר"
+				},
+				{
+					"slug": "sink",
+					"color": "#050506",
+					"name": "לילה עמוק"
+				},
+				{
+					"slug": "ink",
+					"color": "#f4f3ef",
+					"name": "לבן שבור"
+				},
+				{
+					"slug": "soft",
+					"color": "#a7a5ad",
+					"name": "אפור"
+				},
+				{
+					"slug": "hair",
+					"color": "#26262c",
+					"name": "קו"
+				},
+				{
+					"slug": "lime",
+					"color": "#ccff00",
+					"name": "ליים"
+				},
+				{
+					"slug": "stock",
+					"color": "#62d98a",
+					"name": "במלאי בחנות"
+				},
+				{
+					"slug": "supp",
+					"color": "#7fb4ff",
+					"name": "זמין מהספק"
+				},
+				{
+					"slug": "back",
+					"color": "#f2c14e",
+					"name": "נדרש אישור"
+				},
+				{
+					"slug": "out",
+					"color": "#ff7b70",
+					"name": "לא ניתן לרכישה"
+				}
 			],
 			"gradients": [
 				{
 					"slug": "stage",
 					"name": "במה מוארת",
-					"gradient": "radial-gradient(120% 92% at 50% 4%, #fbfaf8 0%, #f2f1ee 52%, #e3e1da 100%)"
+					"gradient": "radial-gradient(60% 50% at 50% 80%, rgba(204,255,0,0.22) 0%, rgba(10,10,12,0) 70%)"
 				}
 			]
 		},
@@ -47,7 +92,9 @@
 							"fontStyle": "normal",
 							"fontDisplay": "swap",
 							"unicodeRange": "U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F",
-							"src": [ "file:./assets/fonts/heebo-hebrew.woff2" ]
+							"src": [
+								"file:./assets/fonts/heebo-hebrew.woff2"
+							]
 						},
 						{
 							"fontFamily": "Heebo",
@@ -55,7 +102,9 @@
 							"fontStyle": "normal",
 							"fontDisplay": "swap",
 							"unicodeRange": "U+0000-00FF, U+0131, U+2000-206F, U+2192, U+2212, U+2215",
-							"src": [ "file:./assets/fonts/heebo-latin.woff2" ]
+							"src": [
+								"file:./assets/fonts/heebo-latin.woff2"
+							]
 						}
 					]
 				},
@@ -70,50 +119,121 @@
 							"fontStyle": "normal",
 							"fontDisplay": "swap",
 							"unicodeRange": "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+2000-206F, U+2122, U+2212, U+2215",
-							"src": [ "file:./assets/fonts/archivo-latin.woff2" ]
+							"src": [
+								"file:./assets/fonts/archivo-latin.woff2"
+							]
 						}
 					]
 				}
 			],
 			"fontSizes": [
-				{ "slug": "x-small", "size": "0.78rem",   "name": "זעיר" },
-				{ "slug": "small",   "size": "0.875rem",  "name": "קטן" },
-				{ "slug": "medium",  "size": "1.0625rem", "name": "רגיל" },
 				{
-					"slug": "large", "name": "גדול",
+					"slug": "x-small",
+					"size": "0.78rem",
+					"name": "זעיר"
+				},
+				{
+					"slug": "small",
+					"size": "0.875rem",
+					"name": "קטן"
+				},
+				{
+					"slug": "medium",
+					"size": "1.0625rem",
+					"name": "רגיל"
+				},
+				{
+					"slug": "large",
+					"name": "גדול",
 					"size": "1.7rem",
-					"fluid": { "min": "1.35rem", "max": "1.7rem" }
+					"fluid": {
+						"min": "1.35rem",
+						"max": "1.7rem"
+					}
 				},
 				{
-					"slug": "x-large", "name": "ענק",
+					"slug": "x-large",
+					"name": "ענק",
 					"size": "2.75rem",
-					"fluid": { "min": "1.7rem", "max": "2.75rem" }
+					"fluid": {
+						"min": "1.7rem",
+						"max": "2.75rem"
+					}
 				},
 				{
-					"slug": "xx-large", "name": "כותרת מוצר",
+					"slug": "xx-large",
+					"name": "כותרת מוצר",
 					"size": "3.6rem",
-					"fluid": { "min": "1.9rem", "max": "3.6rem" }
+					"fluid": {
+						"min": "1.9rem",
+						"max": "3.6rem"
+					}
 				},
 				{
-					"slug": "hero", "name": "כותרת ראשית",
+					"slug": "hero",
+					"name": "כותרת ראשית",
 					"size": "5.6rem",
-					"fluid": { "min": "2.4rem", "max": "5.6rem" }
+					"fluid": {
+						"min": "2.4rem",
+						"max": "5.6rem"
+					}
 				}
 			]
 		},
 		"spacing": {
-			"units": [ "px", "em", "rem", "vh", "vw", "svh", "%" ],
+			"units": [
+				"px",
+				"em",
+				"rem",
+				"vh",
+				"vw",
+				"svh",
+				"%"
+			],
 			"spacingSizes": [
-				{ "slug": "20", "size": "0.5rem", "name": "1" },
-				{ "slug": "30", "size": "1rem",   "name": "2" },
-				{ "slug": "40", "size": "1.5rem", "name": "3" },
-				{ "slug": "50", "size": "2rem",   "name": "4" },
-				{ "slug": "60", "size": "3rem",   "name": "5" },
-				{ "slug": "70", "size": "4rem",   "name": "6" },
-				{ "slug": "80", "size": "6rem",   "name": "7" }
+				{
+					"slug": "20",
+					"size": "0.5rem",
+					"name": "1"
+				},
+				{
+					"slug": "30",
+					"size": "1rem",
+					"name": "2"
+				},
+				{
+					"slug": "40",
+					"size": "1.5rem",
+					"name": "3"
+				},
+				{
+					"slug": "50",
+					"size": "2rem",
+					"name": "4"
+				},
+				{
+					"slug": "60",
+					"size": "3rem",
+					"name": "5"
+				},
+				{
+					"slug": "70",
+					"size": "4rem",
+					"name": "6"
+				},
+				{
+					"slug": "80",
+					"size": "6rem",
+					"name": "7"
+				}
 			]
 		},
-		"border": { "radius": true, "color": true, "style": true, "width": true }
+		"border": {
+			"radius": true,
+			"color": true,
+			"style": true,
+			"width": true
+		}
 	},
 	"styles": {
 		"color": {
@@ -135,42 +255,84 @@
 			"heading": {
 				"typography": {
 					"fontFamily": "var(--wp--preset--font-family--sans)",
-					"fontWeight": "200",
-					"lineHeight": "1.04",
+					"fontWeight": "900",
+					"lineHeight": "1.0",
 					"letterSpacing": "0"
 				},
-				"color": { "text": "var(--wp--preset--color--ink)" }
+				"color": {
+					"text": "var(--wp--preset--color--ink)"
+				}
 			},
-			"h3": { "typography": { "fontWeight": "500", "lineHeight": "1.18" } },
-			"h4": { "typography": { "fontWeight": "500", "lineHeight": "1.18" } },
-			"h5": { "typography": { "fontWeight": "500", "lineHeight": "1.18" } },
-			"h6": { "typography": { "fontWeight": "500", "lineHeight": "1.18" } },
+			"h3": {
+				"typography": {
+					"fontWeight": "500",
+					"lineHeight": "1.18"
+				}
+			},
+			"h4": {
+				"typography": {
+					"fontWeight": "500",
+					"lineHeight": "1.18"
+				}
+			},
+			"h5": {
+				"typography": {
+					"fontWeight": "500",
+					"lineHeight": "1.18"
+				}
+			},
+			"h6": {
+				"typography": {
+					"fontWeight": "500",
+					"lineHeight": "1.18"
+				}
+			},
 			"link": {
-				"color": { "text": "var(--wp--preset--color--ink)" },
-				"typography": { "textDecoration": "none" },
-				":hover": { "typography": { "textDecoration": "underline" } }
+				"color": {
+					"text": "var(--wp--preset--color--ink)"
+				},
+				"typography": {
+					"textDecoration": "none"
+				},
+				":hover": {
+					"typography": {
+						"textDecoration": "underline"
+					}
+				}
 			},
 			"button": {
 				"color": {
-					"background": "var(--wp--preset--color--ink)",
+					"background": "var(--wp--preset--color--lime)",
 					"text": "var(--wp--preset--color--paper)"
 				},
-				"border": { "radius": "999px" },
+				"border": {
+					"radius": "999px"
+				},
 				"typography": {
 					"fontSize": "var(--wp--preset--font-size--small)",
-					"fontWeight": "500"
+					"fontWeight": "700"
 				},
 				"spacing": {
 					"padding": {
-						"top": "0.9rem", "bottom": "0.9rem",
-						"left": "2rem", "right": "2rem"
+						"top": "0.9rem",
+						"bottom": "0.9rem",
+						"left": "2rem",
+						"right": "2rem"
 					}
 				}
 			}
 		}
 	},
 	"templateParts": [
-		{ "name": "header", "title": "כותרת עליונה", "area": "header" },
-		{ "name": "footer", "title": "כותרת תחתונה", "area": "footer" }
+		{
+			"name": "header",
+			"title": "כותרת עליונה",
+			"area": "header"
+		},
+		{
+			"name": "footer",
+			"title": "כותרת תחתונה",
+			"area": "footer"
+		}
 	]
 }
