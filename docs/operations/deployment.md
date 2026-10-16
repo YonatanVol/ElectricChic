@@ -207,4 +207,4 @@ runs at the wrong moment destroys real orders.
 - **A domain.** The Cloudways URL works for the demo. A real domain is Eli's to
   buy, in his name.
 - **Payment.** Blocked on knowing the actual acquirer — see the WhatsApp draft
-  in `docs/whatsapp-to-eli.md`. יציל is credit-card factoring, not a gateway.
+  in `docs/operations/whatsapp-to-eli.md`. יציל is credit-card factoring, not a gateway.
