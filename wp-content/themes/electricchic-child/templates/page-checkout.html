@@ -1,0 +1,16 @@
+<!-- The full header, not WooCommerce's stripped checkout header. A customer
+     who wants to go back to a product or call the shop mid-checkout should
+     not have to leave the page to find the way. -->
+<!-- wp:template-part {"slug":"header","tagName":"div"} /-->
+
+<!-- wp:woocommerce/page-content-wrapper {"page":"checkout"} -->
+<!-- wp:group {"tagName":"main","className":"ec-section ec-commerce ec-commerce--checkout","layout":{"type":"default"}} -->
+<main class="wp-block-group ec-section ec-commerce ec-commerce--checkout">
+	<!-- wp:woocommerce/store-notices /-->
+	<!-- wp:post-title {"level":1,"fontSize":"x-large","className":"ec-commerce__title"} /-->
+	<!-- wp:post-content {"layout":{"type":"default"}} /-->
+</main>
+<!-- /wp:group -->
+<!-- /wp:woocommerce/page-content-wrapper -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"div"} /-->

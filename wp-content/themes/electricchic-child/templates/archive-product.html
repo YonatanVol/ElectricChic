@@ -1,0 +1,121 @@
+<!-- wp:template-part {"slug":"header","tagName":"div"} /-->
+
+<!-- wp:group {"tagName":"main","className":"ec-section ec-catalogue","layout":{"type":"default"}} -->
+<main class="wp-block-group ec-section ec-catalogue">
+
+	<!-- wp:woocommerce/store-notices /-->
+
+	<!-- wp:group {"className":"ec-section__head","layout":{"type":"default"}} -->
+	<div class="wp-block-group ec-section__head">
+		<!-- wp:group {"layout":{"type":"default"}} -->
+		<div class="wp-block-group">
+			<!-- wp:query-title {"type":"archive","showPrefix":false,"fontSize":"x-large"} /-->
+			<!-- wp:term-description /-->
+			<!-- wp:paragraph {"className":"ec-section__note"} -->
+			<p class="ec-section__note">הזמינות מחושבת מהנתונים של החנות ושל הספק — היא לא נבחרת ידנית מתפריט.</p>
+			<!-- /wp:paragraph -->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"className":"ec-catalogue__tools","style":{"spacing":{"blockGap":"1rem"}},"layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"bottom"}} -->
+		<div class="wp-block-group ec-catalogue__tools">
+			<!-- wp:woocommerce/product-results-count /-->
+			<!-- wp:woocommerce/catalog-sorting /-->
+		</div>
+		<!-- /wp:group -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- Filters beside the grid on a desktop, a drawer on a phone. The block
+	     decides which from the viewport; the theme only styles both. -->
+	<!-- wp:group {"className":"ec-catalogue__body","layout":{"type":"default"}} -->
+	<div class="wp-block-group ec-catalogue__body">
+
+		<!-- wp:woocommerce/product-filters {"className":"ec-filters"} -->
+		<div class="wp-block-woocommerce-product-filters ec-filters">
+
+			<!-- wp:woocommerce/product-filter-active -->
+			<div class="wp-block-woocommerce-product-filter-active">
+				<!-- The saved markup is not optional: the chips renderer reads
+				     its own class list back out of it and warns when absent. -->
+				<!-- wp:woocommerce/product-filter-removable-chips {"lock":{"remove":true}} -->
+				<div class="wp-block-woocommerce-product-filter-removable-chips wc-block-product-filter-removable-chips"></div>
+				<!-- /wp:woocommerce/product-filter-removable-chips -->
+				<!-- wp:woocommerce/product-filter-clear-button {"lock":{"remove":true}} -->
+				<div class="wp-block-woocommerce-product-filter-clear-button wp-block-button"><a class="wp-block-button__link wp-element-button">נקה הכל</a></div>
+				<!-- /wp:woocommerce/product-filter-clear-button -->
+			</div>
+			<!-- /wp:woocommerce/product-filter-active -->
+
+			<!-- wp:woocommerce/product-filter-taxonomy {"taxonomy":"product_cat","displayStyle":"woocommerce/product-filter-chips","sortOrder":"count-desc","hideEmpty":true} -->
+			<div class="wp-block-woocommerce-product-filter-taxonomy">
+				<!-- wp:heading {"level":3,"className":"ec-filters__title"} -->
+				<h3 class="wp-block-heading ec-filters__title">מחלקה</h3>
+				<!-- /wp:heading -->
+				<!-- wp:woocommerce/product-filter-chips {"lock":{"remove":true}} -->
+				<div class="wp-block-woocommerce-product-filter-chips wc-block-product-filter-chips"></div>
+				<!-- /wp:woocommerce/product-filter-chips -->
+			</div>
+			<!-- /wp:woocommerce/product-filter-taxonomy -->
+
+			<!-- No availability filter, on purpose. WooCommerce's stock-status
+			     filter queries _stock_status, not the availability resolver, so
+			     "out of stock" returned sixteen products whose own cards said
+			     "special order" or "confirmation required". A filter keyed on
+			     the resolved state belongs to the core plugin. -->
+
+			<!-- wp:woocommerce/product-filter-price -->
+			<div class="wp-block-woocommerce-product-filter-price">
+				<!-- wp:heading {"level":3,"className":"ec-filters__title"} -->
+				<h3 class="wp-block-heading ec-filters__title">מחיר</h3>
+				<!-- /wp:heading -->
+				<!-- wp:woocommerce/product-filter-price-slider {"lock":{"remove":true}} /-->
+			</div>
+			<!-- /wp:woocommerce/product-filter-price -->
+
+		</div>
+		<!-- /wp:woocommerce/product-filters -->
+
+		<!-- Keep product-image or product-price: the availability badge attaches to one of them. -->
+		<!-- wp:woocommerce/product-collection {"className":"ec-grid ec-catalogue__grid","queryId":0,"query":{"perPage":24,"pages":0,"offset":0,"postType":"product","order":"asc","orderBy":"menu_order","search":"","exclude":[],"inherit":true,"taxQuery":{},"isProductCollectionBlock":true,"woocommerceStockStatus":["instock","outofstock","onbackorder"],"woocommerceAttributes":[],"woocommerceHandPickedProducts":[]},"tagName":"div","displayLayout":{"type":"flex","columns":3,"shrinkColumns":true},"dimensions":{"widthType":"fill"},"queryContextIncludes":["collection"]} -->
+		<div class="wp-block-woocommerce-product-collection ec-grid ec-catalogue__grid">
+			<!-- wp:woocommerce/product-template -->
+				<!-- wp:woocommerce/product-image {"showSaleBadge":true,"imageSizing":"single","isDescendentOfQueryLoop":true} /-->
+				<!-- wp:post-title {"level":3,"isLink":true,"fontFamily":"display","__woocommerceNamespace":"woocommerce/product-collection/product-title"} /-->
+				<!-- wp:woocommerce/product-price {"isDescendentOfQueryLoop":true} /-->
+			<!-- /wp:woocommerce/product-template -->
+
+			<!-- wp:query-pagination {"className":"ec-pages","layout":{"type":"flex","justifyContent":"center"}} -->
+				<!-- wp:query-pagination-previous /-->
+				<!-- wp:query-pagination-numbers /-->
+				<!-- wp:query-pagination-next /-->
+			<!-- /wp:query-pagination -->
+
+			<!-- wp:woocommerce/product-collection-no-results -->
+			<!-- wp:group {"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
+			<div class="wp-block-group">
+				<!-- Covers both an empty department and an over-narrow filter, because this block cannot tell them apart. -->
+				<!-- wp:paragraph {"className":"ec-section__note"} -->
+				<p class="ec-section__note">אין כאן דגמים להצגה כרגע. ייתכן שהמלאי במחלקה הזו טרם התקבל, או שהסינון צר מדי.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|50"}}},"layout":{"type":"flex"}} -->
+				<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--50)">
+					<!-- wp:button {"className":"is-style-outline"} -->
+					<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/shop/">לכל הדגמים</a></div>
+					<!-- /wp:button -->
+				</div>
+				<!-- /wp:buttons -->
+			</div>
+			<!-- /wp:group -->
+			<!-- /wp:woocommerce/product-collection-no-results -->
+		</div>
+		<!-- /wp:woocommerce/product-collection -->
+
+	</div>
+	<!-- /wp:group -->
+
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"div"} /-->

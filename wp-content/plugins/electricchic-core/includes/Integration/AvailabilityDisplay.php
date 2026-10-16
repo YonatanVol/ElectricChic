@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace ElectricChic\Core\Integration;
 
 use ElectricChic\Core\Availability\AvailabilityLabels;
+use ElectricChic\Core\Availability\BadgeLedger;
 use ElectricChic\Core\Availability\AvailabilityState;
 use WC_Product;
 
@@ -30,6 +31,41 @@ use WC_Product;
 final class AvailabilityDisplay {
 
 	/**
+	 * Blocks the catalogue badge may attach itself to.
+	 *
+	 * More than one on purpose. The badge used to hang off the price block
+	 * alone, which quietly coupled the single most important thing on the card
+	 * to a design decision: any template that moved the price — or dropped it,
+	 * as a minimal product card reasonably might — would have removed every
+	 * availability badge on the site without raising a single error.
+	 *
+	 * That is the exact failure this project exists to prevent, arriving
+	 * through the back door of a redesign. Listing both anchors means a
+	 * template can arrange the card however it likes and still get the badge;
+	 * claim() below keeps it to one per card.
+	 *
+	 * @var string[]
+	 */
+	private const CARD_ANCHORS = array(
+		'woocommerce/product-price',
+		'woocommerce/product-image',
+	);
+
+	/**
+	 * Blocks that occupy the place where the buy button would be.
+	 *
+	 * Both names are listed because WooCommerce is mid-migration between the
+	 * classic form block and its block-native replacement, and a template may
+	 * legitimately use either.
+	 *
+	 * @var string[]
+	 */
+	private const BUY_BLOCKS = array(
+		'woocommerce/add-to-cart-form',
+		'woocommerce/add-to-cart-with-options',
+	);
+
+	/**
 	 * Build the display over the availability model.
 	 *
 	 * @param ProductStockFactsReader $reader Resolves a product to a state.
@@ -38,23 +74,38 @@ final class AvailabilityDisplay {
 	public function __construct(
 		private readonly ProductStockFactsReader $reader = new ProductStockFactsReader(),
 		private readonly AvailabilityLabels $labels = new AvailabilityLabels(),
-	) {}
+	) {
+		$this->ledger = new BadgeLedger();
+	}
 
 	/**
-	 * Product IDs that have already had a catalogue badge this request.
+	 * Decides which rendering opportunity draws the badge.
 	 *
-	 * Two loop paths are registered below and BOTH fire inside a Product
-	 * Collection block — verified by rendering the shop page and counting: 16
-	 * products produced 32 badges, one after the title and one after the price.
-	 * Registering only one path is not an option either, because which of them
-	 * fires depends on the template, and a missing availability badge is a
-	 * worse failure than a duplicated one.
+	 * A product card offers several — the block catalogue can attach to the
+	 * image or the price, and classic templates fire a loop action as well.
+	 * All of them are registered on purpose, because which one is available
+	 * depends on the template and a missing badge is worse than a repeated
+	 * one. The ledger keeps it to one per CARD.
 	 *
-	 * So both stay registered for coverage and the first to fire wins.
+	 * Per card, not per product: a homepage may feature a machine at the top
+	 * and list it again in a grid below, and both are cards that must state
+	 * their availability. See BadgeLedger for how the boundary is detected.
+	 *
+	 * @var BadgeLedger
+	 */
+	private BadgeLedger $ledger;
+
+	/**
+	 * Products whose state has actually been stated on this page.
+	 *
+	 * Recorded rather than inferred. The product page normally carries its
+	 * state inside the add-to-cart form, but the form is only rendered for a
+	 * product that can be bought — and the products that CANNOT be bought are
+	 * exactly the ones a customer most needs an explanation for.
 	 *
 	 * @var array<int, true>
 	 */
-	private array $rendered = array();
+	private array $stated = array();
 
 	/**
 	 * Attach to WooCommerce.
@@ -84,6 +135,8 @@ final class AvailabilityDisplay {
 
 		$state = $this->reader->state_for( $product );
 
+		$this->stated[ $product->get_id() ] = true;
+
 		return $this->badge_markup( $state, $product, true );
 	}
 
@@ -95,7 +148,7 @@ final class AvailabilityDisplay {
 	public function render_loop_badge(): void {
 		global $product;
 
-		if ( ! $product instanceof WC_Product || ! $this->claim( $product ) ) {
+		if ( ! $product instanceof WC_Product || ! $this->claim( $product, 'woocommerce_after_shop_loop_item_title' ) ) {
 			return;
 		}
 
@@ -107,21 +160,31 @@ final class AvailabilityDisplay {
 	 *
 	 * The classic hook above does fire inside a Product Collection block, but
 	 * only where WooCommerce renders that compatibility layer. This covers the
-	 * block path directly so a card is never left without a badge; claim()
-	 * stops the two from both rendering on the same product.
+	 * block path directly so a card is never left without a badge.
+	 *
+	 * Fires for any block in CARD_ANCHORS, so a custom template is free to
+	 * arrange the card as it likes. claim() guarantees one badge per card
+	 * however many of those blocks are present, and a product that appears on
+	 * the page more than once gets a badge on each of its cards.
 	 *
 	 * @param string               $content Rendered block HTML.
 	 * @param array<string, mixed> $block   Parsed block.
 	 * @return string
 	 */
 	public function append_badge_to_product_block( string $content, array $block ): string {
-		if ( 'woocommerce/product-price' !== ( $block['blockName'] ?? '' ) ) {
+		$name = (string) ( $block['blockName'] ?? '' );
+
+		if ( in_array( $name, self::BUY_BLOCKS, true ) ) {
+			return $this->state_availability_in_place_of_buying( $content );
+		}
+
+		if ( ! in_array( $name, self::CARD_ANCHORS, true ) ) {
 			return $content;
 		}
 
 		global $product;
 
-		if ( ! $product instanceof WC_Product || ! $this->claim( $product ) ) {
+		if ( ! $product instanceof WC_Product || ! $this->claim( $product, $name ) ) {
 			return $content;
 		}
 
@@ -129,18 +192,17 @@ final class AvailabilityDisplay {
 	}
 
 	/**
-	 * Take the right to render this product's catalogue badge, once.
+	 * Take the right to render this product's catalogue badge on this card.
 	 *
 	 * Scoped to the two loop paths only. The product page renders through
 	 * filter_stock_html(), which is a different question — that one replaces
 	 * WooCommerce's own stock line and must always answer.
 	 *
 	 * @param WC_Product $product The product.
+	 * @param string     $anchor  Which rendering opportunity is asking.
 	 * @return bool True if the caller should render.
 	 */
-	private function claim( WC_Product $product ): bool {
-		$id = $product->get_id();
-
+	private function claim( WC_Product $product, string $anchor ): bool {
 		/*
 		 * On a product's own page the catalogue badge is redundant: the stock
 		 * line inside the add-to-cart form already carries the same state AND
@@ -152,17 +214,65 @@ final class AvailabilityDisplay {
 		 * Suppressed here rather than by unregistering the loop hooks, because
 		 * the same page also lists related products and those still need badges.
 		 */
-		if ( is_product() && get_queried_object_id() === $id ) {
+		if ( is_product() && get_queried_object_id() === $product->get_id() ) {
 			return false;
 		}
 
-		if ( isset( $this->rendered[ $id ] ) ) {
-			return false;
+		return $this->ledger->claim( $product->get_id(), $anchor );
+	}
+
+	/**
+	 * Say why a product cannot be bought, where the buy button would have been.
+	 *
+	 * A product page normally states its availability inside the add-to-cart
+	 * form: WooCommerce prints a stock line there and filter_stock_html()
+	 * above replaces it with the derived badge and its explanatory notice.
+	 *
+	 * But PurchasabilityGuard removes that form for anything the model says
+	 * cannot be bought, and the form takes the stock line with it. The result
+	 * was a discontinued machine rendering a title, a price, a full technical
+	 * specification — and no button and no sentence anywhere on the page
+	 * saying why. Found by counting availability statements on the rendered
+	 * page for CORTEZ 10X: three badges, all of them belonging to the related
+	 * products at the bottom.
+
+	 * Silence is the worst of the available answers here. It looks like an
+	 * oversight, it invites a phone call the shop has to answer by hand, and
+	 * on a site whose entire premise is that it tells you what it has, it is
+	 * the one place a customer will remember.
+	 *
+	 * Only fills a genuine gap: if the form did render, filter_stock_html()
+	 * has already recorded the state and this adds nothing.
+	 *
+	 * @param string $content Rendered block HTML, empty when suppressed.
+	 * @return string
+	 */
+	private function state_availability_in_place_of_buying( string $content ): string {
+		global $product;
+
+		if ( ! $product instanceof WC_Product ) {
+			return $content;
 		}
 
-		$this->rendered[ $id ] = true;
+		if ( isset( $this->stated[ $product->get_id() ] ) ) {
+			return $content;
+		}
 
-		return true;
+		$this->stated[ $product->get_id() ] = true;
+
+		/*
+		 * Wrapped rather than appended bare. WordPress stamps the block's
+		 * identity onto the first tag its render produces, so with the form
+		 * suppressed the badge itself came back carrying
+		 * data-block-name="woocommerce/add-to-cart-form" — a paragraph
+		 * announcing itself as the add-to-cart form. The wrapper takes that
+		 * attribute instead, which is accurate: this element genuinely is what
+		 * stands where the form would have been.
+		 */
+		return $content . sprintf(
+			'<div class="ec-avail-instead">%s</div>',
+			$this->badge_markup( $this->reader->state_for( $product ), $product, true )
+		);
 	}
 
 	/**
